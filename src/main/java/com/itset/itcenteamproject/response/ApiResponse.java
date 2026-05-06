@@ -1,5 +1,6 @@
 package com.itset.itcenteamproject.response;
 
+import com.itset.itcenteamproject.exception.ErrorCode;
 import lombok.Getter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
