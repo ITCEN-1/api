@@ -10,6 +10,8 @@ public enum ErrorCode {
     // 에러코드 종류가 많아지면 클래스 나누기
     // 여기 정의되지 않은 에러는 GlobalExceptionHandler에 의해 500 에러 처리됨
 
+    NOTFOUND_HELLO(HttpStatus.NOT_FOUND,"HEL001","해당 Id에 해당하는 Hello를 찾을 수 없습니다."),
+
     // Common
     INVALID_INPUT_VALUE(HttpStatus.BAD_REQUEST, "C001", "잘못된 입력 값입니다."),
     METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "C002", "허용되지 않은 메서드입니다."),
