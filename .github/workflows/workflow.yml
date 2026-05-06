@@ -63,6 +63,6 @@ jobs:
           key: ${{ secrets.SERVER_KEY }}
           passphrase: ${{ secrets.SERVER_PASSPHRASE }}
           script: |
-            fuser -k 8080/tcp || true
+            sudo fuser -k 8080/tcp || true
             rm -f ~/app/*.jar.bak
             nohup java -jar ~/app/*.jar > ~/app/app.log 2>&1 &
