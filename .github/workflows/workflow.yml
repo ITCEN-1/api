@@ -67,4 +67,8 @@ jobs:
           script: |
             sudo fuser -k 8080/tcp || true
             rm -f ~/app/*.jar.bak
-            nohup java -jar ~/app/*.jar > ~/app/app.log 2>&1 &
+            nohup java -Dspring.datasource.url="${DB_URL}" \
+                       -Dspring.datasource.username="${DB_USERNAME}" \
+                       -Dspring.datasource.password="${DB_PASSWORD}" \
+                       -Dspring.jpa.hibernate.ddl-auto="${DDL_AUTO}" \
+                       -jar ~/app/*.jar > ~/app/app.log 2>&1 &
