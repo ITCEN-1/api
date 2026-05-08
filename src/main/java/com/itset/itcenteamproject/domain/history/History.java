@@ -42,6 +42,7 @@ public class History {
     }
 
     @CreatedDate
+    @Column(updatable = false)
     private LocalDateTime createdAt;
 
 }

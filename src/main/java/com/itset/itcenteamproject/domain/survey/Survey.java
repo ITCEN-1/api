@@ -75,5 +75,6 @@ public class Survey {
     private List<SurveySelectedDistrict>  surveySelectedDistrictList = new ArrayList<>();
 
     @CreatedDate
+    @Column(updatable = false)
     private LocalDateTime createdAt;
 }
