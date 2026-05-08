@@ -38,5 +38,5 @@ public class User {
     @CreatedDate
     //수정해도 최초 가입시간 유지
     @Column(nullable = false, updatable = false)
-    private LocalDateTime createAt;
+    private LocalDateTime createdAt;
 }
