@@ -68,7 +68,7 @@ public class Survey {
     private PreferenceLevel preferenceLibrary;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="user_id")//FK 컬럼명
+    @JoinColumn(name="user_id", nullable = false)//FK 컬럼명
     private User user;
 
     @OneToMany(mappedBy = "survey" , cascade = CascadeType.ALL,orphanRemoval = true)

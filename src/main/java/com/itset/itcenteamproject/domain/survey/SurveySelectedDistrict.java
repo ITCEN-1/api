@@ -16,7 +16,7 @@ public class SurveySelectedDistrict {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="survey_id")
+    @JoinColumn(name="survey_id",nullable = false)
     private Survey survey;
 
     @Column(nullable = false, length = 20)
