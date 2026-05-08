@@ -1,20 +1,30 @@
 package com.itset.itcenteamproject.domain.user;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor
 @Table(name = "users")
+@EntityListeners(AuditingEntityListener.class)
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Builder
+    public User(String loginId, String password, String nickname) {
+        this.loginId = loginId;
+        this.password = password;
+        this.nickname = nickname;
+    }
 
     @Column(name = "login_id", unique = true, nullable = false)
     private String loginId;
@@ -25,6 +35,8 @@ public class User {
     @Column(unique = true, nullable = false)
     private String nickname;
 
-    @Column(name = "survey_completed")
-    private Boolean hasSurvey = false;
+    @CreatedDate
+    //수정해도 최초 가입시간 유지
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createAt;
 }
