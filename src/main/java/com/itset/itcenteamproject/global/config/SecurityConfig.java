@@ -34,10 +34,10 @@ public class SecurityConfig {
                                 "/api/hello/*",
                                 "/api/signup",
                                 "/api/auth/login",
+                                "/api/auth/logout",
+                                "/api/auth/survey-check",
                                 "/api/users/check",
-                                "/api/survey/complete",
-                                "api/auth/survey-status",
-                                "api/me"
+                                "/api/me"
                         ).permitAll()
                         // 2.그 외 API는 인증 필요
                         .anyRequest().authenticated()

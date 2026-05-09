@@ -4,7 +4,6 @@ import com.itset.itcenteamproject.domain.user.dto.LoginRequestDTO;
 import com.itset.itcenteamproject.domain.user.dto.SignupRequestDTO;
 import com.itset.itcenteamproject.exception.CustomException;
 import com.itset.itcenteamproject.exception.ErrorCode;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -68,12 +67,5 @@ public class UserService {
     public User findById(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.BAD_REQUEST));
-    }
-
-    //설문 완료 설정(설문 확인 테스트용)
-    @Transactional
-    public void completeSurvey(Long userId) {
-        User user = findById(userId);
-        user.completeSurvey();
     }
 }

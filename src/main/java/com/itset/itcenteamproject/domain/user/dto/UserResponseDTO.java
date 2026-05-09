@@ -12,7 +12,6 @@ public class UserResponseDTO {
     private Long id;
     private String loginId;
     private String nickname;
-    private Boolean hasSurvey;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
@@ -22,6 +21,5 @@ public class UserResponseDTO {
         this.loginId = user.getLoginId();
         this.nickname = user.getNickname();
         this.createdAt = user.getCreatedAt();
-        this.hasSurvey = user.getHasSurvey();
     }
 }

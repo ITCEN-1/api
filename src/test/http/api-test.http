@@ -1,13 +1,30 @@
-GET localhost:8080/api/me
+### 1) 회원가입
+POST http://localhost:8080/api/signup
 Content-Type: application/json
 
 {
-  "loginId":"test001",
-  "password":"1234",
-  "nickname":"test001"
+  "loginId": "test003",
+  "password": "1234",
+  "nickname": "tester003"
 }
 
+### 2) 로그인
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
 
+{
+  "loginId": "test003",
+  "password": "1234"
+}
 
+### 3) 로그인 사용자 정보 확인
+GET http://localhost:8080/api/me
 
-###
+### 4) 설문 여부 확인
+GET http://localhost:8080/api/auth/survey-check
+
+### 5) 로그아웃
+POST http://localhost:8080/api/auth/logout
+
+### 6) 로그아웃 후 설문 여부 확인 - 세션 만료 테스트
+GET http://localhost:8080/api/auth/survey-check

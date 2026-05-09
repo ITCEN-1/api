@@ -5,10 +5,9 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class LoginResponseDTO {
-    private String loginId;
-    private String nickname;
+public class SurveyCheckResponseDTO {
     private boolean surveyCompleted;
     private String redirectPath;
 }
+
 

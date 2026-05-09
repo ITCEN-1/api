@@ -19,11 +19,10 @@ public class User {
     private Long id;
 
     @Builder
-    public User(String loginId, String password, String nickname, boolean hasSurvey) {
+    public User(String loginId, String password, String nickname) {
         this.loginId = loginId;
         this.password = password;
         this.nickname = nickname;
-        this.hasSurvey = hasSurvey;
     }
 
     @Column(name = "login_id", unique = true, nullable = false)
@@ -35,15 +34,9 @@ public class User {
     @Column(unique = true, nullable = false)
     private String nickname;
 
-    @Column(name = "survey_completed")
-    private Boolean hasSurvey = false;
-
     @CreatedDate
     //수정해도 최초 가입시간 유지
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    public void completeSurvey(){
-        this.hasSurvey = true;
-    }
 }

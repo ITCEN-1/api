@@ -1,6 +1,5 @@
 package com.itset.itcenteamproject.domain.user;
 
-import com.itset.itcenteamproject.domain.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

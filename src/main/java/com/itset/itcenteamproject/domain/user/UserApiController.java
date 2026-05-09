@@ -1,8 +1,10 @@
 package com.itset.itcenteamproject.domain.user;
 
+import com.itset.itcenteamproject.domain.survey.SurveyRepository;
 import com.itset.itcenteamproject.domain.user.dto.*;
 import com.itset.itcenteamproject.exception.CustomException;
 import com.itset.itcenteamproject.exception.ErrorCode;
+import com.itset.itcenteamproject.domain.user.UserService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserApiController {
 
     private final UserService userService;
+    private final SurveyRepository surveyRepository;
 
     //회원가입
     @PostMapping("/signup")
@@ -32,13 +35,18 @@ public class UserApiController {
             HttpSession session
     ) {
         User user = userService.login(dto);
-
         session.setAttribute("loginUser", user.getId());
-        session.setMaxInactiveInterval(60);
+        session.setMaxInactiveInterval(120);
+
+        //설문 여부 확인 후 페이지 이동(프론트)
+        boolean surveyCompleted = surveyRepository.existsByUserId(user.getId());
+        String redirectPath = surveyCompleted ? "/dashboard" : "/surveys";
 
         return new LoginResponseDTO(
                 user.getLoginId(),
-                user.getNickname()
+                user.getNickname(),
+                surveyCompleted,
+                redirectPath
         );
     }
 
@@ -74,25 +82,20 @@ public class UserApiController {
         return new UserResponseDTO(user);
     }
 
-    //설문여부 확인
-    @GetMapping("/auth/survey-status")
-    public Boolean surveyStatus(HttpSession session) {
+    //의도하지 않은 경로로 대시보드 진입 방지
+    //프론트에서 대시보드 페이지 진입 전 호출
+    @GetMapping("/auth/survey-check")
+    public SurveyCheckResponseDTO checkSurvey(HttpSession session) {
         Long userId = getLoginUser(session);
-        User user = userService.findById(userId);
 
-        return user.getHasSurvey();
+        boolean surveyCompleted = surveyRepository.existsByUserId(userId);
+        String redirectPath = surveyCompleted ? "/dashboard" : "/survey";
+
+        return new SurveyCheckResponseDTO(surveyCompleted, redirectPath);
     }
 
-    //설문 완료하기(설문여부 확인 테스트용)
-    @PostMapping("/survey/complete")
-    public ResponseEntity<Void> completeSurvey(HttpSession session) {
-        Long userId = getLoginUser(session);
-        userService.completeSurvey(userId);
 
-        return ResponseEntity.ok().build();
-    }
-
-    //인증 체크
+    //인증 체크(세션에 loginUser가 있는지)
     private Long getLoginUser(HttpSession session) {
         //로그인 상태 -> userid 반환
         Long userId = (Long) session.getAttribute("loginUser");
