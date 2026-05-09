@@ -89,7 +89,7 @@ public class UserApiController {
         Long userId = getLoginUser(session);
 
         boolean surveyCompleted = surveyRepository.existsByUserId(userId);
-        String redirectPath = surveyCompleted ? "/dashboard" : "/survey";
+        String redirectPath = surveyCompleted ? "/dashboard" : "/surveys";
 
         return new SurveyCheckResponseDTO(surveyCompleted, redirectPath);
     }
