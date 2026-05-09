@@ -1,5 +1,7 @@
-package com.itset.itcenteamproject.domain.user;
+package com.itset.itcenteamproject.domain.user.service;
 
+import com.itset.itcenteamproject.domain.user.User;
+import com.itset.itcenteamproject.domain.user.UserRepository;
 import com.itset.itcenteamproject.domain.user.dto.LoginRequestDTO;
 import com.itset.itcenteamproject.domain.user.dto.SignupRequestDTO;
 import com.itset.itcenteamproject.exception.CustomException;
@@ -59,8 +61,10 @@ public class UserService {
     }
 
     //로그인 아이디 중복검사
-    public boolean checkLoginIdDuplicate(String loginId) {
-        return userRepository.existsByLoginId(loginId);
+    public void checkLoginIdDuplicate(String loginId) {
+        if (userRepository.existsByLoginId(loginId)) {
+            throw new CustomException(ErrorCode.DUPLICATE_LOGIN_ID);
+        }
     }
 
     //userId로 DB(User) 조회, 세션에 userId만 있음
