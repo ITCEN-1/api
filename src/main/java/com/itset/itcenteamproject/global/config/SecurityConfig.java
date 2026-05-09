@@ -16,6 +16,11 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable()) // 테스트 시 편리함을 위해
+                //spring security 비밀번호 암호화 기능만 쓰기 위해
+                .httpBasic(httpBasic -> httpBasic.disable())
+                .formLogin(form -> form.disable())
+                .logout(logout -> logout.disable())
+
                 .authorizeHttpRequests(auth -> auth
                         // 1.Swagger 관련 리소스는 모두 허용
                         .requestMatchers(
@@ -26,7 +31,13 @@ public class SecurityConfig {
                                 "/swagger-resources/**",
                                 "/webjars/**",
                                 "/api/hello",
-                                "/api/hello/*"
+                                "/api/hello/*",
+                                "/api/signup",
+                                "/api/auth/login",
+                                "/api/users/check",
+                                "/api/survey/complete",
+                                "api/auth/survey-status",
+                                "api/me"
                         ).permitAll()
                         // 2.그 외 API는 인증 필요
                         .anyRequest().authenticated()
