@@ -12,9 +12,4 @@ public class SurveyService {
     public boolean hasSurvey(Long userId) {
         return surveyRepository.existsByUserId(userId);
     }
-
-    //설문여부에 따른 페이지 이동
-    public String getRedirectPath(Long userId) {
-        return hasSurvey(userId) ? "/dashboard" : "/surveys";
-    }
 }
