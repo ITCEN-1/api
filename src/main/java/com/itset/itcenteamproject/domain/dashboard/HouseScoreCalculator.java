@@ -20,7 +20,7 @@ class HouseScoreCalculator {
         this.wolseRepositoryMap = wolseRepositoryMap;
     }
 
-    public double calcHousePriceScore(Survey survey, List<RecommendedDong> recommendedDongs) {
+    public List<RecommendedDong> calcHousePriceScore(Survey survey, List<RecommendedDong> recommendedDongs) {
         List<ContractCntDTO> contractCntDTO = this.wolseRepositoryMap.get(getContractType(survey).getBeanName())
                 .findContractCntByPreference(survey);
 
@@ -40,7 +40,7 @@ class HouseScoreCalculator {
                     dong.setScore(dong.getScore().add(BigDecimal.valueOf(additionalScore)));
                 });
 
-        return 0;
+        return recommendedDongs;
     }
 
     private ContractTypeEnum getContractType(Survey survey) {
