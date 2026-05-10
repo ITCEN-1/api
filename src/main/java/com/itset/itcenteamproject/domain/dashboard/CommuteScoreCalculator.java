@@ -25,6 +25,7 @@ import static com.itset.itcenteamproject.exception.ErrorCode.*;
 public class CommuteScoreCalculator {
 
     private final LocationUtil locationUtil;
+    private final RestClient restClient = RestClient.create();
 
     /**
      * workplaceDongCode(직장,학교 동) 를 기준으로 recommendedDongList(추천된 동) 에 있는 각 동 까지 걸리는 시간을
@@ -78,8 +79,6 @@ public class CommuteScoreCalculator {
                 + "&SearchType=0"
                 + "&SearchPathType=0";
 
-        //RestClient 로 API 호출
-        RestClient restClient = RestClient.create();
         String response=null;
         try{
             response = restClient.get()
