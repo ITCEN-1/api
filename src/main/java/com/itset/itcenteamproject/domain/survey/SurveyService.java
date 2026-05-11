@@ -1,5 +1,7 @@
 package com.itset.itcenteamproject.domain.survey;
 
+import com.itset.itcenteamproject.exception.CustomException;
+import com.itset.itcenteamproject.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -8,8 +10,4 @@ import org.springframework.stereotype.Service;
 public class SurveyService {
     private final SurveyRepository surveyRepository;
 
-    //설문여부 확인
-    public boolean hasSurvey(Long userId) {
-        return surveyRepository.existsByUserId(userId);
-    }
 }
