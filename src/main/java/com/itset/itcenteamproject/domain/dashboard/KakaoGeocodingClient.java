@@ -25,7 +25,7 @@ public class KakaoGeocodingClient {
 
     private final RestClient restClient = RestClient.create();
 
-    @Value("rest-api-key")// <-- 롬북 Value랑 헷갈려서 20분 버림, 이거 읽는 사람은 그러지마세요
+    @Value("${kakao.rest-api-key}")// <-- 롬북 Value랑 헷갈려서 20분 버림, 이거 읽는 사람은 그러지마세요
     private String kakaoRestApiKey;
 
     private static final String KAKAO_ADDRESS_SEARCH_URL = "https://dapi.kakao.com/v2/local/search/address.json";
