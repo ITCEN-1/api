@@ -2,6 +2,9 @@ package com.itset.itcenteamproject.domain.survey;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface SurveyRepository extends JpaRepository<Survey, Long> {
+import java.util.Optional;
 
+public interface SurveyRepository extends JpaRepository<Survey, Long> {
+    boolean existsByUserId(Long userId);
+    Optional<Survey> findTopByUserIdOrderByCreatedAtDesc(Long userId);
 }
