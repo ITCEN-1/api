@@ -3,12 +3,14 @@ package com.itset.itcenteamproject.domain.history;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.SessionAttribute;
 
 import java.util.List;
 
 @RestController
+@RequestMapping("/api")
 public class HistoryController {
 
     private final HistoryService historyService;
