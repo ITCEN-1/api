@@ -17,9 +17,6 @@ public enum ErrorCode {
     METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "C002", "허용되지 않은 메서드입니다."),
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "C003", "서버 내부 오류입니다."),
 
-    // User (예시)
-    /*USER_NOT_FOUND(HttpStatus.NOT_FOUND, "U001", "사용자를 찾을 수 없습니다."),
-    DUPLICATE_EMAIL(HttpStatus.BAD_REQUEST, "U002", "이미 존재하는 이메일입니다.");*/
     // User관련 추가
     BAD_REQUEST(HttpStatus.BAD_REQUEST, "U001", "잘못된 요청입니다."),
     INVALID_LOGIN_ID(HttpStatus.BAD_REQUEST, "U002", "아이디는 6~12자 영문+숫자 조합이어야 합니다."),
@@ -29,12 +26,20 @@ public enum ErrorCode {
 
     LOGIN_FAILED(HttpStatus.UNAUTHORIZED, "U005", "아이디 또는 비밀번호가 올바르지 않습니다."),
     SESSION_EXPIRED(HttpStatus.UNAUTHORIZED, "U006", "세션이 만료되었습니다."),
+
     NOT_FOUND_USER(HttpStatus.NOT_FOUND,"U007","존재하지 않는 유저입니다"),
 
     // 설문 관련
     INVALID_RENTAL_FILED(HttpStatus.BAD_REQUEST,"SUR001","정상적인 전세 또는 월세+보증금 입력이 아닙니다"),
     INVALID_MONTHLY_FILED(HttpStatus.BAD_REQUEST,"SUR002","정상적인 월세,보증금 입력이 아닙니다, 월세최소+월세최대+보증금최소+보증금최대를 모두 입력하세요"),
     INVALID_JEONSE_FILED(HttpStatus.BAD_REQUEST,"SUR003","정상적인 전세 입력이 아닙니다, 전세최소+전세최대를 모두 입력하세요");
+
+    // DongLocation 관련
+    INVALID_DONG_CODE(HttpStatus.BAD_REQUEST,"DON001","유효하지 않은 동 코드입니다. (1111010100 ~ 1174011000)"),
+
+    // 통근점수 산정 관련
+    ODSAY_API_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "COM002", "오디세이 API 호출에 실패했습니다."),
+    ODSAY_PARSE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "COM003", "오디세이 응답 파싱에 실패했습니다.");
 
     private final HttpStatus status; //헤더 상태코드로 들어감
     private final String code; //errorCode.getCode 로 사용
