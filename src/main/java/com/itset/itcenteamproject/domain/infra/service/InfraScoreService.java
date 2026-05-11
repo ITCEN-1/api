@@ -98,8 +98,6 @@ public class InfraScoreService {
                             .message("인프라 점수")
                             .build();
                 })
-                //점수 높은 순으로 정렬해서 리스트로 만든다.
-                .sorted(Comparator.comparing(RecommendedDong::getScore).reversed())
                 .toList();
     }
 
