@@ -26,10 +26,10 @@ public enum ErrorCode {
 
     DUPLICATE_LOGIN_ID(HttpStatus.CONFLICT, "U003", "이미 사용 중인 아이디입니다."),
     DUPLICATE_NICKNAME(HttpStatus.CONFLICT, "U004", "이미 사용 중인 닉네임입니다."),
-    NOT_FOUND_USER(HttpStatus.NOT_FOUND,"U005","존재하지 않는 유저입니다"),
 
     LOGIN_FAILED(HttpStatus.UNAUTHORIZED, "U005", "아이디 또는 비밀번호가 올바르지 않습니다."),
     SESSION_EXPIRED(HttpStatus.UNAUTHORIZED, "U006", "세션이 만료되었습니다."),
+    NOT_FOUND_USER(HttpStatus.NOT_FOUND,"U007","존재하지 않는 유저입니다"),
 
     // 설문 관련
     INVALID_RENTAL_FILED(HttpStatus.BAD_REQUEST,"SUR001","정상적인 전세 또는 월세+보증금 입력이 아닙니다"),
