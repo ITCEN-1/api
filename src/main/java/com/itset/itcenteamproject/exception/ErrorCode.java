@@ -32,7 +32,7 @@ public enum ErrorCode {
     // 설문 관련
     INVALID_RENTAL_FILED(HttpStatus.BAD_REQUEST,"SUR001","정상적인 전세 또는 월세+보증금 입력이 아닙니다"),
     INVALID_MONTHLY_FILED(HttpStatus.BAD_REQUEST,"SUR002","정상적인 월세,보증금 입력이 아닙니다, 월세최소+월세최대+보증금최소+보증금최대를 모두 입력하세요"),
-    INVALID_JEONSE_FILED(HttpStatus.BAD_REQUEST,"SUR003","정상적인 전세 입력이 아닙니다, 전세최소+전세최대를 모두 입력하세요");
+    INVALID_JEONSE_FILED(HttpStatus.BAD_REQUEST,"SUR003","정상적인 전세 입력이 아닙니다, 전세최소+전세최대를 모두 입력하세요"),
 
     // DongLocation 관련
     INVALID_DONG_CODE(HttpStatus.BAD_REQUEST,"DON001","유효하지 않은 동 코드입니다. (1111010100 ~ 1174011000)"),
