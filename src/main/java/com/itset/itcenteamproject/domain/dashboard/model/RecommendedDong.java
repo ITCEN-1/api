@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class RecommendedDong {
+public class RecommendedDong implements Comparable<RecommendedDong>{
     private Integer ranking;
     private Integer dongCode;
     private String dongName;
@@ -17,4 +17,13 @@ public class RecommendedDong {
     private Double longitude;
     private BigDecimal score;
     private String message;
+
+    //score 기준 내림차순 정렬 (점수 높은게 1등이므로)
+    @Override
+    public int compareTo(RecommendedDong o) {
+        return o.getScore().compareTo(this.getScore());
+        // o.getScore() - this.getScore() 결과로
+        // o > this : o가 앞으로
+        // o < this : o가 뒤로
+    }
 }
