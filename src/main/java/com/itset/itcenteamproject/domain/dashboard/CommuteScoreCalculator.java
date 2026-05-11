@@ -10,6 +10,7 @@ import com.itset.itcenteamproject.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientException;
 
 import java.math.BigDecimal;
 import java.net.URI;
@@ -86,7 +87,7 @@ public class CommuteScoreCalculator {
                 .retrieve()//http 요청을 실행
                 .body(String.class);//응답 body를 String 으로 변환
 
-        }catch (Exception e){
+        }catch (RestClientException e){
             throw new CustomException(ODSAY_API_ERROR);
         }
 
