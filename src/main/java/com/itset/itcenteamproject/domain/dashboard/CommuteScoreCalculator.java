@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.itset.itcenteamproject.domain.dashboard.model.RecommendedDong;
-import com.itset.itcenteamproject.domain.dashboard.util.LocationUtil;
 import com.itset.itcenteamproject.domain.infra.Coordinate;
 import com.itset.itcenteamproject.exception.CustomException;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +24,7 @@ import static com.itset.itcenteamproject.exception.ErrorCode.*;
 @RequiredArgsConstructor
 public class CommuteScoreCalculator {
 
-    private final LocationUtil locationUtil;
+    private final LocationService locationUtil;
     private final RestClient restClient = RestClient.create();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
