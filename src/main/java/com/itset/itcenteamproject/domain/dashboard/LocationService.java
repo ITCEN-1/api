@@ -26,7 +26,7 @@ public class LocationService {
     }
 
     // 설문의 선택 구 리스트에 속한 법정동코드 리스트 반환
-    private List<Integer> getDongCodesBySurvey(Survey survey){
+    public List<Integer> getDongCodesBySurvey(Survey survey){
         List<Integer> dongCodes=new ArrayList<>();
         List<SurveySelectedDistrict> districtList = survey.getSurveySelectedDistrictList();
 
