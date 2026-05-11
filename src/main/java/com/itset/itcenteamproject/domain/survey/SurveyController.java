@@ -1,5 +1,6 @@
 package com.itset.itcenteamproject.domain.survey;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +13,7 @@ public class SurveyController {
     private final SurveyService surveyService;
 
     @PostMapping
-    public ResponseEntity<Long> createSurvey(@RequestBody SurveyCreateRequest request,
+    public ResponseEntity<Long> createSurvey(@RequestBody @Valid SurveyCreateRequest request,
                                              @SessionAttribute("loginUser") Long userId) {
         Long surveyId = surveyService.createSurvey(request,userId);//생성된 질문 ID
         return ResponseEntity.status(HttpStatus.CREATED).body(surveyId);//200 대신 201응답
