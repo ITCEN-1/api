@@ -8,6 +8,8 @@ import com.itset.itcenteamproject.domain.survey.Survey;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -21,9 +23,9 @@ class HouseScoreCalculator {
     }
 
     public List<RecommendedDong> calcHousePriceScore(Survey survey, List<RecommendedDong> recommendedDongs) {
+        List<RecommendedDong> newRecommendedDong = new ArrayList<>();
         List<ContractCntDTO> contractCntDTO = this.wolseRepositoryMap.get(getContractType(survey).getBeanName())
                 .findContractCntByPreference(survey);
-
         Long maxCnt = contractCntDTO.getFirst().getCnt();
 
         Map<Integer, Long> cntMap = contractCntDTO.stream()
@@ -37,10 +39,16 @@ class HouseScoreCalculator {
                 .forEach(dong -> {
                     Long curCnt = cntMap.get(dong.getDongCode());
                     double additionalScore = calcScore(maxCnt, curCnt);
-                    dong.setScore(dong.getScore().add(BigDecimal.valueOf(additionalScore)));
+                    newRecommendedDong.add(
+                            RecommendedDong.builder()
+                                    .dongCode(dong.getDongCode())
+                                    .dongName(dong.getDongName())
+                                    .score(BigDecimal.valueOf(additionalScore))
+                                    .build()
+                    );
                 });
 
-        return recommendedDongs;
+        return getTop10RecommendedDongs(newRecommendedDong);
     }
 
     private ContractTypeEnum getContractType(Survey survey) {
@@ -52,5 +60,16 @@ class HouseScoreCalculator {
 
     private Double calcScore(Long maxContractCnt, Long curContractCnt) {
         return (double) curContractCnt / maxContractCnt * 100;
+    }
+
+    private List<RecommendedDong> getTop10RecommendedDongs(List<RecommendedDong> recommendedDongs) {
+        List<RecommendedDong> top10RecommendedDongs = new ArrayList<>();
+
+        recommendedDongs.stream()
+                .sorted(Comparator.comparing(RecommendedDong::getScore).reversed())
+                .limit(10)
+                .forEach(top10RecommendedDongs::add);
+
+        return top10RecommendedDongs;
     }
 }
