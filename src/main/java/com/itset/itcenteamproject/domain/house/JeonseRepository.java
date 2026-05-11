@@ -8,8 +8,10 @@ import java.util.List;
 
 public interface JeonseRepository extends JpaRepository<Jeonse, Long>, HouseContractRepository {
     @Override
-    @Query("select j.dongCode, count(*) as cnt from Jeonse as j" +
-            " where j.jeonseRent between #{#survey.jeonseMin} and #{#survey.jeonseMax}" +
-            " group by j.dongCode order by cnt desc")
+    @Query("select new com.itset.itcenteamproject.domain.house.ContractCntDTO(j.dongCode, count(j)) " +
+            "from Jeonse j " +
+            "where j.jeonseRent between :#{#survey.jeonseMin} and :#{#survey.jeonseMax} " +
+            "group by j.dongCode " +
+            "order by count(j) desc")
     List<ContractCntDTO> findContractCntByPreference(Survey survey);
 }

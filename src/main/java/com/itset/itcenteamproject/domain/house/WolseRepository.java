@@ -8,9 +8,9 @@ import java.util.List;
 
 public interface WolseRepository extends JpaRepository<Wolse, Long>, HouseContractRepository {
     @Override
-    @Query("select w.dongCode, count(*) as cnt from Wolse as w" +
+    @Query("select new com.itset.itcenteamproject.domain.house.ContractCntDTO(w.dongCode, count(w)) from Wolse as w" +
             " where w.monthlyRent Between #{#survey.monthlyMin} and #{#survey.monthlyMax}" +
             " and w.deposit Between #{#survey.depositMin} and #{#survey.depositMax}" +
-            " group by w.dongCode order by cnt desc")
+            " group by w.dongCode order by count(w) desc")
     List<ContractCntDTO> findContractCntByPreference(Survey survey);
 }

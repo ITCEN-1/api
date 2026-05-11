@@ -9,5 +9,5 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ContractCntDTO {
     private Integer dongCode;
-    private Integer cnt;
+    private Long cnt;
 }
