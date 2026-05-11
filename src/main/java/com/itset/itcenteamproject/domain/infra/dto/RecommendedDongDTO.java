@@ -9,11 +9,23 @@ import lombok.Getter;
 @Builder
 public class RecommendedDongDTO {
 
-    private Integer ranking;   // 순위
-    private Integer dongCode;  // 법정동 코드
-    private String dongName;   // 동 이름
-    private Double latitude;   // 위도
-    private Double longitude;  // 경도
-    private Double score;      // 계산 점수
-    private String message;    // 보조 설명
+    private Integer ranking;
+    private Integer dongCode;
+    private String dongName;
+    private Double latitude;
+    private Double longitude;
+    private Double score;
+    private String message;
+
+    // 추가: 인프라별 개수
+    private Long subwayCount;
+    private Long hospitalCount;
+    private Long libraryCount;
+    private Long largeStoreCount;
+
+    // 밀도 별 개수(개수 / 동 면적)
+    private Double subwayDensity;
+    private Double hospitalDensity;
+    private Double libraryDensity;
+    private Double largeStoreDensity;
 }
