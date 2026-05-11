@@ -16,15 +16,15 @@ import java.util.stream.Collectors;
 
 @Component
 class HouseScoreCalculator {
-    private final Map<String, HouseContractRepository> wolseRepositoryMap;
+    private final Map<String, HouseContractRepository> contractRepositoryMap;
 
-    HouseScoreCalculator(Map<String, HouseContractRepository> wolseRepositoryMap) {
-        this.wolseRepositoryMap = wolseRepositoryMap;
+    HouseScoreCalculator(Map<String, HouseContractRepository> contractRepositoryMap) {
+        this.contractRepositoryMap = contractRepositoryMap;
     }
 
     public List<RecommendedDong> calcHousePriceScore(Survey survey, List<RecommendedDong> recommendedDongs) {
         List<RecommendedDong> newRecommendedDong = new ArrayList<>();
-        List<ContractCntDTO> contractCntDTO = this.wolseRepositoryMap.get(getContractType(survey).getBeanName())
+        List<ContractCntDTO> contractCntDTO = this.contractRepositoryMap.get(getContractType(survey).getBeanName())
                 .findContractCntByPreference(survey);
         Long maxCnt = contractCntDTO.getFirst().getCnt();
 
@@ -65,11 +65,9 @@ class HouseScoreCalculator {
     private List<RecommendedDong> getTop10RecommendedDongs(List<RecommendedDong> recommendedDongs) {
         List<RecommendedDong> top10RecommendedDongs = new ArrayList<>();
 
-        recommendedDongs.stream()
+        return recommendedDongs.stream()
                 .sorted(Comparator.comparing(RecommendedDong::getScore).reversed())
                 .limit(10)
-                .forEach(top10RecommendedDongs::add);
-
-        return top10RecommendedDongs;
+                .collect(Collectors.toList());
     }
 }
