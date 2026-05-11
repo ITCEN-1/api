@@ -77,7 +77,7 @@ public class CommuteScoreCalculatorIntegrationTest {
         //then
         addScoredList.forEach(en->System.out.println(en.toString())); // 디버깅용,콘솔에 점수가산된 추천동객체 반환
         addScoredList.forEach(rd -> {
-            assertThat(rd.getScore()).isGreaterThan(BigDecimal.valueOf(80));  // 점수가 80보다 크면 제대로 가산된거임
+            assertThat(rd.getScore()).isGreaterThan(BigDecimal.valueOf(90));  // 점수가 90보다 크면 제대로 가산된거임
         });
 
     }
