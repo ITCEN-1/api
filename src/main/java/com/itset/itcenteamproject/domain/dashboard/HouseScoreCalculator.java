@@ -51,6 +51,6 @@ class HouseScoreCalculator {
     }
 
     private Double calcScore(int maxContractCnt, int curContractCnt) {
-        return (double) (curContractCnt / maxContractCnt * 100);
+        return (double) curContractCnt / maxContractCnt * 100;
     }
 }
