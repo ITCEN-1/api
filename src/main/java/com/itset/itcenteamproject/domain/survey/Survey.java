@@ -29,6 +29,28 @@ public class Survey {
     private Integer monthlyMin;
     private Integer monthlyMax;
 
+    private Integer depositMin;
+    private Integer depositMax;
+    @Enumerated(EnumType.STRING)
+    private PreferenceLevel preferenceLargeStore;
+    @Enumerated(EnumType.STRING)
+    private PreferenceLevel preferenceHospital;
+    @Enumerated(EnumType.STRING)
+    private PreferenceLevel preferenceSubway;
+    @Enumerated(EnumType.STRING)
+    private PreferenceLevel preferenceLibrary;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="user_id", nullable = false)//FK 컬럼명
+    private User user;
+
+    @OneToMany(mappedBy = "survey" , cascade = CascadeType.ALL,orphanRemoval = true)
+    private List<SurveySelectedDistrict>  surveySelectedDistrictList = new ArrayList<>();
+
+    @CreatedDate
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
+
     @Builder
     public Survey(String workplaceAddress,
                   Integer jeonseMin,
@@ -55,26 +77,4 @@ public class Survey {
         this.preferenceLibrary = preferenceLibrary;
         this.user = user;
     }
-
-    private Integer depositMin;
-    private Integer depositMax;
-    @Enumerated(EnumType.STRING)
-    private PreferenceLevel preferenceLargeStore;
-    @Enumerated(EnumType.STRING)
-    private PreferenceLevel preferenceHospital;
-    @Enumerated(EnumType.STRING)
-    private PreferenceLevel preferenceSubway;
-    @Enumerated(EnumType.STRING)
-    private PreferenceLevel preferenceLibrary;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="user_id", nullable = false)//FK 컬럼명
-    private User user;
-
-    @OneToMany(mappedBy = "survey" , cascade = CascadeType.ALL,orphanRemoval = true)
-    private List<SurveySelectedDistrict>  surveySelectedDistrictList = new ArrayList<>();
-
-    @CreatedDate
-    @Column(updatable = false)
-    private LocalDateTime createdAt;
 }
