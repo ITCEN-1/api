@@ -112,12 +112,12 @@ class HouseScoreCalculatorTest {
     void testCalcHousePriceScoreForJeonse() {
         // given
         List<ContractCntDTO> contractList = new ArrayList<>();
-        contractList.add(new ContractCntDTO(1001, 1000));
-        contractList.add(new ContractCntDTO(1004, 800));
-        contractList.add(new ContractCntDTO(1005, 700));
-        contractList.add(new ContractCntDTO(1006, 500));
-        contractList.add(new ContractCntDTO(1002, 200));
-        contractList.add(new ContractCntDTO(1003, 100));
+        contractList.add(new ContractCntDTO(1001, 1000L));
+        contractList.add(new ContractCntDTO(1004, 800L));
+        contractList.add(new ContractCntDTO(1005, 700L));
+        contractList.add(new ContractCntDTO(1006, 500L));
+        contractList.add(new ContractCntDTO(1002, 200L));
+        contractList.add(new ContractCntDTO(1003, 100L));
 
         when(mockRepository.findContractCntByPreference(testSurvey))
                 .thenReturn(contractList);
@@ -142,12 +142,12 @@ class HouseScoreCalculatorTest {
                 .build();
 
         List<ContractCntDTO> contractList = new ArrayList<>();
-        contractList.add(new ContractCntDTO(1001, 1000));
-        contractList.add(new ContractCntDTO(1004, 800));
-        contractList.add(new ContractCntDTO(1005, 700));
-        contractList.add(new ContractCntDTO(1006, 500));
-        contractList.add(new ContractCntDTO(1002, 300));
-        contractList.add(new ContractCntDTO(1003, 100));
+        contractList.add(new ContractCntDTO(1001, 1000L));
+        contractList.add(new ContractCntDTO(1004, 800L));
+        contractList.add(new ContractCntDTO(1005, 700L));
+        contractList.add(new ContractCntDTO(1006, 500L));
+        contractList.add(new ContractCntDTO(1002, 300L));
+        contractList.add(new ContractCntDTO(1003, 100L));
 
         when(mockRepository.findContractCntByPreference(wolseTestSurvey))
                 .thenReturn(contractList);
