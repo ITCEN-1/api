@@ -44,7 +44,9 @@ public enum ErrorCode {
 
     // 카카오 API 관련
     KAKAO_API_ERROR(HttpStatus.INTERNAL_SERVER_ERROR,"KAO001","카카오 API 요청이 실패했습니다"),
-    KAKAO_API_PARSE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR,"KAO002","카카오 API 요청이 실패했습니다");
+    KAKAO_API_PARSE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR,"KAO002","카카오 API 요청이 실패했습니다"),
+    INVALID_WORKPLACE_ADDRESS(HttpStatus.BAD_REQUEST,"KA003" , "직장 주소를 찾을 수 없습니다. 주소를 다시 확인해주세요.");
+
 
     private final HttpStatus status; //헤더 상태코드로 들어감
     private final String code; //errorCode.getCode 로 사용

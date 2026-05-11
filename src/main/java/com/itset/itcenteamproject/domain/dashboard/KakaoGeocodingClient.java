@@ -13,8 +13,8 @@ import org.springframework.web.client.RestClientException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import static com.itset.itcenteamproject.exception.ErrorCode.KAKAO_API_ERROR;
-import static com.itset.itcenteamproject.exception.ErrorCode.KAKAO_API_PARSE_ERROR;
+
+import static com.itset.itcenteamproject.exception.ErrorCode.*;
 
 /**
  *  https://developers.kakao.com/docs/ko/local/dev-guide#address-coord 다음 공식문서를 참고하였습니다
@@ -55,8 +55,9 @@ public class KakaoGeocodingClient {
             JsonNode root = objectMapper.readTree(response);
             JsonNode documents = root.path("documents");
 
+            // 파싱은 됐지만 결과가 없음 → 주소 자체가 잘못된 것
             if (documents.isEmpty()) {
-                throw new CustomException(KAKAO_API_PARSE_ERROR);
+                throw new CustomException(INVALID_WORKPLACE_ADDRESS);
             }
 
             JsonNode first = documents.get(0);
