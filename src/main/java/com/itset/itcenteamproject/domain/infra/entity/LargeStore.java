@@ -27,4 +27,10 @@ public class LargeStore {
 
     @Column(name = "dong_code", nullable = false)
     private Integer dongCode; // 소속 법정동 코드
+
+    @Column(name = "latitude", nullable = false)
+    private Double latitude;
+
+    @Column(name = "longitude", nullable = false)
+    private Double longitude;
 }
