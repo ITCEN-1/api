@@ -27,6 +27,7 @@ public class CommuteScoreCalculator {
 
     private final LocationUtil locationUtil;
     private final RestClient restClient = RestClient.create();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     /**
      * workplaceDongCode(직장,학교 동) 를 기준으로 recommendedDongList(추천된 동) 에 있는 각 동 까지 걸리는 시간을
@@ -97,16 +98,32 @@ public class CommuteScoreCalculator {
     //오디세이 응답 JSON 값에서 가장 빠른 'totalTime' 을 찾습니다
     //오디세이는 기본적으로 빠른순으로 응답하므로 이를 이용해 get(0) 으로 찾았습니다
     private int convertOdsayResponseToTotalMinutes (String response){
+
+        //응답이 비어있는 경우 예외처리
+        if (response == null || response.isBlank()) {
+            throw new CustomException(ODSAY_API_ERROR);
+        }
+
         try {
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode root = mapper.readTree(response);
-            return root
+            JsonNode root = objectMapper.readTree(response);
+
+            JsonNode firstPath = root
                     .path("result")
                     .path("path")
-                    .get(0)
+                    .path(0);
+
+            JsonNode totalTime = firstPath
                     .path("info")
-                    .path("totalTime")
-                    .asInt();
+                    .path("totalTime");
+
+            //파싱 중 문제가 발생한경우 예외처리
+            if (firstPath.isMissingNode() || !totalTime.isNumber()) {
+                throw new CustomException(ODSAY_PARSE_ERROR);
+            }
+
+            //최종적으로 int형으로 반환하여 리턴
+            return totalTime.asInt();
+
         } catch (JsonProcessingException e) {
             throw new CustomException(ODSAY_PARSE_ERROR);
         }
