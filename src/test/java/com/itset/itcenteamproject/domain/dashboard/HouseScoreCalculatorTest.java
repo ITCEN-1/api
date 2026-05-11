@@ -160,4 +160,47 @@ class HouseScoreCalculatorTest {
         Assertions.assertThat(result.get(1).getScore()).isEqualTo(new BigDecimal("30.0"));
         Assertions.assertThat(result.get(2).getScore()).isEqualTo(new BigDecimal("10.0"));
     }
+
+    @Test
+    @DisplayName("점수 내림차순으로 top 10 추출 확인")
+    void testTop10RecommendedDongsSortedByScoreDescending() {
+        // given - 15개의 추천동 생성 (다양한 점수로)
+        List<RecommendedDong> testDongs = new ArrayList<>();
+        for (int i = 1; i <= 15; i++) {
+            testDongs.add(RecommendedDong.builder()
+                    .dongCode(1000 + i)
+                    .dongName("테스트동" + i)
+                    .score(BigDecimal.ZERO) // 초기 점수 (실제 계산에서는 무시됨)
+                    .build());
+        }
+
+        // 계약 데이터 mock 설정 - 계약 건 수를 95, 90, 85...로 설정하고 maxCnt를 100으로 설정
+        List<ContractCntDTO> contractList = new ArrayList<>();
+        contractList.add(new ContractCntDTO(1016, 100L)); // maxCnt를 100으로 설정하기 위한 더미 데이터
+        for (int i = 1; i <= 15; i++) {
+            contractList.add(new ContractCntDTO(1000 + i, 100L - i * 5)); // 95, 90, 85, ..., 25
+        }
+
+        when(mockRepository.findContractCntByPreference(testSurvey))
+                .thenReturn(contractList);
+
+        // when
+        List<RecommendedDong> result = calculator.calcHousePriceScore(testSurvey, testDongs);
+
+        // then
+        // 1. 결과가 정확히 10개인지 확인
+        Assertions.assertThat(result).hasSize(10);
+
+        // 2. 점수가 내림차순으로 정렬되어 있는지 확인
+        for (int i = 0; i < result.size() - 1; i++) {
+            Assertions.assertThat(result.get(i).getScore())
+                    .isGreaterThanOrEqualTo(result.get(i + 1).getScore());
+        }
+
+        // 3. 가장 높은 점수가 첫 번째에 있는지 확인 (95.0)
+        Assertions.assertThat(result.getFirst().getScore()).isEqualTo(new BigDecimal("95.0"));
+
+        // 4. 가장 낮은 점수가 마지막에 있는지 확인 (50.0)
+        Assertions.assertThat(result.getLast().getScore()).isEqualTo(new BigDecimal("50.0"));
+    }
 }
