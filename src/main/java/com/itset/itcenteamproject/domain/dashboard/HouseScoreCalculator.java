@@ -24,9 +24,9 @@ class HouseScoreCalculator {
         List<ContractCntDTO> contractCntDTO = this.wolseRepositoryMap.get(getContractType(survey).getBeanName())
                 .findContractCntByPreference(survey);
 
-        int maxCnt = contractCntDTO.getFirst().getCnt();
+        Long maxCnt = contractCntDTO.getFirst().getCnt();
 
-        Map<Integer, Integer> cntMap = contractCntDTO.stream()
+        Map<Integer, Long> cntMap = contractCntDTO.stream()
                 .collect(Collectors.toMap(
                         ContractCntDTO::getDongCode,
                         ContractCntDTO::getCnt
@@ -35,7 +35,7 @@ class HouseScoreCalculator {
         recommendedDongs.stream()
                 .filter(dong -> cntMap.containsKey(dong.getDongCode()))
                 .forEach(dong -> {
-                    int curCnt = cntMap.get(dong.getDongCode());
+                    Long curCnt = cntMap.get(dong.getDongCode());
                     double additionalScore = calcScore(maxCnt, curCnt);
                     dong.setScore(dong.getScore().add(BigDecimal.valueOf(additionalScore)));
                 });
@@ -50,7 +50,7 @@ class HouseScoreCalculator {
         return ContractTypeEnum.WOLSE;
     }
 
-    private Double calcScore(int maxContractCnt, int curContractCnt) {
+    private Double calcScore(Long maxContractCnt, Long curContractCnt) {
         return (double) curContractCnt / maxContractCnt * 100;
     }
 }
