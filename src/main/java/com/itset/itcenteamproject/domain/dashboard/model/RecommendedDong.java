@@ -18,4 +18,8 @@ public class RecommendedDong {
     private Double longitude;
     private BigDecimal score;
     private String message;
+<<<<<<< feat/commuteScore
 }
+=======
+}
+>>>>>>> main
