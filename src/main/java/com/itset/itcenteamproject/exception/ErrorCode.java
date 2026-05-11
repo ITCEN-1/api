@@ -26,9 +26,15 @@ public enum ErrorCode {
 
     DUPLICATE_LOGIN_ID(HttpStatus.CONFLICT, "U003", "이미 사용 중인 아이디입니다."),
     DUPLICATE_NICKNAME(HttpStatus.CONFLICT, "U004", "이미 사용 중인 닉네임입니다."),
+    NOT_FOUND_USER(HttpStatus.NOT_FOUND,"U005","존재하지 않는 유저입니다"),
 
     LOGIN_FAILED(HttpStatus.UNAUTHORIZED, "U005", "아이디 또는 비밀번호가 올바르지 않습니다."),
-    SESSION_EXPIRED(HttpStatus.UNAUTHORIZED, "U006", "세션이 만료되었습니다.");
+    SESSION_EXPIRED(HttpStatus.UNAUTHORIZED, "U006", "세션이 만료되었습니다."),
+
+    // 설문 관련
+    INVALID_RENTAL_FILED(HttpStatus.BAD_REQUEST,"SUR001","정상적인 전세 또는 월세+보증금 입력이 아닙니다"),
+    INVALID_MONTHLY_FILED(HttpStatus.BAD_REQUEST,"SUR002","정상적인 월세,보증금 입력이 아닙니다, 월세최소+월세최대+보증금최소+보증금최대를 모두 입력하세요"),
+    INVALID_JEONSE_FILED(HttpStatus.BAD_REQUEST,"SUR003","정상적인 전세 입력이 아닙니다, 전세최소+전세최대를 모두 입력하세요");
 
     private final HttpStatus status; //헤더 상태코드로 들어감
     private final String code; //errorCode.getCode 로 사용
