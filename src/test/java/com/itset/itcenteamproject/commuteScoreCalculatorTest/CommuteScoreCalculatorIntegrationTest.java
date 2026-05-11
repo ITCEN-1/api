@@ -28,11 +28,11 @@ public class CommuteScoreCalculatorIntegrationTest {
     @DisplayName("오디세이 api 호출 테스트")
     void getCommuteMinutesByOdsayTest(){
         //given
-        Coordinate workPlaceCoordinate = new Coordinate(126.9923298,37.57038842);
+        Coordinate workplaceCoordinate = new Coordinate(126.9923298,37.57038842);
         Integer destintationDongCode=1171010700;//가락동
 
         //when
-        int min=commuteScoreCalculator.getCommuteMinutesByOdsay(workPlaceCoordinate,destintationDongCode);
+        int min=commuteScoreCalculator.getCommuteMinutesByOdsay(workplaceCoordinate,destintationDongCode);
 
         //then
         System.out.println("통근시간:" + min + "분!!!!");
@@ -43,7 +43,7 @@ public class CommuteScoreCalculatorIntegrationTest {
     @DisplayName("CommuteScoreCalculator.calculate 테스트")
     void calculateTest(){
         //given
-        Coordinate workPlaceCoordinate = new Coordinate(126.9923298,37.57038842);
+        Coordinate workplaceCoordinate = new Coordinate(126.9923298,37.57038842);
         RecommendedDong rd1= RecommendedDong.builder()
                 .ranking(1)
                 .dongCode(1117013000)
@@ -73,7 +73,7 @@ public class CommuteScoreCalculatorIntegrationTest {
 
         List<RecommendedDong> rdList= Arrays.asList(rd1,rd2,rd3);
         //when
-        List<RecommendedDong> addScoredList=commuteScoreCalculator.calculate(workPlaceCoordinate,rdList);
+        List<RecommendedDong> addScoredList=commuteScoreCalculator.calculate(workplaceCoordinate,rdList);
 
         //then
         addScoredList.forEach(en->System.out.println(en.toString())); // 디버깅용,콘솔에 점수가산된 추천동객체 반환
