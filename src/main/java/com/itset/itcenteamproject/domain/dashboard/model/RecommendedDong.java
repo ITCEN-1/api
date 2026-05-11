@@ -1,5 +1,4 @@
 package com.itset.itcenteamproject.domain.dashboard.model;
-
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -18,8 +17,4 @@ public class RecommendedDong {
     private Double longitude;
     private BigDecimal score;
     private String message;
-<<<<<<< feat/commuteScore
 }
-=======
-}
->>>>>>> main

@@ -5,7 +5,7 @@ Content-Type: application/json
 {
   "loginId": "test003",
   "password": "1234",
-  "nickname": "tester003"
+  "nickname": "test003"
 }
 
 ### 2) 로그인
@@ -28,3 +28,21 @@ POST http://localhost:8080/api/auth/logout
 
 ### 6) 로그아웃 후 설문 여부 확인 - 세션 만료 테스트
 GET http://localhost:8080/api/auth/survey-check
+
+### 인프라 점수 산정 테스트
+POST http://localhost:8080/api/infra/recommend
+Content-Type: application/json
+
+{
+  "dongCodes": [1168010100, 1168010300, 1168010500]
+}
+
+
+### 인프라 점수 산정 테스트2
+POST http://localhost:8080/api/infra/recommend
+Content-Type: application/json
+
+{
+  "dongCodes": [1168010100,1168010300,1168010500,1168010600,1168010700,1168010800,1168011000,1168011100,1168011200,1168011300,1168011400,1168011500,1168011800,1168012000,1168012100,1168012200,1168012300,1168012400,1168012500,1168012600]
+}
+
