@@ -40,7 +40,11 @@ public enum ErrorCode {
 
     // 통근점수 산정 관련
     ODSAY_API_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "COM002", "오디세이 API 호출에 실패했습니다."),
-    ODSAY_PARSE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "COM003", "오디세이 응답 파싱에 실패했습니다.");
+    ODSAY_PARSE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "COM003", "오디세이 응답 파싱에 실패했습니다."),
+
+    // 카카오 API 관련
+    KAKAO_API_ERROR(HttpStatus.INTERNAL_SERVER_ERROR,"KAO001","카카오 API 요청이 실패했습니다"),
+    KAKAO_API_PARSE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR,"KAO002","카카오 API 요청이 실패했습니다");
 
     private final HttpStatus status; //헤더 상태코드로 들어감
     private final String code; //errorCode.getCode 로 사용
