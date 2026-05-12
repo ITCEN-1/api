@@ -1,6 +1,7 @@
 package com.itset.itcenteamproject.domain.infra;
 
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 /**
@@ -9,6 +10,7 @@ import lombok.Getter;
  */
 @AllArgsConstructor
 @Getter
+@EqualsAndHashCode
 public final class Coordinate {
     private final Double longitude;
     private final Double latitude;
