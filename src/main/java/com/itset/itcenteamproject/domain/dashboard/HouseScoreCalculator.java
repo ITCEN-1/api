@@ -5,6 +5,8 @@ import com.itset.itcenteamproject.domain.house.ContractTypeEnum;
 import com.itset.itcenteamproject.domain.house.ContractCntDTO;
 import com.itset.itcenteamproject.domain.house.HouseContractRepository;
 import com.itset.itcenteamproject.domain.survey.Survey;
+import com.itset.itcenteamproject.exception.CustomException;
+import com.itset.itcenteamproject.exception.ErrorCode;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -26,6 +28,10 @@ class HouseScoreCalculator {
         List<RecommendedDong> newRecommendedDong = new ArrayList<>();
         List<ContractCntDTO> contractCntDTO = this.contractRepositoryMap.get(getContractType(survey).getBeanName())
                 .findContractCntByPreference(survey);
+
+        if (contractCntDTO.isEmpty()) {
+            throw new CustomException(ErrorCode.NO_CONTRACT_DATA);
+        }
         Long maxCnt = contractCntDTO.getFirst().getCnt();
 
         Map<Integer, Long> cntMap = contractCntDTO.stream()
