@@ -1,6 +1,7 @@
 package com.itset.itcenteamproject.commuteScoreCalculatorTest;
 
 import com.itset.itcenteamproject.domain.dashboard.CommuteScoreCalculator;
+import com.itset.itcenteamproject.domain.dashboard.OdsayApiKeys;
 import com.itset.itcenteamproject.domain.dashboard.model.RecommendedDong;
 import com.itset.itcenteamproject.domain.infra.Coordinate;
 import org.junit.jupiter.api.DisplayName;
@@ -24,6 +25,9 @@ public class CommuteScoreCalculatorIntegrationTest {
     @Autowired
     private CommuteScoreCalculator commuteScoreCalculator;
 
+    @Autowired
+    private OdsayApiKeys odsayApiKeys;
+
     @Test
     @DisplayName("오디세이 api 호출 테스트")
     void getCommuteMinutesByOdsayTest(){
@@ -32,7 +36,7 @@ public class CommuteScoreCalculatorIntegrationTest {
         Integer destintationDongCode=1171010700;//가락동
 
         //when
-        int min=commuteScoreCalculator.getCommuteMinutesByOdsay(workplaceCoordinate,destintationDongCode);
+        int min=commuteScoreCalculator.getCommuteMinutesByOdsay(workplaceCoordinate,destintationDongCode,odsayApiKeys.getNextKey());
 
         //then
         System.out.println("통근시간:" + min + "분!!!!");
