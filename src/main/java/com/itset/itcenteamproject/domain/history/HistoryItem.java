@@ -26,10 +26,13 @@ public class HistoryItem {
     @Column(nullable = false)
     private Integer dongCode;
 
+    private Integer commuteTime;
+
     @Builder
-    public HistoryItem(History history, Integer ranking,Integer dongCode) {
+    public HistoryItem(History history, Integer ranking,Integer dongCode, Integer commuteTime) {
         this.history = history;
         this.ranking = ranking;
         this.dongCode = dongCode;
+        this.commuteTime = commuteTime;
     }
 }
