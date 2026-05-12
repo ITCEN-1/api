@@ -37,7 +37,8 @@ public class SecurityConfig {
                                 "/api/users/check",
                                 "/api/me",
                                 "/api/history",
-                                "/api/infra/**"
+                                "/api/infra/**",
+                                "/api/surveys/**"
                         ).permitAll()
                         // 2.그 외 API는 인증 필요
                         .anyRequest().authenticated()
