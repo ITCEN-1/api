@@ -16,6 +16,8 @@ public class DongDetailResponse {
     private String dongName;
     private Double latitude;
     private Double longitude;
+    private Integer commuteTime;
+    private String commuteMessage;
 
     // 인프라 개수
     private Long hospitalCount;

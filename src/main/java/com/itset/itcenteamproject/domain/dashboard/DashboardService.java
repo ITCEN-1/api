@@ -52,18 +52,17 @@ public class DashboardService {
     private final JeonseRepository jeonseRepository;
     private final WolseRepository wolseRepository;
     private final SurveyService surveyService;
-    private final CommuteScoreCalculator commuteScoreCalculator;
 
     @Transactional
-    public List<RecommendedDong> getRanking(Long userId){
+    public List<RecommendedDong> getRanking(Long userId) {
 
         //1. 설문 바탕으로 점수 산정
-        List<RecommendedDong> recommendedDongList =  calculatorOrchestrator.getRankingListFromCurrentSurvey(userId);
+        List<RecommendedDong> recommendedDongList = calculatorOrchestrator.getRankingListFromCurrentSurvey(userId);
 
         //2. 설문 내용과 응답을 히스토리에 저장
         // 유저 Id 정보에서 설문 정보 가져오기
-        User user = userRepository.findById(userId).orElseThrow(()-> new CustomException(NOT_FOUND_USER));
-        Survey survey = surveyRepository.findTopByUserIdOrderByCreatedAtDesc(userId).orElseThrow(()-> new CustomException(NOT_FOUND_SURVEY));
+        User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(NOT_FOUND_USER));
+        Survey survey = surveyRepository.findTopByUserIdOrderByCreatedAtDesc(userId).orElseThrow(() -> new CustomException(NOT_FOUND_SURVEY));
 
         // 히스토리 생성
         History history = History.builder()
@@ -75,7 +74,7 @@ public class DashboardService {
         historyRepository.save(history);
 
         // 추가된 History의 HistoryItem 을 넣어준다
-        for(RecommendedDong rd:recommendedDongList){
+        for (RecommendedDong rd : recommendedDongList) {
             HistoryItem historyItem = HistoryItem.builder()
                     .history(history)
                     .ranking(rd.getRanking())
@@ -91,8 +90,7 @@ public class DashboardService {
             Long userId,
             Long surveyId,
             Integer dongCode
-    )
-    {
+    ) {
         //surveyId가 userId의 설문인지 검증 + 설문 조회
         Survey survey = surveyService.findByIdAndUserId(surveyId, userId);
 
@@ -113,6 +111,24 @@ public class DashboardService {
         long jeonseCount = jeonseMap.getOrDefault(dongCode, 0L);
         long wolseCount = wolseMap.getOrDefault(dongCode, 0L);
 
+        //설문조사에 있는 동-직장까지 걸리는 시간 메시지
+        History history = historyRepository.findHistoriesBySurveyId(surveyId, userId);
+
+        Integer commuteTime = null;
+        String commuteMessage = null;
+
+        if (history != null && history.getHistoryItems() != null) {
+            HistoryItem matched = history.getHistoryItems().stream()
+                    .filter(item -> dongCode.equals(item.getDongCode()))
+                    .findFirst()
+                    .orElse(null);
+
+            if (matched != null && matched.getCommuteTime() != null) {
+                commuteTime = matched.getCommuteTime();
+                commuteMessage = "해당 주소까지 " + commuteTime + "분이 걸립니다";
+            }
+        }
+
         //응답 DTO 반환
         return DongDetailResponse.builder()
                 .surveyId(surveyId)
@@ -126,6 +142,8 @@ public class DashboardService {
                 .largeStoreCount(largeStoreCount)
                 .jeonseCount(jeonseCount)
                 .wolseCount(wolseCount)
+                .commuteTime(commuteTime)
+                .commuteMessage(commuteMessage)
                 .build();
     }
 
