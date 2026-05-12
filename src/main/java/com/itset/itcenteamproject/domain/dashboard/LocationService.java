@@ -1,8 +1,8 @@
 package com.itset.itcenteamproject.domain.dashboard;
 
 import com.itset.itcenteamproject.domain.infra.Coordinate;
-import com.itset.itcenteamproject.domain.infra.DongLocation;
-import com.itset.itcenteamproject.domain.infra.DongLocationRepository;
+import com.itset.itcenteamproject.domain.infra.entity.DongLocation;
+import com.itset.itcenteamproject.domain.infra.repository.DongLocationRepository;
 import com.itset.itcenteamproject.domain.survey.Survey;
 import com.itset.itcenteamproject.domain.survey.SurveySelectedDistrict;
 import com.itset.itcenteamproject.exception.CustomException;
