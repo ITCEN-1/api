@@ -1,6 +1,7 @@
 package com.itset.itcenteamproject.domain.survey;
 
 import com.itset.itcenteamproject.domain.user.User;
+import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -12,7 +13,7 @@ import java.util.List;
 @Setter
 public class SurveyCreateRequest {
 
-    @NotNull(message = "직장 or 학교 주소는 필수입니다")
+    //nullable
     private String workplaceAddress;
 
     //null체크는 SurveyService에서 검증
