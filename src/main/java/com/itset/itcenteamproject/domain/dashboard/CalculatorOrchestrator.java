@@ -28,26 +28,29 @@ public class CalculatorOrchestrator {
     @Transactional
     public List<RecommendedDong> getRankingListFromCurrentSurvey(Long userId){
 
-        //1. 유저 Id 정보에서 설문 정보 가져오기
+        // 유저 Id 정보에서 설문 정보 가져오기
         Survey survey = surveyRepository.findTopByUserIdOrderByCreatedAtDesc(userId).orElseThrow(()-> new CustomException(NOT_FOUND_SURVEY));
-        //2. 주소를 좌표로 변환 (with kakao API)
-        Coordinate workplaceCoordinate=kakaoGeocodingClient.addressToCoordinate(survey.getWorkplaceAddress());
-        //3. surveySelectedDistrictList ['마포구','송파구',...] -> 동 리스트로 변환 with DongLocationRepository
+
+        // surveySelectedDistrictList ['마포구','송파구',...] -> 동 리스트로 변환 with DongLocationRepository
         List<Integer> filteredDongCodes= locationService.getDongCodesBySurvey(survey);
 
         //점수 산정
 
-        //인프라 점수 산정 100 -> 100
+        //1. 인프라 점수 산정 100 -> 100
         List<RecommendedDong> infraStepRecommendedDongList = infraScoreCalculator.calculateTopDongs(survey,filteredDongCodes);
 
-        //인프라 점수에 집값 점수 추가 100 -> 10
+        //2. 인프라 점수에 집값 점수 추가 100 -> 10
         List<RecommendedDong> houseStepRecommendedDongList = houseScoreCalculator.calcHousePriceScore(survey,infraStepRecommendedDongList);
 
-        //인프라+집값 점수로 산정된 상위 10개 동에 통근시간 점수 추가 10->10
-        List<RecommendedDong> commuteStepRecommendedDongList = commuteScoreCalculator.calculate(workplaceCoordinate,houseStepRecommendedDongList);
+        //3(optional). WorkplaceAddress 가 있다면 인프라+집값 점수로 산정된 상위 10개 동에 통근시간 점수 추가 10->10
+        if(survey.getWorkplaceAddress()!=null){
+            Coordinate workplaceCoordinate=kakaoGeocodingClient.addressToCoordinate(survey.getWorkplaceAddress());
+            List<RecommendedDong> commuteStepRecommendedDongList = commuteScoreCalculator.calculate(workplaceCoordinate,houseStepRecommendedDongList);
+            return scoreDongList(commuteStepRecommendedDongList);
+        }
 
         //최종 결과에 순위 부여
-        return scoreDongList(commuteStepRecommendedDongList);
+        return scoreDongList(houseStepRecommendedDongList);
     }
 
     // 동 리스트의 순위를 매기는 메소드
