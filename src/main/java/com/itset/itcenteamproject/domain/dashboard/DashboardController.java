@@ -24,9 +24,8 @@ public class DashboardController {
     public DongDetailResponse getDongSummary(
             @PathVariable Integer dongCode,
             @RequestParam Long surveyId,
-            HttpSession session
+            @SessionAttribute("loginUser") Long userId
     ) {
-        Long userId = (Long) session.getAttribute("loginUser");
         return dashboardService.getDongSummary(userId, surveyId, dongCode);
     }
 
@@ -36,9 +35,8 @@ public class DashboardController {
             @PathVariable Integer dongCode,
             @RequestParam Long surveyId,
             @RequestParam InfraType type,
-            HttpSession session
+            @SessionAttribute("loginUser") Long userId
     ) {
-        Long userId = (Long) session.getAttribute("loginUser");
         return dashboardService.getInfraDetails(userId, surveyId, dongCode, type);
     }
     // 점수를 가져오면서 히스토리에 저장도 하는거라 GET 애매하긴함
