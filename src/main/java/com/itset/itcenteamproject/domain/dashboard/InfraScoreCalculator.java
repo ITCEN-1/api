@@ -1,4 +1,4 @@
-package com.itset.itcenteamproject.domain.infra.service;
+package com.itset.itcenteamproject.domain.dashboard;
 
 import com.itset.itcenteamproject.domain.dashboard.model.RecommendedDong;
 import com.itset.itcenteamproject.domain.infra.entity.DongLocation;
@@ -7,18 +7,18 @@ import com.itset.itcenteamproject.domain.infra.repository.HospitalRepository;
 import com.itset.itcenteamproject.domain.infra.repository.LargeStoreRepository;
 import com.itset.itcenteamproject.domain.infra.repository.LibraryRepository;
 import com.itset.itcenteamproject.domain.infra.repository.SubwayRepository;
+import com.itset.itcenteamproject.domain.infra.service.PreferenceWeightService;
 import com.itset.itcenteamproject.domain.survey.Survey;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class InfraScoreService {
+public class InfraScoreCalculator {
 
     private final DongLocationRepository dongLocationRepository;
     private final SubwayRepository subwayRepository;

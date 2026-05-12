@@ -1,16 +1,12 @@
 package com.itset.itcenteamproject.domain.dashboard.util;
 
 import com.itset.itcenteamproject.domain.infra.Coordinate;
-import com.itset.itcenteamproject.domain.infra.DongLocation;
-import com.itset.itcenteamproject.domain.infra.DongLocationRepository;
+import com.itset.itcenteamproject.domain.infra.entity.DongLocation;
+import com.itset.itcenteamproject.domain.infra.repository.DongLocationRepository;
 import com.itset.itcenteamproject.exception.CustomException;
 import com.itset.itcenteamproject.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-
-import java.util.Optional;
-
-import static com.itset.itcenteamproject.exception.ErrorCode.INVALID_DONG_CODE;
 
 @Component
 @RequiredArgsConstructor
