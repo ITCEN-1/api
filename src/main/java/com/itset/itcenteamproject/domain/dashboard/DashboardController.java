@@ -33,12 +33,11 @@ public class DashboardController {
     @GetMapping("/dongs/{dongCode}/elements")
     public InfraDetailResponse getInfraDetails(
             @PathVariable Integer dongCode,
-            @RequestParam Long surveyId,
-            @RequestParam InfraType type,
-            @SessionAttribute("loginUser") Long userId
+            @RequestParam InfraType type
     ) {
-        return dashboardService.getInfraDetails(userId, surveyId, dongCode, type);
+        return dashboardService.getInfraDetails(dongCode, type);
     }
+
     // 점수를 가져오면서 히스토리에 저장도 하는거라 GET 애매하긴함
     @GetMapping
     public List<RecommendedDong> getRanking(@SessionAttribute("loginUser") Long userId){

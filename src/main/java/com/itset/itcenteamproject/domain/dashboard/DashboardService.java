@@ -25,7 +25,6 @@ import com.itset.itcenteamproject.domain.user.UserRepository;
 import com.itset.itcenteamproject.exception.CustomException;
 import com.itset.itcenteamproject.exception.ErrorCode;
 import jakarta.transaction.Transactional;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -150,25 +149,21 @@ public class DashboardService {
     //인프라 요소별 상세 조회
     //type에 따라 이름/위도/경도 목록 반환
     public InfraDetailResponse getInfraDetails(
-            Long userId,
-            Long surveyId,
             Integer dongCode,
             InfraType type
     ) {
-        // 1) 설문 권한 검증 (본인 설문인지)
-        surveyService.findByIdAndUserId(surveyId, userId);
-
-        // 2) 동 존재 확인
+        // 1) 동 존재 확인
         dongLocationRepository.findById(dongCode)
                 .orElseThrow(() -> new CustomException(ErrorCode.INVALID_DONG_CODE));
 
-        // 3) type별 목록 조회 + 공통 DTO 변환
+        // 2) type별 목록 조회 + 공통 DTO 변환
         List<InfraItemResponse> items = switch (type) {
             //해당 동의 병원 엔티티 목록 조회
             case HOSPITAL -> hospitalRepository.findByDongCode(dongCode).stream()
                     //병원 엔티티 하나를 InfraItemResponse로 변환해서 필요한 필드 추출
                     //DB 엔티티를 API응답용 DTO로 매핑
                     .map(h -> InfraItemResponse.builder()
+                            .id(h.getId())
                             .name(h.getName())
                             .latitude(h.getLatitude())
                             .longitude(h.getLongitude())
@@ -177,6 +172,7 @@ public class DashboardService {
 
             case SUBWAY -> subwayRepository.findByDongCode(dongCode).stream()
                     .map(s -> InfraItemResponse.builder()
+                            .id(s.getId())
                             .name(s.getName())
                             .latitude(s.getLatitude())
                             .longitude(s.getLongitude())
@@ -186,6 +182,7 @@ public class DashboardService {
 
             case LIBRARY -> libraryRepository.findByDongCode(dongCode).stream()
                     .map(l -> InfraItemResponse.builder()
+                            .id(l.getId())
                             .name(l.getName())
                             .latitude(l.getLatitude())
                             .longitude(l.getLongitude())
@@ -194,6 +191,7 @@ public class DashboardService {
 
             case LARGE_STORE -> largeStoreRepository.findByDongCode(dongCode).stream()
                     .map(ls -> InfraItemResponse.builder()
+                            .id(ls.getId())
                             .name(ls.getName())
                             .latitude(ls.getLatitude())
                             .longitude(ls.getLongitude())
@@ -201,9 +199,8 @@ public class DashboardService {
                     .toList();
         };
 
-        // 4) 응답 반환
+        // 3) 응답 반환
         return InfraDetailResponse.builder()
-                .surveyId(surveyId)
                 .dongCode(dongCode)
                 .type(type)
                 .items(items)
