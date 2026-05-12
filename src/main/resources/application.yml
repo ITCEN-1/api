@@ -9,7 +9,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: ${DDL_AUTO}  # 개발: update / 운영: validate 또는 none
-    show-sql: true
+    show-sql: false # 운영환경에서는 false
     properties:
       hibernate:
         format_sql: true
@@ -24,3 +24,6 @@ springdoc:
 
 kakao:
   rest-api-key: ${KAKAO_REST_API_KEY}
+
+odsay:
+  rest-api-keys: ${ODSAY_REST_API_KEY_LIST}
