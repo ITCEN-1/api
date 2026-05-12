@@ -38,6 +38,8 @@ public class SecurityConfig {
                                 "/api/me",
                                 "/api/history",
                                 "/api/infra/**"
+                                "/api/infra/**",
+                                "/api/dashboards/test"
                         ).permitAll()
                         // 2.그 외 API는 인증 필요
                         .anyRequest().authenticated()
