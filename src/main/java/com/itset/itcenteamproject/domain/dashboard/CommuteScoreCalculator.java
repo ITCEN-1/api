@@ -37,10 +37,13 @@ public class CommuteScoreCalculator {
      */
     public List<RecommendedDong> calculate(Coordinate workplaceCoordinate, List<RecommendedDong> recommendedDongList){
         List<RecommendedDong> addCommuteScoreDongList= new ArrayList<>();
-        for(RecommendedDong rd: recommendedDongList){
+        for(RecommendedDong rd: recommendedDongList){ // 각 RecommendedDong 에 commute 통근시간 추가, 점수 가산
+            // 오디세이로 통근시간 가져오기
+            int commuteMinutes=getCommuteMinutesByOdsay(workplaceCoordinate,rd.getDongCode());
+            rd.setCommuteTime(commuteMinutes);
+            // 통근시간으로 점수 산정해서 기존 점수에 더하기
             BigDecimal newScore = rd.getScore().add( //Decimal끼리는 + 연산 말고 add 메소드 사용함
-                    convertMinutesToScore(
-                            getCommuteMinutesByOdsay(workplaceCoordinate,rd.getDongCode())));
+                    convertMinutesToScore(commuteMinutes));
             rd.setScore(newScore); //점수를 기존 RecommendedDong에 반영
             addCommuteScoreDongList.add(rd);
         }
@@ -65,7 +68,6 @@ public class CommuteScoreCalculator {
         //NOTE: 여기 있는 키는 현재 김준혁 집 아이피에서만 허용되는 키임, 교육장에서 헷을때 당황하지 않도록
         //NOTE: 오디세이는 api 키에 특수문자가 포함되어있어, 서버가 특수문자를 명령어로 잘못 해석하기 때문에 URLEncoder.encode를 하면 특수문자를 %XX 형식으로 변환
         String encodedApiKey = URLEncoder.encode("OhwYC2oPpPkLspemmNUMro0VB2T3/Eu0KDgYe8ne0zo", StandardCharsets.UTF_8);
-
         //요청 uri 정의
         String uriString = "https://api.odsay.com/v1/api/searchPubTransPathT"
                 + "?apiKey=" + encodedApiKey
