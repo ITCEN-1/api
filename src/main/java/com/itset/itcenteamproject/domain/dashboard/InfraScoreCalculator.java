@@ -95,7 +95,7 @@ public class InfraScoreCalculator {
                             .latitude(r.dong.getLatitude())
                             .longitude(r.dong.getLongitude())
                             .score(BigDecimal.valueOf(score))
-                            .message("인프라 점수")
+                            .message("infra: "+BigDecimal.valueOf(score))
                             .build();
                 })
                 .toList();

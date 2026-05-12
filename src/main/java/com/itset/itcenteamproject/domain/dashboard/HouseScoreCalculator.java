@@ -46,6 +46,7 @@ class HouseScoreCalculator {
                                     .score(dong.getScore().add(BigDecimal.valueOf(additionalScore)))
                                     .longitude(dong.getLongitude())
                                     .latitude(dong.getLatitude())
+                                    .message(dong.getMessage()+" house: "+BigDecimal.valueOf(additionalScore))
                                     .build()
                     );
                 });
