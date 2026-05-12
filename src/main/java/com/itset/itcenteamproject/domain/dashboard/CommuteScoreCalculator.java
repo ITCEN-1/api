@@ -7,6 +7,7 @@ import com.itset.itcenteamproject.domain.dashboard.model.RecommendedDong;
 import com.itset.itcenteamproject.domain.infra.Coordinate;
 import com.itset.itcenteamproject.exception.CustomException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
@@ -22,12 +23,13 @@ import static com.itset.itcenteamproject.exception.ErrorCode.*;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class CommuteScoreCalculator {
 
     private final LocationService locationUtil;
     private final RestClient restClient = RestClient.create();
     private final ObjectMapper objectMapper = new ObjectMapper();
-
+    private final OdsayApiKeys odsayApiKeys;
     /**
      * workplaceDongCode(직장,학교 동) 를 기준으로 recommendedDongList(추천된 동) 에 있는 각 동 까지 걸리는 시간을
      * 조회하여 추가 점수를 부여하고 RecommendedDong.score에 가산하여 리턴합니다
@@ -36,41 +38,56 @@ public class CommuteScoreCalculator {
      * @return 통근거리를 기준으로 점수가 추가된 addCommuteScoreDongList 리스트 반환
      */
     public List<RecommendedDong> calculate(Coordinate workplaceCoordinate, List<RecommendedDong> recommendedDongList){
-        List<RecommendedDong> addCommuteScoreDongList= new ArrayList<>();
-        for(RecommendedDong rd: recommendedDongList){ // 각 RecommendedDong 에 commute 통근시간 추가, 점수 가산
+        List<RecommendedDong> newRecommendedDong= new ArrayList<>();
+        for(RecommendedDong rd: recommendedDongList){
+
             // 오디세이로 통근시간 가져오기
-            int commuteMinutes=getCommuteMinutesByOdsay(workplaceCoordinate,rd.getDongCode());
-            rd.setCommuteTime(commuteMinutes);
+            int commuteMinutes=getCommuteMinutesByOdsay(workplaceCoordinate,rd.getDongCode(), odsayApiKeys.getNextKey());
+
             // 통근시간으로 점수 산정해서 기존 점수에 더하기
             BigDecimal newScore = rd.getScore().add( //Decimal끼리는 + 연산 말고 add 메소드 사용함
                     convertMinutesToScore(commuteMinutes));
-            rd.setScore(newScore); //점수를 기존 RecommendedDong에 반영
-            addCommuteScoreDongList.add(rd);
+
+            // 점수 추가 이력 추가
+            String newMessage = rd.getMessage()+" commute: "+convertMinutesToScore(commuteMinutes);
+
+            newRecommendedDong.add(RecommendedDong.builder()
+                    .commuteTime(commuteMinutes)
+                    .dongCode(rd.getDongCode())
+                    .dongName(rd.getDongName())
+                    .score(newScore)
+                    .longitude(rd.getLongitude())
+                    .latitude(rd.getLatitude())
+                    .message(newMessage)
+                    .build());
+
+            // 429 에러를 막기 위해 각 요청마다 대기를 준다
+            try {
+                Thread.sleep(50); //300ms 대기
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
         }
-        return addCommuteScoreDongList;
+        return newRecommendedDong;
     }
 
     /**
      * 오디세이 API를 호출하여 좌표간 통근시간(분)을 반환합니다
-     * https://lab.odsay.com/guide/console#searchPubTransPathT
      * @param workplaceCoordinate
      * @param destinationDongCode
+     * @param apiKey
      * @return 통근시간(분)
      */
-    public int getCommuteMinutesByOdsay(Coordinate workplaceCoordinate,Integer destinationDongCode){
+    public int getCommuteMinutesByOdsay(Coordinate workplaceCoordinate,Integer destinationDongCode,String apiKey){
 
-        //유효성 검증
+        // 유효성 검증
         validateDongCode(destinationDongCode);
 
         Coordinate destinationCoor = locationUtil.dongCodeToCoordinate(destinationDongCode);
 
-        //TODO: 운영환경에서는 서버 공인아이피로 변경후, 하드코딩 대신 env 파일로 관리
-        //NOTE: 여기 있는 키는 현재 김준혁 집 아이피에서만 허용되는 키임, 교육장에서 헷을때 당황하지 않도록
-        //NOTE: 오디세이는 api 키에 특수문자가 포함되어있어, 서버가 특수문자를 명령어로 잘못 해석하기 때문에 URLEncoder.encode를 하면 특수문자를 %XX 형식으로 변환
-        String encodedApiKey = URLEncoder.encode("OhwYC2oPpPkLspemmNUMro0VB2T3/Eu0KDgYe8ne0zo", StandardCharsets.UTF_8);
-        //요청 uri 정의
+        // 요청 uri 정의
         String uriString = "https://api.odsay.com/v1/api/searchPubTransPathT"
-                + "?apiKey=" + encodedApiKey
+                + "?apiKey=" + apiKey
                 + "&lang=0"
                 + "&SX=" + workplaceCoordinate.getLongitude()
                 + "&SY=" + workplaceCoordinate.getLatitude()
@@ -94,11 +111,9 @@ public class CommuteScoreCalculator {
         return convertOdsayResponseToTotalMinutes(response);
     }
 
-    //오디세이 응답 JSON 값에서 가장 빠른 'totalTime' 을 찾습니다
-    //오디세이는 기본적으로 빠른순으로 응답하므로 이를 이용해 get(0) 으로 찾았습니다
+    // 오디세이 응답 JSON 에서 가장 빠른 경로 소요시간을 파싱
     private int convertOdsayResponseToTotalMinutes (String response){
 
-        //응답이 비어있는 경우 예외처리
         if (response == null || response.isBlank()) {
             throw new CustomException(ODSAY_API_ERROR);
         }
@@ -122,8 +137,8 @@ public class CommuteScoreCalculator {
 
             //최종적으로 int형으로 반환하여 리턴
             return totalTime.asInt();
-
         } catch (JsonProcessingException e) {
+            log.error("[ODsay] JSON 파싱 실패!! response: {}", response, e);
             throw new CustomException(ODSAY_PARSE_ERROR);
         }
     }
@@ -135,12 +150,12 @@ public class CommuteScoreCalculator {
      */
     private BigDecimal convertMinutesToScore(int minutes) {
         //TODO: 팀 회의 후 수치값 적절하게 변경
-        if (minutes <= 10) return BigDecimal.valueOf(100);
-        if (minutes <= 20) return BigDecimal.valueOf(90);
-        if (minutes <= 30) return BigDecimal.valueOf(80);
-        if (minutes <= 45) return BigDecimal.valueOf(60);
-        if (minutes <= 60) return BigDecimal.valueOf(40);
-        if (minutes <= 90) return BigDecimal.valueOf(20);
+        if (minutes <= 10) return BigDecimal.valueOf(50);
+        if (minutes <= 20) return BigDecimal.valueOf(45);
+        if (minutes <= 30) return BigDecimal.valueOf(40);
+        if (minutes <= 45) return BigDecimal.valueOf(30);
+        if (minutes <= 60) return BigDecimal.valueOf(20);
+        if (minutes <= 90) return BigDecimal.valueOf(10);
         return BigDecimal.valueOf(10);
     }
 
