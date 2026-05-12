@@ -43,7 +43,9 @@ class HouseScoreCalculator {
                             RecommendedDong.builder()
                                     .dongCode(dong.getDongCode())
                                     .dongName(dong.getDongName())
-                                    .score(BigDecimal.valueOf(additionalScore))
+                                    .score(dong.getScore().add(BigDecimal.valueOf(additionalScore)))
+                                    .longitude(dong.getLongitude())
+                                    .latitude(dong.getLatitude())
                                     .build()
                     );
                 });
@@ -63,7 +65,6 @@ class HouseScoreCalculator {
     }
 
     private List<RecommendedDong> getTop10RecommendedDongs(List<RecommendedDong> recommendedDongs) {
-        List<RecommendedDong> top10RecommendedDongs = new ArrayList<>();
 
         return recommendedDongs.stream()
                 .sorted(Comparator.comparing(RecommendedDong::getScore).reversed())

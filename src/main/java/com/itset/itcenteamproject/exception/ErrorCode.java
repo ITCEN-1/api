@@ -33,13 +33,20 @@ public enum ErrorCode {
     INVALID_RENTAL_FILED(HttpStatus.BAD_REQUEST,"SUR001","정상적인 전세 또는 월세+보증금 입력이 아닙니다"),
     INVALID_MONTHLY_FILED(HttpStatus.BAD_REQUEST,"SUR002","정상적인 월세,보증금 입력이 아닙니다, 월세최소+월세최대+보증금최소+보증금최대를 모두 입력하세요"),
     INVALID_JEONSE_FILED(HttpStatus.BAD_REQUEST,"SUR003","정상적인 전세 입력이 아닙니다, 전세최소+전세최대를 모두 입력하세요"),
+    NOT_FOUND_SURVEY(HttpStatus.NOT_FOUND,"SUR004","유저가 가진 설문이 없습니다"),
 
     // DongLocation 관련
     INVALID_DONG_CODE(HttpStatus.BAD_REQUEST,"DON001","유효하지 않은 동 코드입니다. (1111010100 ~ 1174011000)"),
 
     // 통근점수 산정 관련
     ODSAY_API_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "COM002", "오디세이 API 호출에 실패했습니다."),
-    ODSAY_PARSE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "COM003", "오디세이 응답 파싱에 실패했습니다.");
+    ODSAY_PARSE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "COM003", "오디세이 응답 파싱에 실패했습니다."),
+
+    // 카카오 API 관련
+    KAKAO_API_ERROR(HttpStatus.INTERNAL_SERVER_ERROR,"KAO001","카카오 API 요청이 실패했습니다"),
+    KAKAO_API_PARSE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR,"KAO002","카카오 API 요청이 실패했습니다"),
+    INVALID_WORKPLACE_ADDRESS(HttpStatus.BAD_REQUEST,"KA003" , "직장 주소를 찾을 수 없습니다. 주소를 다시 확인해주세요.");
+
 
     private final HttpStatus status; //헤더 상태코드로 들어감
     private final String code; //errorCode.getCode 로 사용
