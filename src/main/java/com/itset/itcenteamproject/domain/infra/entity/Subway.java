@@ -28,6 +28,9 @@ public class Subway {
     @Column(name = "dong_code", nullable = false)
     private Integer dongCode; // 소속 법정동 코드
 
+    @Column(name = "line", nullable = false)
+    private  String line; // 라인(호선) 명
+
     @Column(name = "latitude", nullable = false)
     private Double latitude;
 
