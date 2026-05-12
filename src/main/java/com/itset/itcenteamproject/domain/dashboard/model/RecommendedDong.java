@@ -16,6 +16,7 @@ public class RecommendedDong implements Comparable<RecommendedDong>{
     private Double latitude;
     private Double longitude;
     private BigDecimal score;
+    private Integer commuteTime;
     private String message;
 
     //score 기준 내림차순 정렬 (점수 높은게 1등이므로)
