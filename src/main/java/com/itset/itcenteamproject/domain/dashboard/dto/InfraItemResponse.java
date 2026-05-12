@@ -14,4 +14,5 @@ public class InfraItemResponse {
     private String name;
     private Double latitude;
     private Double longitude;
+    private String line;
 }

@@ -24,8 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.itset.itcenteamproject.domain.dashboard.dto.InfraType.*;
-
 @Service
 @RequiredArgsConstructor
 public class DashboardService {
@@ -38,27 +36,20 @@ public class DashboardService {
     private final JeonseRepository jeonseRepository;
     private final WolseRepository wolseRepository;
     private final SurveyService surveyService;
+    private final CommuteScoreCalculator commuteScoreCalculator;
 
-    /**
-     * 동 상세 요약 조회
-     * - userId: 로그인 사용자 검증용
-     * - surveyId: 과거 설문 기준 조회용
-     * - dongCode: 상세 조회 대상 동
-     * - top10DongCodes: 추천 결과 10개 동 코드
-     */
     public DongDetailResponse getDongSummary(
             Long userId,
             Long surveyId,
             Integer dongCode
             )
     {
-
         //surveyId가 userId의 설문인지 검증 + 설문 조회
         Survey survey = surveyService.findByIdAndUserId(surveyId, userId);
 
-        //동 기본정보 조회
+        //동 기본정보 조회(동 존재 여부 확인 + 이름, 위/경도표)
         DongLocation dong = dongLocationRepository.findById(dongCode)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 동 코드입니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.INVALID_DONG_CODE));
 
         //인프라 개수 조회 (동 기준)
         long hospitalCount = hospitalRepository.countByDongCode(dongCode);
@@ -66,7 +57,7 @@ public class DashboardService {
         long libraryCount = libraryRepository.countByDongCode(dongCode);
         long largeStoreCount = largeStoreRepository.countByDongCode(dongCode);
 
-        //문 기준 전/월세 집계 결과에서 현재 dongCode 개수만 추출
+        //설문 기준 전/월세 집계 결과에서 현재 dongCode 개수만 추출
         Map<Integer, Long> jeonseMap = toCountMap(jeonseRepository.findContractCntByPreference(survey));
         Map<Integer, Long> wolseMap = toCountMap(wolseRepository.findContractCntByPreference(survey));
 
@@ -89,10 +80,8 @@ public class DashboardService {
                 .build();
     }
 
-    /**
-     * 인프라 요소별 상세 조회
-     * - type에 따라 이름/위도/경도 목록 반환
-     */
+     //인프라 요소별 상세 조회
+     //type에 따라 이름/위도/경도 목록 반환
     public InfraDetailResponse getInfraDetails(
             Long userId,
             Long surveyId,
@@ -108,7 +97,10 @@ public class DashboardService {
 
         // 3) type별 목록 조회 + 공통 DTO 변환
         List<InfraItemResponse> items = switch (type) {
+            //해당 동의 병원 엔티티 목록 조회
             case HOSPITAL -> hospitalRepository.findByDongCode(dongCode).stream()
+                    //병원 엔티티 하나를 InfraItemResponse로 변환해서 필요한 필드 추출
+                    //DB 엔티티를 API응답용 DTO로 매핑
                     .map(h -> InfraItemResponse.builder()
                             .name(h.getName())
                             .latitude(h.getLatitude())
@@ -121,6 +113,7 @@ public class DashboardService {
                             .name(s.getName())
                             .latitude(s.getLatitude())
                             .longitude(s.getLongitude())
+                            .line(s.getLine().strip())
                             .build())
                     .toList();
 
@@ -150,11 +143,11 @@ public class DashboardService {
                 .build();
     }
 
-
+    //리스트 형태 집계 결과를 동코드 → 개수 map으로 변환
     private Map<Integer, Long> toCountMap(List<ContractCntDTO> list) {
         return list.stream().collect(Collectors.toMap(
-                ContractCntDTO::getDongCode,
-                ContractCntDTO::getCnt,
+                ContractCntDTO::getDongCode, //key
+                ContractCntDTO::getCnt, //value
                 (a, b) -> a
         ));
     }
