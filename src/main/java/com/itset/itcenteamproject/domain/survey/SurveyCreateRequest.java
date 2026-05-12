@@ -19,15 +19,15 @@ public class SurveyCreateRequest {
     //null체크는 SurveyService에서 검증
     @Min(value = 0)
     private Integer jeonseMin;
-    @Min(value = 0)
+    @Min(value = 300)
     private Integer jeonseMax;
     @Min(value = 0)
     private Integer monthlyMin;
-    @Min(value = 0)
+    @Min(value = 1)
     private Integer monthlyMax;
     @Min(value = 0)
     private Integer depositMin;
-    @Min(value = 0)
+    @Min(value = 10)
     private Integer depositMax;
 
     @NotNull(message = "대형마트 선호도는 필수입니다.")
