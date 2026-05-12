@@ -86,6 +86,12 @@ public class SurveyService {
             }
         }
     }
+    //과거 설문을 봐도 본인 설문만 허용
+    public Survey findByIdAndUserId(Long surveyId, Long userId) {
+        return surveyRepository.findByIdAndUserId(surveyId, userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_SURVEY));
+    }
+
     //설문여부 확인
     public boolean hasSurvey(Long userId) {
         return surveyRepository.existsByUserId(userId);
