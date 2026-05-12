@@ -37,7 +37,7 @@ public class SecurityConfig {
                                 "/api/users/check",
                                 "/api/me",
                                 "/api/history",
-                                "/api/infra/**"
+                                "/api/infra/**",
                                 "/api/infra/**",
                                 "/api/dashboards/test"
                         ).permitAll()
