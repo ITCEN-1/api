@@ -2,17 +2,11 @@ package com.itset.itcenteamproject.domain.survey;
 
 import com.itset.itcenteamproject.domain.user.User;
 import com.itset.itcenteamproject.domain.user.UserRepository;
-import com.itset.itcenteamproject.domain.user.dto.UserResponseDTO;
 import com.itset.itcenteamproject.exception.CustomException;
 import com.itset.itcenteamproject.exception.ErrorCode;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestMapping;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static com.itset.itcenteamproject.exception.ErrorCode.NOT_FOUND_USER;
 
@@ -78,7 +72,7 @@ public class SurveyService {
     //과거 설문을 봐도 본인 설문만 허용
     public Survey findByIdAndUserId(Long surveyId, Long userId) {
         return surveyRepository.findByIdAndUserId(surveyId, userId)
-                .orElseThrow(() -> new CustomException(ErrorCode.SURVEY_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_SURVEY));
     }
 
     //설문여부 확인

@@ -2,6 +2,7 @@ package com.itset.itcenteamproject.commuteScoreCalculatorTest;
 
 import com.itset.itcenteamproject.domain.dashboard.CommuteScoreCalculator;
 import com.itset.itcenteamproject.domain.dashboard.model.RecommendedDong;
+import com.itset.itcenteamproject.domain.infra.Coordinate;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,11 +28,11 @@ public class CommuteScoreCalculatorIntegrationTest {
     @DisplayName("오디세이 api 호출 테스트")
     void getCommuteMinutesByOdsayTest(){
         //given
-        Integer originDongCode=1111015600;//종로3가
+        Coordinate workplaceCoordinate = new Coordinate(126.9923298,37.57038842);
         Integer destintationDongCode=1171010700;//가락동
 
         //when
-        int min=commuteScoreCalculator.getCommuteMinutesByOdsay(originDongCode,destintationDongCode);
+        int min=commuteScoreCalculator.getCommuteMinutesByOdsay(workplaceCoordinate,destintationDongCode);
 
         //then
         System.out.println("통근시간:" + min + "분!!!!");
@@ -42,7 +43,7 @@ public class CommuteScoreCalculatorIntegrationTest {
     @DisplayName("CommuteScoreCalculator.calculate 테스트")
     void calculateTest(){
         //given
-        Integer workplaceDongCode=1111015600;//종로3가
+        Coordinate workplaceCoordinate = new Coordinate(126.9923298,37.57038842);
         RecommendedDong rd1= RecommendedDong.builder()
                 .ranking(1)
                 .dongCode(1117013000)
@@ -72,7 +73,7 @@ public class CommuteScoreCalculatorIntegrationTest {
 
         List<RecommendedDong> rdList= Arrays.asList(rd1,rd2,rd3);
         //when
-        List<RecommendedDong> addScoredList=commuteScoreCalculator.calculate(workplaceDongCode,rdList);
+        List<RecommendedDong> addScoredList=commuteScoreCalculator.calculate(workplaceCoordinate,rdList);
 
         //then
         addScoredList.forEach(en->System.out.println(en.toString())); // 디버깅용,콘솔에 점수가산된 추천동객체 반환

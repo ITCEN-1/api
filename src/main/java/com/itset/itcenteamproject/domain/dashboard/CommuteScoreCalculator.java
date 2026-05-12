@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.itset.itcenteamproject.domain.dashboard.model.RecommendedDong;
-import com.itset.itcenteamproject.domain.dashboard.util.LocationUtil;
 import com.itset.itcenteamproject.domain.infra.Coordinate;
 import com.itset.itcenteamproject.exception.CustomException;
 import lombok.RequiredArgsConstructor;
@@ -25,23 +24,26 @@ import static com.itset.itcenteamproject.exception.ErrorCode.*;
 @RequiredArgsConstructor
 public class CommuteScoreCalculator {
 
-    private final LocationUtil locationUtil;
+    private final LocationService locationUtil;
     private final RestClient restClient = RestClient.create();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     /**
      * workplaceDongCode(직장,학교 동) 를 기준으로 recommendedDongList(추천된 동) 에 있는 각 동 까지 걸리는 시간을
      * 조회하여 추가 점수를 부여하고 RecommendedDong.score에 가산하여 리턴합니다
-     * @param workplaceDongCode
+     * @param workplaceCoordinate
      * @param recommendedDongList
      * @return 통근거리를 기준으로 점수가 추가된 addCommuteScoreDongList 리스트 반환
      */
-    public List<RecommendedDong> calculate(Integer workplaceDongCode, List<RecommendedDong> recommendedDongList){
+    public List<RecommendedDong> calculate(Coordinate workplaceCoordinate, List<RecommendedDong> recommendedDongList){
         List<RecommendedDong> addCommuteScoreDongList= new ArrayList<>();
-        for(RecommendedDong rd: recommendedDongList){
+        for(RecommendedDong rd: recommendedDongList){ // 각 RecommendedDong 에 commute 통근시간 추가, 점수 가산
+            // 오디세이로 통근시간 가져오기
+            int commuteMinutes=getCommuteMinutesByOdsay(workplaceCoordinate,rd.getDongCode());
+            rd.setCommuteTime(commuteMinutes);
+            // 통근시간으로 점수 산정해서 기존 점수에 더하기
             BigDecimal newScore = rd.getScore().add( //Decimal끼리는 + 연산 말고 add 메소드 사용함
-                    convertMinutesToScore(
-                            getCommuteMinutesByOdsay(workplaceDongCode,rd.getDongCode())));
+                    convertMinutesToScore(commuteMinutes));
             rd.setScore(newScore); //점수를 기존 RecommendedDong에 반영
             addCommuteScoreDongList.add(rd);
         }
@@ -51,30 +53,27 @@ public class CommuteScoreCalculator {
     /**
      * 오디세이 API를 호출하여 좌표간 통근시간(분)을 반환합니다
      * https://lab.odsay.com/guide/console#searchPubTransPathT
-     * @param originDongCode
+     * @param workplaceCoordinate
      * @param destinationDongCode
      * @return 통근시간(분)
      */
-    public int getCommuteMinutesByOdsay(Integer originDongCode,Integer destinationDongCode){
+    public int getCommuteMinutesByOdsay(Coordinate workplaceCoordinate,Integer destinationDongCode){
 
         //유효성 검증
-        validateDongCode(originDongCode);
         validateDongCode(destinationDongCode);
 
-        Coordinate orginCoor = locationUtil.dongCodeToCoordinate(originDongCode);
         Coordinate destinationCoor = locationUtil.dongCodeToCoordinate(destinationDongCode);
 
         //TODO: 운영환경에서는 서버 공인아이피로 변경후, 하드코딩 대신 env 파일로 관리
         //NOTE: 여기 있는 키는 현재 김준혁 집 아이피에서만 허용되는 키임, 교육장에서 헷을때 당황하지 않도록
         //NOTE: 오디세이는 api 키에 특수문자가 포함되어있어, 서버가 특수문자를 명령어로 잘못 해석하기 때문에 URLEncoder.encode를 하면 특수문자를 %XX 형식으로 변환
         String encodedApiKey = URLEncoder.encode("OhwYC2oPpPkLspemmNUMro0VB2T3/Eu0KDgYe8ne0zo", StandardCharsets.UTF_8);
-
         //요청 uri 정의
         String uriString = "https://api.odsay.com/v1/api/searchPubTransPathT"
                 + "?apiKey=" + encodedApiKey
                 + "&lang=0"
-                + "&SX=" + orginCoor.getLongitude()
-                + "&SY=" + orginCoor.getLatitude()
+                + "&SX=" + workplaceCoordinate.getLongitude()
+                + "&SY=" + workplaceCoordinate.getLatitude()
                 + "&EX=" + destinationCoor.getLongitude()
                 + "&EY=" + destinationCoor.getLatitude()
                 + "&OPT=0"

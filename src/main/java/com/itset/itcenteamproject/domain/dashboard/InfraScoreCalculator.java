@@ -29,10 +29,10 @@ public class InfraScoreCalculator {
 
     // 순위 없이 동 + 점수만 반환
     public List<RecommendedDong> calculateTopDongs(
-            //후보 법정동 코드 목록
-            List<Integer> filteredDongCodes,
             //설문조사 목록
-            Survey survey
+            Survey survey,
+            //후보 법정동 코드 목록
+            List<Integer> filteredDongCodes
     ) {
         //HIGH/MIDDLE/LOW를 숫자 가중치(1.0/0.5/0.0)로 변환
         double subwayWeight = preferenceWeightService.toWeight(survey.getPreferenceSubway());

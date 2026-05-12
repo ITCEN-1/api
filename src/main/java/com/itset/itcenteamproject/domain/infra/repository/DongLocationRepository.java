@@ -9,4 +9,6 @@ public interface DongLocationRepository extends JpaRepository<DongLocation, Inte
 
     // 후보 법정동 코드들에 해당하는 동 정보 조회
     List<DongLocation> findByDongCodeIn(List<Integer> dongCodes);
+    DongLocation getDongLocationByDongCode(Integer dongCode);
+    List<DongLocation> findAllByDistrictName(String districtName);
 }
