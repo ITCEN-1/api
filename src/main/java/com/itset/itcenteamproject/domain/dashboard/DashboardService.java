@@ -39,6 +39,11 @@ public class DashboardService {
         User user = userRepository.findById(userId).orElseThrow(()-> new CustomException(NOT_FOUND_USER));
         Survey survey = surveyRepository.findTopByUserIdOrderByCreatedAtDesc(userId).orElseThrow(()-> new CustomException(NOT_FOUND_SURVEY));
 
+        // 동일 설문에 대한 히스토리가 이미 존재하면 저장 생략
+        if (historyRepository.existsBySurveyId(survey.getId())) {
+            return recommendedDongList;
+        }
+
         // 히스토리 생성
         History history = History.builder()
                 .survey(survey)

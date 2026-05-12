@@ -8,4 +8,5 @@ public interface HistoryRepository extends JpaRepository<History, Long> {
             " left join fetch h.historyItems" +
             " where h.survey.id = :surveyId and h.user.id=:userId")
     History findHistoriesBySurveyId(Long surveyId, Long userId);
+    boolean existsBySurveyId(Long surveyId);
 }
