@@ -47,6 +47,16 @@ public class Survey {
     @OneToMany(mappedBy = "survey" , cascade = CascadeType.ALL,orphanRemoval = true)
     private List<SurveySelectedDistrict>  surveySelectedDistrictList = new ArrayList<>();
 
+    //surveySelectedDistrictList 추가
+    public void addDistricts(List<String> districtNames) {
+        districtNames.stream()
+                .map(name -> SurveySelectedDistrict.builder()
+                        .survey(this)
+                        .districtName(name)
+                        .build())
+                .forEach(this.surveySelectedDistrictList::add);
+    }
+
     @CreatedDate
     @Column(updatable = false)
     private LocalDateTime createdAt;
