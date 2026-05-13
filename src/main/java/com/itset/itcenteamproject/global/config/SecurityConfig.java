@@ -36,6 +36,7 @@ public class SecurityConfig {
                                 "/api/auth/**",
                                 "/api/users/check",
                                 "/api/me",
+                                "/api/surveys/**"
                                 "/api/infra/**",
                                 "/api/dashboard/**",
                                 "/api/history/**",
