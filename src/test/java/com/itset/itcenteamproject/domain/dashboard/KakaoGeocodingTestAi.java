@@ -1,6 +1,7 @@
 package com.itset.itcenteamproject.domain.dashboard;
 
-import com.itset.itcenteamproject.domain.infra.Coordinate;
+import com.itset.itcenteamproject.domain.dashboard.client.KakaoGeocodingClient;
+import com.itset.itcenteamproject.global.vo.Coordinate;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

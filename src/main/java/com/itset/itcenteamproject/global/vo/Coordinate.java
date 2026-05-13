@@ -1,4 +1,4 @@
-package com.itset.itcenteamproject.domain.infra;
+package com.itset.itcenteamproject.global.vo;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;

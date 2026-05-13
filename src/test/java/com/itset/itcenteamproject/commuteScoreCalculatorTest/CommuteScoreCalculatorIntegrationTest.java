@@ -1,9 +1,9 @@
 package com.itset.itcenteamproject.commuteScoreCalculatorTest;
 
-import com.itset.itcenteamproject.domain.dashboard.CommuteScoreCalculator;
-import com.itset.itcenteamproject.domain.dashboard.OdsayApiKeys;
+import com.itset.itcenteamproject.domain.dashboard.service.CommuteScoreCalculator;
+import com.itset.itcenteamproject.domain.dashboard.client.OdsayApiKeys;
 import com.itset.itcenteamproject.domain.dashboard.model.RecommendedDong;
-import com.itset.itcenteamproject.domain.infra.Coordinate;
+import com.itset.itcenteamproject.global.vo.Coordinate;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

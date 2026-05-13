@@ -1,10 +1,11 @@
-package com.itset.itcenteamproject.domain.dashboard;
+package com.itset.itcenteamproject.domain.dashboard.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.itset.itcenteamproject.domain.dashboard.client.OdsayApiKeys;
 import com.itset.itcenteamproject.domain.dashboard.model.RecommendedDong;
-import com.itset.itcenteamproject.domain.infra.Coordinate;
+import com.itset.itcenteamproject.global.vo.Coordinate;
 import com.itset.itcenteamproject.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,8 +15,6 @@ import org.springframework.web.client.RestClientException;
 
 import java.math.BigDecimal;
 import java.net.URI;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 

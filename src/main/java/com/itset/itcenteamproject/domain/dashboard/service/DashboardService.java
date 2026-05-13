@@ -1,4 +1,4 @@
-package com.itset.itcenteamproject.domain.dashboard;
+package com.itset.itcenteamproject.domain.dashboard.service;
 
 import com.itset.itcenteamproject.domain.dashboard.dto.DongDetailResponse;
 import com.itset.itcenteamproject.domain.dashboard.dto.InfraDetailResponse;

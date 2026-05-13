@@ -1,11 +1,10 @@
-package com.itset.itcenteamproject.domain.dashboard;
+package com.itset.itcenteamproject.domain.dashboard.controller;
 
 import com.itset.itcenteamproject.domain.dashboard.dto.DongDetailResponse;
 import com.itset.itcenteamproject.domain.dashboard.dto.InfraDetailResponse;
 import com.itset.itcenteamproject.domain.dashboard.dto.InfraType;
-import com.itset.itcenteamproject.domain.dashboard.DashboardService;
+import com.itset.itcenteamproject.domain.dashboard.service.DashboardService;
 
-import jakarta.servlet.http.HttpSession;
 import com.itset.itcenteamproject.domain.dashboard.model.RecommendedDong;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;

@@ -30,4 +30,4 @@ odsay:
 
 logging:
   level:
-    com.itset.itcenteamproject.domain.dashboard.CommuteScoreCalculator: DEBUG
+    com.itset.itcenteamproject.domain.dashboard.com.itset.itcenteamproject.domain.dashboard.service.CommuteScoreCalculator: DEBUG

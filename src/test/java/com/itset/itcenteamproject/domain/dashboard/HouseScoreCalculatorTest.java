@@ -1,6 +1,7 @@
 package com.itset.itcenteamproject.domain.dashboard;
 
 import com.itset.itcenteamproject.domain.dashboard.model.RecommendedDong;
+import com.itset.itcenteamproject.domain.dashboard.service.HouseScoreCalculator;
 import com.itset.itcenteamproject.domain.house.ContractCntDTO;
 import com.itset.itcenteamproject.domain.house.HouseContractRepository;
 import com.itset.itcenteamproject.domain.survey.PreferenceLevel;
