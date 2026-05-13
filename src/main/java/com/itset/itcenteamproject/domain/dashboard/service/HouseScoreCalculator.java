@@ -17,10 +17,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
-class HouseScoreCalculator {
+public class HouseScoreCalculator {
     private final Map<String, HouseContractRepository> contractRepositoryMap;
 
-    HouseScoreCalculator(Map<String, HouseContractRepository> contractRepositoryMap) {
+    public HouseScoreCalculator(Map<String, HouseContractRepository> contractRepositoryMap) {
         this.contractRepositoryMap = contractRepositoryMap;
     }
 

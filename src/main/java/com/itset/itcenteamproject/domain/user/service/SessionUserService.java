@@ -24,7 +24,7 @@ public class SessionUserService {
     //로그인 세션
     public void login(HttpSession session, Long userId) {
         session.setAttribute(LOGIN_USER, userId);
-        session.setMaxInactiveInterval(120);
+        session.setMaxInactiveInterval(18000);
     }
 
     //로그아웃 세션

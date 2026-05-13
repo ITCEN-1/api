@@ -30,8 +30,17 @@ public class SwaggerConfig {
                 .url("http://35.203.175.24:8080")
                 .description("Production Server");
 
+        // 쿠키 기반 세션 인증 추가
+        SecurityScheme cookieScheme = new SecurityScheme()
+                .type(SecurityScheme.Type.APIKEY)
+                .in(SecurityScheme.In.COOKIE)
+                .name("JSESSIONID");
+
         return new OpenAPI()
                 .info(info)
-                .servers(List.of(localServer, productionServer));
+                .servers(List.of(localServer, productionServer))
+                .addSecurityItem(new SecurityRequirement().addList("cookieAuth"))
+                .components(new Components()
+                        .addSecuritySchemes("cookieAuth", cookieScheme));
     }
 }
