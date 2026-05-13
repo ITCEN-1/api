@@ -3,6 +3,7 @@ package com.itset.itcenteamproject.domain.history;
 import com.itset.itcenteamproject.domain.survey.entity.Survey;
 import com.itset.itcenteamproject.domain.survey.dto.SurveyDTO;
 import com.itset.itcenteamproject.domain.survey.SurveyRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Service
 public class HistoryService {
     private final HistoryRepository historyRepository;
@@ -28,12 +30,14 @@ public class HistoryService {
         Long userId = Long.parseLong(uid);
         // userID에 해당하는 Survey를 Page크기만큼 가져오기
         Page<Survey> surveyPage = surveyRepository.findSurveyByUserId(userId, pageable);
+        log.info(surveyPage.getContent().toString());
 
         // Survey를 순회하며 SurveyId에 해당하는 History 및 Ranking 데이터를 가져온다.
         for (Survey survey : surveyPage.getContent()) {
             SurveyDTO surveyDto = SurveyDTO.from(survey);
             // surveyID를 바탕으로 history 데이터를 가져온다.
             History history = historyRepository.findHistoriesBySurveyId(survey.getId());
+            log.info(history.toString());
             // Ranking데이터 가져오기
             List<HistoryItemDTO> rankings = history.getHistoryItems().stream()
                     .map(HistoryItemDTO::from)
