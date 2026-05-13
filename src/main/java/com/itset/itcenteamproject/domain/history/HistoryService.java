@@ -33,7 +33,7 @@ public class HistoryService {
         for (Survey survey : surveyPage.getContent()) {
             SurveyDTO surveyDto = SurveyDTO.from(survey);
             // surveyID를 바탕으로 history 데이터를 가져온다.
-            History history = historyRepository.findHistoriesBySurveyId(survey.getId(), userId);
+            History history = historyRepository.findHistoriesBySurveyId(survey.getId());
             // Ranking데이터 가져오기
             List<HistoryItemDTO> rankings = history.getHistoryItems().stream()
                     .map(HistoryItemDTO::from)
