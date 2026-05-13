@@ -8,7 +8,7 @@ import com.itset.itcenteamproject.domain.infra.repository.LargeStoreRepository;
 import com.itset.itcenteamproject.domain.infra.repository.LibraryRepository;
 import com.itset.itcenteamproject.domain.infra.repository.SubwayRepository;
 import com.itset.itcenteamproject.domain.infra.service.PreferenceWeightService;
-import com.itset.itcenteamproject.domain.survey.Survey;
+import com.itset.itcenteamproject.domain.survey.entity.Survey;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

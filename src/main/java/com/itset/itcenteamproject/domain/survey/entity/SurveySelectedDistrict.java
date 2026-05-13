@@ -1,4 +1,4 @@
-package com.itset.itcenteamproject.domain.survey;
+package com.itset.itcenteamproject.domain.survey.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;

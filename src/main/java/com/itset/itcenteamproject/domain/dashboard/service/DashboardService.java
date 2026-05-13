@@ -17,7 +17,7 @@ import com.itset.itcenteamproject.domain.dashboard.model.RecommendedDong;
 import com.itset.itcenteamproject.domain.history.History;
 import com.itset.itcenteamproject.domain.history.HistoryItem;
 import com.itset.itcenteamproject.domain.history.HistoryRepository;
-import com.itset.itcenteamproject.domain.survey.Survey;
+import com.itset.itcenteamproject.domain.survey.entity.Survey;
 import com.itset.itcenteamproject.domain.survey.SurveyService;
 import com.itset.itcenteamproject.domain.survey.SurveyRepository;
 import com.itset.itcenteamproject.domain.user.User;

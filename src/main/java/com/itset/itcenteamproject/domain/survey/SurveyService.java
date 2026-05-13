@@ -1,5 +1,8 @@
 package com.itset.itcenteamproject.domain.survey;
 
+import com.itset.itcenteamproject.domain.survey.dto.SurveyCreateRequest;
+import com.itset.itcenteamproject.domain.survey.entity.Survey;
+import com.itset.itcenteamproject.domain.survey.entity.SurveySelectedDistrict;
 import com.itset.itcenteamproject.domain.user.User;
 import com.itset.itcenteamproject.domain.user.UserRepository;
 import com.itset.itcenteamproject.exception.CustomException;
@@ -17,7 +20,7 @@ public class SurveyService {
     private final UserRepository userRepository;
 
     @Transactional
-    public Long createSurvey(SurveyCreateRequest request,Long userId){
+    public Long createSurvey(SurveyCreateRequest request, Long userId){
 
         //유효성 검증
         validateSurvey(request);

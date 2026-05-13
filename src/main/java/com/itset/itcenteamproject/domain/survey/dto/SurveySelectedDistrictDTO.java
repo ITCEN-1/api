@@ -1,5 +1,6 @@
-package com.itset.itcenteamproject.domain.survey;
+package com.itset.itcenteamproject.domain.survey.dto;
 
+import com.itset.itcenteamproject.domain.survey.entity.SurveySelectedDistrict;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;

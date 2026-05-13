@@ -5,7 +5,7 @@ import com.itset.itcenteamproject.domain.dashboard.service.HouseScoreCalculator;
 import com.itset.itcenteamproject.domain.house.ContractCntDTO;
 import com.itset.itcenteamproject.domain.house.HouseContractRepository;
 import com.itset.itcenteamproject.domain.survey.PreferenceLevel;
-import com.itset.itcenteamproject.domain.survey.Survey;
+import com.itset.itcenteamproject.domain.survey.entity.Survey;
 import com.itset.itcenteamproject.domain.user.User;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

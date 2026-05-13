@@ -4,7 +4,7 @@ import com.itset.itcenteamproject.domain.dashboard.model.RecommendedDong;
 import com.itset.itcenteamproject.domain.house.ContractTypeEnum;
 import com.itset.itcenteamproject.domain.house.ContractCntDTO;
 import com.itset.itcenteamproject.domain.house.HouseContractRepository;
-import com.itset.itcenteamproject.domain.survey.Survey;
+import com.itset.itcenteamproject.domain.survey.entity.Survey;
 import com.itset.itcenteamproject.exception.CustomException;
 import com.itset.itcenteamproject.exception.ErrorCode;
 import org.springframework.stereotype.Component;

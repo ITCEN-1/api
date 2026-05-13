@@ -3,7 +3,7 @@ package com.itset.itcenteamproject.domain.dashboard.service;
 import com.itset.itcenteamproject.domain.dashboard.client.KakaoGeocodingClient;
 import com.itset.itcenteamproject.domain.dashboard.model.RecommendedDong;
 import com.itset.itcenteamproject.global.vo.Coordinate;
-import com.itset.itcenteamproject.domain.survey.Survey;
+import com.itset.itcenteamproject.domain.survey.entity.Survey;
 import com.itset.itcenteamproject.domain.survey.SurveyRepository;
 import com.itset.itcenteamproject.exception.CustomException;
 import jakarta.transaction.Transactional;

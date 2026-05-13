@@ -1,5 +1,6 @@
 package com.itset.itcenteamproject.domain.survey;
 
+import com.itset.itcenteamproject.domain.survey.dto.SurveyCreateRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
