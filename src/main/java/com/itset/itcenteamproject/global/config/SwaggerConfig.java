@@ -26,8 +26,12 @@ public class SwaggerConfig {
         // 서버 환경 설정
         Server localServer = new Server().url("http://localhost:8080").description("Local Server");
 
+        Server productionServer = new Server()
+                .url("http://35.203.175.24:8080")
+                .description("Production Server");
+
         return new OpenAPI()
                 .info(info)
-                .servers(List.of(localServer));
+                .servers(List.of(localServer, productionServer));
     }
 }
