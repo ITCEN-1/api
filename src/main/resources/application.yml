@@ -27,3 +27,7 @@ kakao:
 
 odsay:
   rest-api-keys: ${ODSAY_REST_API_KEY_LIST}
+
+logging:
+  level:
+    com.itset.itcenteamproject.domain.dashboard.CommuteScoreCalculator: DEBUG
