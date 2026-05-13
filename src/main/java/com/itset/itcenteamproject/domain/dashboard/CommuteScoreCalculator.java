@@ -112,33 +112,46 @@ public class CommuteScoreCalculator {
     }
 
     // 오디세이 응답 JSON 에서 가장 빠른 경로 소요시간을 파싱
-    private int convertOdsayResponseToTotalMinutes (String response){
+    private int convertOdsayResponseToTotalMinutes(String response) {
 
         if (response == null || response.isBlank()) {
+            log.error("[ODsay] 응답이 비어있음. response: '{}'", response);
             throw new CustomException(ODSAY_API_ERROR);
         }
 
         try {
             JsonNode root = objectMapper.readTree(response);
 
-            JsonNode firstPath = root
-                    .path("result")
-                    .path("path")
-                    .path(0);
+            JsonNode pathArray = root.path("result").path("path");
+            JsonNode firstPath = pathArray.path(0);
+            JsonNode totalTime = firstPath.path("info").path("totalTime");
 
-            JsonNode totalTime = firstPath
-                    .path("info")
-                    .path("totalTime");
-
-            //파싱 중 문제가 발생한경우 예외처리
-            if (firstPath.isMissingNode() || !totalTime.isNumber()) {
+            if (pathArray.isMissingNode()) {
+                log.error("[ODsay] 'result.path' 노드 없음. response: {}", response);
                 throw new CustomException(ODSAY_PARSE_ERROR);
             }
 
-            //최종적으로 int형으로 반환하여 리턴
-            return totalTime.asInt();
+            if (pathArray.isEmpty()) {
+                log.error("[ODsay] 경로 결과가 0개. response: {}", response);
+                throw new CustomException(ODSAY_PARSE_ERROR);
+            }
+
+            if (firstPath.isMissingNode()) {
+                log.error("[ODsay] 첫 번째 경로(path[0]) 없음. response: {}", response);
+                throw new CustomException(ODSAY_PARSE_ERROR);
+            }
+
+            if (!totalTime.isNumber()) {
+                log.error("[ODsay] 'totalTime' 파싱 실패. totalTime 노드: {}, response: {}", totalTime, response);
+                throw new CustomException(ODSAY_PARSE_ERROR);
+            }
+
+            int result = totalTime.asInt();
+            log.debug("[ODsay] 파싱 성공. totalTime: {}분", result);
+            return result;
+
         } catch (JsonProcessingException e) {
-            log.error("[ODsay] JSON 파싱 실패!! response: {}", response, e);
+            log.error("[ODsay] JSON 파싱 실패. response: {}", response, e);
             throw new CustomException(ODSAY_PARSE_ERROR);
         }
     }
