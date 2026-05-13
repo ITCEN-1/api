@@ -18,9 +18,9 @@ public class SwaggerConfig {
     @Bean
     public OpenAPI openAPI() {
         Info info = new Info()
-                .title("Backend API")
-                .description("백엔드 API 명세서입니다.")
-                .version("v1.0.0")
+                .title("DongnePick API")
+                .description("아이티센 1차 프로젝트 동네픽 API 명세서")
+                .version("v1.0.1")
                 .contact(new Contact().name("Kim_Joon_hyuk").email("joonlife0901@gmail.com"));
 
         // 서버 환경 설정

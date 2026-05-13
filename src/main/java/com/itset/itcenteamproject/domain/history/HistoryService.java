@@ -1,7 +1,7 @@
 package com.itset.itcenteamproject.domain.history;
 
-import com.itset.itcenteamproject.domain.survey.Survey;
-import com.itset.itcenteamproject.domain.survey.SurveyDTO;
+import com.itset.itcenteamproject.domain.survey.entity.Survey;
+import com.itset.itcenteamproject.domain.survey.dto.SurveyDTO;
 import com.itset.itcenteamproject.domain.survey.SurveyRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

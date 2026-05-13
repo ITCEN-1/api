@@ -1,5 +1,6 @@
-package com.itset.itcenteamproject.domain.survey;
+package com.itset.itcenteamproject.domain.survey.entity;
 
+import com.itset.itcenteamproject.domain.survey.PreferenceLevel;
 import com.itset.itcenteamproject.domain.user.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;

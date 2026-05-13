@@ -1,5 +1,7 @@
-package com.itset.itcenteamproject.domain.survey;
+package com.itset.itcenteamproject.domain.survey.dto;
 
+import com.itset.itcenteamproject.domain.survey.PreferenceLevel;
+import com.itset.itcenteamproject.domain.survey.entity.Survey;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

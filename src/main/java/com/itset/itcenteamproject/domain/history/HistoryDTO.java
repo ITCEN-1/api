@@ -1,6 +1,6 @@
 package com.itset.itcenteamproject.domain.history;
 
-import com.itset.itcenteamproject.domain.survey.SurveyDTO;
+import com.itset.itcenteamproject.domain.survey.dto.SurveyDTO;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;

@@ -1,7 +1,8 @@
-package com.itset.itcenteamproject.domain.survey;
+package com.itset.itcenteamproject.domain.survey.dto;
 
+import com.itset.itcenteamproject.domain.survey.PreferenceLevel;
+import com.itset.itcenteamproject.domain.survey.entity.Survey;
 import com.itset.itcenteamproject.domain.user.User;
-import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
