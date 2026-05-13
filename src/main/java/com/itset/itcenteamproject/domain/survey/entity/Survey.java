@@ -3,10 +3,7 @@ package com.itset.itcenteamproject.domain.survey.entity;
 import com.itset.itcenteamproject.domain.survey.PreferenceLevel;
 import com.itset.itcenteamproject.domain.user.User;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -17,6 +14,7 @@ import java.util.List;
 @Table(name = "surveys")
 @Entity
 @Getter
+@ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
 public class Survey {
