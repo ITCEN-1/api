@@ -59,7 +59,7 @@ jobs:
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           DDL_AUTO: ${{ secrets.DDL_AUTO }}
           KAKAO_REST_API_KEY: ${{ secrets.KAKAO_REST_API_KEY }}
-          ODSAY_REST_API_KEY_LIST: ${{ secrets.ODSAY_REST_API_LIST }}
+          ODSAY_REST_API_KEY_LIST: ${{ secrets.ODSAY_REST_API_KEY_LIST }}
 
         with:
           host: ${{ secrets.SERVER_HOST }}
