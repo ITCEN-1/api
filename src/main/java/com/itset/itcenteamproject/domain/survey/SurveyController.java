@@ -33,7 +33,7 @@ public class SurveyController {
     //프론트에서 대시보드 페이지 진입 전 호출
     @Operation(description = "의도하지 않은 경로로 대시보드 진입 방지," +
             " 프론트에서 대시보드 페이지 진입 전 호출, 현재 세션 유저의 설문 유무를 조회합니다", summary = "설문 유무 조회" )
-    @GetMapping("/auth/survey-check")
+    @GetMapping("/surveys/status")
     public SurveyCheckResponseDTO checkSurvey(HttpSession session) {
         Long userId = sessionUserService.getLoginUserId(session);
         boolean surveyCompleted = surveyService.hasSurvey(userId);
