@@ -150,8 +150,8 @@ public class CommuteScoreCalculator {
             return result;
 
         } catch (JsonProcessingException e) {
-            log.error("[ODsay] JSON 파싱 실패. response: {}", response, e);
-            throw new CustomException(ODSAY_PARSE_ERROR);
+            log.error("[ODsay] 에러 응답 또는 JSON 응답 실패. response: {}", response, e);
+            throw new CustomException(ODSAY_BAD_API_RESPONSE);
         }
     }
 
