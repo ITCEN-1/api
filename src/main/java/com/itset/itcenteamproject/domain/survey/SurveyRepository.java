@@ -14,6 +14,8 @@ public interface SurveyRepository extends JpaRepository<Survey, Long> {
     @Query(value = "select s from Survey s left join fetch s.surveySelectedDistrictList where s.user.id = :userId",
           countQuery = "select count(s) from Survey s where s.user.id = :userId")
     Page<Survey> findSurveyByUserId(Long userId, Pageable pageable);
+    @Query(value = "select s from Survey s left join fetch s.surveySelectedDistrictList where s.id=:surveyId")
+    Optional<Survey> findSurveyById(Long surveyId);
     Optional<Survey> findTopByUserIdOrderByCreatedAtDesc(Long userId);
     Optional<Survey> findByIdAndUserId(Long id, Long userId);
 }
