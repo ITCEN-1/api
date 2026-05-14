@@ -4,6 +4,7 @@ import com.itset.itcenteamproject.domain.survey.dto.SurveyCreateRequest;
 import com.itset.itcenteamproject.domain.user.dto.SurveyCheckResponseDTO;
 import com.itset.itcenteamproject.domain.user.service.SessionUserService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -23,7 +24,7 @@ public class SurveyController {
     @PostMapping
     @Operation(summary = "설문 등록")
     public ResponseEntity<Long> createSurvey(@RequestBody @Valid SurveyCreateRequest request,
-                                             @SessionAttribute("loginUser") Long userId) {
+                                             @Parameter(hidden = true) @SessionAttribute("loginUser") Long userId) {
         Long surveyId = surveyService.createSurvey(request,userId);//생성된 질문 ID
         return ResponseEntity.status(HttpStatus.CREATED).body(surveyId);//200 대신 201응답
     }
