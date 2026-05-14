@@ -30,7 +30,7 @@ public class OdsayClient {
      * @param destinationCoordinate
      * @return 통근시간(분)
      */
-    public int getCommuteMinutes(Coordinate startingCoordinate, Coordinate destinationCoordinate){
+    public String getCommuteMinutes(Coordinate startingCoordinate, Coordinate destinationCoordinate){
 
         // 요청 uri 정의
         String uriString = "https://api.odsay.com/v1/api/searchPubTransPathT"
@@ -55,11 +55,11 @@ public class OdsayClient {
             throw new CustomException(ODSAY_API_ERROR);
         }
 
-        return convertOdsayResponseToTotalMinutes(response);
+        return response;
     }
 
     // 오디세이 응답 JSON 에서 가장 빠른 경로 소요시간을 파싱
-    private int convertOdsayResponseToTotalMinutes(String response) {
+    public int convertOdsayResponseToTotalMinutes(String response) {
 
         if (response == null || response.isBlank()) {
             log.error("[ODsay] 응답이 비어있음. response: '{}'", response);

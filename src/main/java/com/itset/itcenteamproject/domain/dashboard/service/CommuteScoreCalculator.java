@@ -45,7 +45,8 @@ public class CommuteScoreCalculator {
             Coordinate startingDongCoordinate = locationUtil.dongCodeToCoordinate(startingDongCode);
 
             // 오디세이 API로 통근시간 가져오기
-            int commuteMinutes=odsayClient.getCommuteMinutes(startingDongCoordinate,workplaceCoordinate);
+            String odsayResponse=odsayClient.getCommuteMinutes(startingDongCoordinate,workplaceCoordinate);
+            int commuteMinutes=odsayClient.convertOdsayResponseToTotalMinutes(odsayResponse);
 
             // 통근시간으로 점수 산정해서 기존 점수에 더하기 (Decimal 은 + 대신 add)
             BigDecimal newScore = rd.getScore().add(convertMinutesToScore(commuteMinutes));
