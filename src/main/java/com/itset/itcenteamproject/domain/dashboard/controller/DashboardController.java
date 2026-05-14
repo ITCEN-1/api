@@ -50,7 +50,7 @@ public class DashboardController {
        return dashboardService.getRanking(userId);
     }
 
-    @Operation(summary = "[Test] 동 랭킹 조회 API 테스트" ,description = "테스트용, 파라미터로 직접 UserId 값을 입력받습니다")
+    @Operation(summary = "[Test] 동 랭킹 조회" ,description = "테스트용, 파라미터로 직접 UserId 값을 입력받습니다")
     @GetMapping("/test")
     public List<RecommendedDong> getRankingTest(@RequestParam Long userId){
         return dashboardService.getRanking(userId);

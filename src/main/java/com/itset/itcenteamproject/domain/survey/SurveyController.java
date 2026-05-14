@@ -22,7 +22,7 @@ public class SurveyController {
     private final SessionUserService sessionUserService;
 
     @PostMapping
-    @Operation(summary = "설문 등록")
+    @Operation(summary = "설문 등록",description = "설문 작성자는 현재 세션 유저로 등록됩니다")
     public ResponseEntity<Long> createSurvey(@RequestBody @Valid SurveyCreateRequest request,
                                              @Parameter(hidden = true) @SessionAttribute("loginUser") Long userId) {
         Long surveyId = surveyService.createSurvey(request,userId);//생성된 질문 ID
@@ -32,7 +32,7 @@ public class SurveyController {
     //의도하지 않은 경로로 대시보드 진입 방지
     //프론트에서 대시보드 페이지 진입 전 호출
     @Operation(description = "의도하지 않은 경로로 대시보드 진입 방지," +
-            " 프론트에서 대시보드 페이지 진입 전 호출", summary = "세션 유저의 설문 유무 조회" )
+            " 프론트에서 대시보드 페이지 진입 전 호출, 현재 세션 유저의 설문 유무를 조회합니다", summary = "설문 유무 조회" )
     @GetMapping("/auth/survey-check")
     public SurveyCheckResponseDTO checkSurvey(HttpSession session) {
         Long userId = sessionUserService.getLoginUserId(session);
