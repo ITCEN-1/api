@@ -7,13 +7,16 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "boards")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+
 public class Board {
 
     @Id
@@ -33,9 +36,11 @@ public class Board {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
+    @Column(nullable=false) private Long viewCount;
+
     @CreatedDate
-    @Column(updatable = false)
-    private LocalDateTime createdAt; //
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
 
     @Builder
     public Board(User user, Integer dongCode, String title, String content) {
@@ -43,5 +48,8 @@ public class Board {
         this.dongCode = dongCode;
         this.title = title;
         this.content = content;
+        this.viewCount = 0L;
     }
+    @PrePersist
+    public void increaseViewCount() { this.viewCount++; }
 }
