@@ -81,8 +81,37 @@ public class BoardController {
 
 
     @GetMapping("/posts/{postId}")
-    public String getPostDetail(@PathVariable Long postId, Model model) {
-        model.addAttribute("post", boardService.getPostDetailAndIncreaseView(postId));
+    public String getPostDetail(
+            @PathVariable Long postId,
+            HttpSession session,
+            Model model
+    ) {
+        BoardDetailDTO post = boardService.getPostDetailAndIncreaseView(postId);
+
+        Long loginUserId = (Long) session.getAttribute("loginUser");
+        boolean editable = loginUserId != null && loginUserId.equals(post.getWriterId());
+
+        model.addAttribute("post", post);
+        model.addAttribute("editable", editable);
+        model.addAttribute("districts", boardService.getDistricts());
+        model.addAttribute("dongs", boardService.getDongsByDistrict(post.getDistrictName()));
+
         return "community/post-detail";
+    }
+
+    //수정 저장
+    @PostMapping("/posts/{postId}/edit")
+    public String updatePost(
+            @PathVariable Long postId,
+            @ModelAttribute("form") BoardUpdateRequest form,
+            HttpSession session,
+            RedirectAttributes redirectAttributes
+    ) {
+        Long userId = sessionUserService.getLoginUserId(session);
+
+        boardService.updatePost(userId, postId, form);
+
+        redirectAttributes.addFlashAttribute("successMessage", "게시글이 수정되었습니다.");
+        return "redirect:/communities/posts/" + postId;
     }
 }

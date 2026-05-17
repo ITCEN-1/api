@@ -26,8 +26,8 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
 
     @Query("""
                 select new com.itset.itcenteamproject.domain.board.dto.BoardDetailDTO(
-                  b.id, b.title, b.content, u.nickname, d.districtName, d.dongName, b.createdAt, b.viewCount
-                )
+                     b.id, b.title, b.content, u.id, u.nickname, d.districtName, b.dongCode, d.dongName, b.createdAt, b.viewCount
+                  )
                 from Board b join b.user u join DongLocation d on d.dongCode = b.dongCode
                 where b.id=:postId
             """)

@@ -38,6 +38,52 @@ public class BoardService {
         return boardRepository.save(board).getId();
     }
 
+    //수정 화면에 기존 글 값을 채워 넣기 위해
+    @Transactional(readOnly = true)
+    public BoardUpdateRequest getPostForEdit(Long userId, Long postId) {
+        Board board = boardRepository.findById(postId)
+                .orElseThrow(() -> new CustomException(ErrorCode.BAD_REQUEST));
+
+        if (!board.getUser().getId().equals(userId)) {
+            throw new CustomException(ErrorCode.BAD_REQUEST);
+        }
+
+        DongLocation dong = dongLocationRepository.findById(board.getDongCode())
+                .orElseThrow(() -> new CustomException(ErrorCode.INVALID_DONG_CODE));
+
+        BoardUpdateRequest form = new BoardUpdateRequest();
+        form.setDistrictName(dong.getDistrictName());
+        form.setDongCode(dong.getDongCode());
+        form.setTitle(board.getTitle());
+        form.setContent(board.getContent());
+
+        return form;
+    }
+
+    //수정 요청을 받아 실제 게시글 값을 변경
+    @Transactional
+    public void updatePost(Long userId, Long postId, BoardUpdateRequest req) {
+        if (req.getDongCode() == null) throw new IllegalArgumentException("동을 선택해주세요.");
+        if (req.getTitle() == null || req.getTitle().isBlank()) throw new IllegalArgumentException("제목을 입력해주세요.");
+        if (req.getContent() == null || req.getContent().isBlank()) throw new IllegalArgumentException("본문을 입력해주세요.");
+
+        Board board = boardRepository.findById(postId)
+                .orElseThrow(() -> new CustomException(ErrorCode.BAD_REQUEST));
+
+        if (!board.getUser().getId().equals(userId)) {
+            throw new CustomException(ErrorCode.BAD_REQUEST);
+        }
+
+        dongLocationRepository.findById(req.getDongCode())
+                .orElseThrow(() -> new CustomException(ErrorCode.INVALID_DONG_CODE));
+
+        board.updatePost(
+                req.getDongCode(),
+                req.getTitle().trim(),
+                req.getContent().trim()
+        );
+    }
+
     @Transactional
     public BoardDetailDTO getPostDetailAndIncreaseView(Long postId) {
         Board board = boardRepository.findById(postId).orElseThrow(() -> new CustomException(ErrorCode.BAD_REQUEST));
