@@ -48,12 +48,8 @@
                 return;
             }
 
-            // 성공 시 게시판 이동(일반 사용자는 /dashboard 또는 /surveys
-            // 관리자: /admin
-            const body = await res.json();
-            const content = body.content ?? body;
-
-            location.href = content.redirectPath || '/communities/posts';
+            // 성공 시 게시판 이동
+            location.href = '/communities/posts';
         } catch (err) {
             console.error(err);
             msgEl.textContent = '네트워크 오류가 발생했습니다.';

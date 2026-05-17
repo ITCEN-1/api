@@ -1,19 +1,137 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>게시글 상세</title>
 </head>
 <body>
-<h2 th:text="${post.title}">제목</h2>
-<div>작성자: <span th:text="${post.writerName}"></span></div>
-<div>지역: <span th:text="${post.districtName}"></span> <span th:text="${post.dongName}"></span></div>
-<div>작성일: <span th:text="${#temporals.format(post.createdAt,'yyyy-MM-dd HH:mm')}"></span></div>
-<div>조회수: <span th:text="${post.viewCount}"></span></div>
-<hr>
-<pre th:text="${post.content}"></pre>
-<a href="/communities/posts">목록</a>
 
+<!-- 보기 영역 -->
+<div id="viewArea">
+    <h2 th:text="${post.title}">제목</h2>
 
+    <div>작성자: <span th:text="${post.writerName}">작성자</span></div>
+    <div>지역:
+        <span th:text="${post.districtName}">구</span>
+        <span th:text="${post.dongName}">동</span>
+    </div>
+    <div>작성일:
+        <span th:text="${#temporals.format(post.createdAt,'yyyy-MM-dd HH:mm')}">작성일</span>
+    </div>
+    <div>조회수: <span th:text="${post.viewCount}">0</span></div>
+
+    <hr>
+    <pre th:text="${post.content}">본문</pre>
+
+    <!-- 작성자 본인일 때만 수정 버튼 노출 -->
+    <button type="button" id="editBtn" th:if="${editable}">수정</button>
+    <a href="/communities/posts">목록</a>
+</div>
+
+<!-- 작성자 본인일 때만 수정 폼 자체를 렌더링 -->
+<div id="editArea" style="display:none;" th:if="${editable}">
+    <h2>게시글 수정</h2>
+
+    <form th:action="@{/communities/posts/{postId}/edit(postId=${post.postId})}"
+          method="post">
+
+        <div>
+            <label>구 선택</label><br/>
+            <select id="districtSelect" name="districtName">
+                <option value="">구를 선택하세요</option>
+                <option th:each="dist : ${districts}"
+                        th:value="${dist}"
+                        th:text="${dist}"
+                        th:selected="${dist == post.districtName}">
+                </option>
+            </select>
+        </div>
+
+        <div>
+            <label>동 선택</label><br/>
+            <select id="dongSelect" name="dongCode" required>
+                <option value="">동을 선택하세요</option>
+                <option th:each="d : ${dongs}"
+                        th:value="${d.dongCode}"
+                        th:text="${d.dongName}"
+                        th:selected="${d.dongCode == post.dongCode}">
+                </option>
+            </select>
+        </div>
+
+        <div>
+            <label>제목</label><br/>
+            <input type="text" name="title" th:value="${post.title}" maxlength="100" required/>
+        </div>
+
+        <div>
+            <label>본문</label><br/>
+            <textarea name="content" rows="8" cols="80" required th:text="${post.content}"></textarea>
+        </div>
+
+        <button type="submit">수정 완료</button>
+        <button type="button" id="cancelEditBtn">취소</button>
+    </form>
+</div>
+
+<script>
+    const viewArea = document.getElementById('viewArea');
+    const editArea = document.getElementById('editArea');
+    const editBtn = document.getElementById('editBtn');
+    const cancelEditBtn = document.getElementById('cancelEditBtn');
+
+    // editable=false이면 editBtn/editArea가 렌더링되지 않으므로 null 체크 필요
+    if (editBtn && editArea) {
+        editBtn.addEventListener('click', () => {
+            viewArea.style.display = 'none';
+            editArea.style.display = 'block';
+        });
+    }
+
+    if (cancelEditBtn && editArea) {
+        cancelEditBtn.addEventListener('click', () => {
+            editArea.style.display = 'none';
+            viewArea.style.display = 'block';
+        });
+    }
+
+    const districtSelect = document.getElementById('districtSelect');
+    const dongSelect = document.getElementById('dongSelect');
+
+    // 수정 폼이 없는 사용자에게는 districtSelect/dongSelect도 없으므로 null 체크
+    if (districtSelect && dongSelect) {
+        function resetDong() {
+            dongSelect.innerHTML = '<option value="">동을 선택하세요</option>';
+        }
+
+        districtSelect.addEventListener('change', async () => {
+            const district = districtSelect.value;
+            resetDong();
+
+            if (!district) return;
+
+            try {
+                const res = await fetch(`/communities/dongs?district=${encodeURIComponent(district)}`);
+                if (!res.ok) {
+                    alert('동 목록을 불러오지 못했습니다.');
+                    return;
+                }
+
+                const body = await res.json();
+                const dongs = Array.isArray(body) ? body : (body.content ?? []);
+
+                dongs.forEach(d => {
+                    const option = document.createElement('option');
+                    option.value = d.dongCode;
+                    option.textContent = d.dongName;
+                    dongSelect.appendChild(option);
+                });
+            } catch (e) {
+                console.error(e);
+                alert('동 목록을 불러오지 못했습니다.');
+            }
+        });
+    }
+</script>
 </body>
 </html>
