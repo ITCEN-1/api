@@ -36,7 +36,8 @@ public class Board {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
-    @Column(nullable=false) private Long viewCount;
+    @Column(nullable = false)
+    private Long viewCount = 0L;
 
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -50,6 +51,13 @@ public class Board {
         this.content = content;
         this.viewCount = 0L;
     }
-    @PrePersist
-    public void increaseViewCount() { this.viewCount++; }
+    public void increaseViewCount() {
+        this.viewCount++;
+    }
+
+    public void updatePost(Integer dongCode, String title, String content) {
+        this.dongCode = dongCode;
+        this.title = title;
+        this.content = content;
+    }
 }
