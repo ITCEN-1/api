@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h2 th:text="${post.title}">제목</h2>
+<div>작성자: <span th:text="${post.writerName}"></span></div>
+<div>지역: <span th:text="${post.districtName}"></span> <span th:text="${post.dongName}"></span></div>
+<div>작성일: <span th:text="${#temporals.format(post.createdAt,'yyyy-MM-dd HH:mm')}"></span></div>
+<div>조회수: <span th:text="${post.viewCount}"></span></div>
+<hr>
+<pre th:text="${post.content}"></pre>
+<a href="/communities/posts">목록</a>
+
+
+</body>
+</html>

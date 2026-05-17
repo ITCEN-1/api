@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>전체 게시판</title>
+    <style>
+        body { font-family: sans-serif; margin: 24px; }
+        h2 { margin-bottom: 12px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background: #f6f6f6; }
+        .pager { margin-top: 16px; display: flex; gap: 8px; align-items: center; }
+        .pager a, .pager span {
+            padding: 6px 10px; border: 1px solid #ccc; border-radius: 6px; text-decoration: none; color: #333;
+        }
+        .disabled { color: #aaa; border-color: #eee; pointer-events: none; }
+        .filter { display: flex; gap: 8px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; }
+        .top-actions { margin-bottom: 12px; }
+        .msg { color: #0b6b2a; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+<h2>전체 게시판</h2>
+
+<div class="top-actions">
+    <a th:href="@{/auth/login}">로그인</a>
+    <a th:href="@{/auth/signup}" style="margin-left:8px;">회원가입</a>
+    <a th:href="@{/communities/posts/new}" style="margin-left:8px;">글쓰기</a>
+</div>
+
+<div class="msg" th:if="${successMessage}" th:text="${successMessage}">성공 메시지</div>
+
+<!-- 검색 폼 -->
+<form class="filter" th:action="@{/communities/posts}" method="get">
+    <!-- 제목 키워드 -->
+    <input type="text" name="titleKeyword" placeholder="제목 검색"
+           th:value="${titleKeyword}" />
+
+    <!-- 구 선택 -->
+    <select id="districtSelect" name="district">
+        <option value="">구 선택</option>
+        <option th:each="dist : ${districts}"
+                th:value="${dist}"
+                th:text="${dist}"
+                th:selected="${dist == district}">
+        </option>
+    </select>
+
+    <!-- 동 선택 -->
+    <select id="dongSelect" name="dongCode">
+        <option value="">동 선택</option>
+        <option th:each="d : ${dongs}"
+                th:value="${d.dongCode}"
+                th:text="${d.dongName}"
+                th:selected="${dongCode != null and d.dongCode == dongCode}">
+        </option>
+    </select>
+
+    <button type="submit">검색</button>
+    <a th:href="@{/communities/posts}">초기화</a>
+</form>
+
+<table th:if="${!postPage.empty}">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>제목</th>
+        <th>작성자</th>
+        <th>동</th>
+        <th>작성일시</th>
+        <th>조회수</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="post : ${posts}">
+        <td th:text="${post.postId}">1</td>
+        <td>
+            <!-- 제목 클릭 시 상세 페이지 -->
+            <a th:href="@{/communities/posts/{postId}(postId=${post.postId})}"
+               th:text="${post.title}">제목</a>
+        </td>
+        <td th:text="${post.writerName}">작성자</td>
+        <td th:text="${post.dongName}">동이름</td>
+        <td th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm')}">2026-05-13 10:00</td>
+        <td th:text="${post.viewCount}">0</td>
+    </tr>
+    </tbody>
+</table>
+
+<div th:if="${postPage.empty}">
+    게시글이 없습니다.
+</div>
+
+<!-- 페이징 -->
+<div class="pager">
+    <a th:if="${postPage.hasPrevious()}"
+       th:href="@{/communities/posts(
+            page=${postPage.number - 1},
+            titleKeyword=${titleKeyword},
+            district=${district},
+            dongCode=${dongCode}
+       )}">
+        이전
+    </a>
+    <span th:if="${!postPage.hasPrevious()}" class="disabled">이전</span>
+
+    <span th:text="${postPage.number + 1} + ' / ' + ${postPage.totalPages == 0 ? 1 : postPage.totalPages}">1 / 1</span>
+
+    <a th:if="${postPage.hasNext()}"
+       th:href="@{/communities/posts(
+            page=${postPage.number + 1},
+            titleKeyword=${titleKeyword},
+            district=${district},
+            dongCode=${dongCode}
+       )}">
+        다음
+    </a>
+    <span th:if="${!postPage.hasNext()}" class="disabled">다음</span>
+</div>
+
+<script>
+    // 구 선택 시 동 목록 다시 조회 (AJAX)
+    const districtSelect = document.getElementById('districtSelect');
+    const dongSelect = document.getElementById('dongSelect');
+
+    function resetDong() {
+        dongSelect.innerHTML = '<option value="">동 선택</option>';
+    }
+
+    districtSelect.addEventListener('change', async () => {
+        const district = districtSelect.value;
+        resetDong();
+
+        if (!district) return;
+
+        try {
+            const res = await fetch(`/communities/dongs?district=${encodeURIComponent(district)}`);
+            if (!res.ok) throw new Error('동 목록 조회 실패');
+
+            const body = await res.json();
+            const dongs = Array.isArray(body) ? body : (body.content ?? []);
+
+            dongs.forEach(d => {
+                const opt = document.createElement('option');
+                opt.value = d.dongCode;
+                opt.textContent = d.dongName;
+                dongSelect.appendChild(opt);
+            });
+        } catch (e) {
+            console.error(e);
+            alert('동 목록을 불러오지 못했습니다.');
+        }
+    });
+</script>
+
+</body>
+</html>

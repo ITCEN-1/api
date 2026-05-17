@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>게시글 작성</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 24px;
+        }
+
+        .row {
+            margin-bottom: 10px;
+        }
+
+        input[type="text"], textarea, select {
+            min-width: 320px;
+        }
+    </style>
+</head>
+<body>
+
+<h2>게시글 작성</h2>
+
+<form th:action="@{/communities/posts}" th:object="${form}" method="post">
+    <div class="row">
+        <label>구 선택</label><br/>
+        <!-- districtName 바인딩 -->
+        <select id="districtSelect" th:field="*{districtName}">
+            <option value="">구를 선택하세요</option>
+            <option th:each="dist : ${districts}"
+                    th:value="${dist}"
+                    th:text="${dist}">
+            </option>
+        </select>
+    </div>
+
+    <div class="row">
+        <label>동 선택</label><br/>
+        <!-- dongCode 바인딩 -->
+        <select id="dongSelect" th:field="*{dongCode}" required>
+            <option value="">동을 선택하세요</option>
+            <!-- 첫 렌더링 시 서버가 내려준 dongs(있다면) -->
+            <option th:each="d : ${dongs}"
+                    th:value="${d.dongCode}"
+                    th:text="${d.dongName}">
+            </option>
+        </select>
+    </div>
+
+    <div class="row">
+        <label>제목</label><br/>
+        <input type="text" th:field="*{title}" maxlength="100" required/>
+    </div>
+
+    <div class="row">
+        <label>본문</label><br/>
+        <textarea th:field="*{content}" rows="8" cols="80" required></textarea>
+    </div>
+
+    <div class="row">
+        <button type="submit">작성</button>
+        <a th:href="@{/communities/posts}">목록</a>
+    </div>
+</form>
+
+<script>
+    const districtSelect = document.getElementById('districtSelect');
+    const dongSelect = document.getElementById('dongSelect');
+
+    function resetDong() {
+        dongSelect.innerHTML = '<option value="">동을 선택하세요</option>';
+    }
+
+    districtSelect.addEventListener('change', async () => {
+        resetDong();
+        if (!districtSelect.value) return;
+        const res = await fetch(`/communities/dongs?district=${encodeURIComponent(districtSelect.value)}`);
+        if (!res.ok) {
+            alert('동 목록을 불러오지 못했습니다.');
+            return;
+        }
+        const body = await res.json();
+        const dongs = Array.isArray(body) ? body : (body.content ?? []); // 래핑/비래핑 모두 대응
+        dongs.forEach(d => {
+            const o = document.createElement('option');
+            o.value = d.dongCode;
+            o.textContent = d.dongName;
+            dongSelect.appendChild(o);
+        });
+    });
+</script>
+
+
+</body>
+</html>
