@@ -32,14 +32,17 @@ public class SecurityConfig {
                                 "/webjars/**",
                                 "/api/hello",
                                 "/api/hello/*",
-                                "/api/signup",
+                                "/auth/**",
+                                "/communities/**",
                                 "/api/auth/**",
+                                "/api/signup",
                                 "/api/users/check",
                                 "/api/me",
                                 "/api/infra/**",
                                 "/api/dashboard/**",
                                 "/api/history/**",
-                                "/api/infra/**"
+                                "/api/infra/**",
+                                "/communities/**"
                         ).permitAll()
                         // 2.그 외 API는 인증 필요
                         .anyRequest().authenticated()
