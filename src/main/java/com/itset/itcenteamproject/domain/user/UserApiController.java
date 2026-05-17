@@ -40,13 +40,25 @@ public class UserApiController {
         User user = userService.login(dto);
         sessionUserService.login(session, user.getId());
 
-        //설문 여부 확인 후 페이지 이동(프론트)
+        // 관리자는 설문 여부와 관계없이 관리자 페이지로 이동
+        if (user.isAdmin()) {
+            return LoginResponseDTO.builder()
+                    .loginId(user.getLoginId())
+                    .nickname(user.getNickname())
+                    .role(user.getRole())
+                    .surveyCompleted(false)
+                    .redirectPath("/admin")
+                    .build();
+        }
+
+        //일반 사용자는 설문 여부 확인 후 페이지 이동(프론트)
         boolean surveyCompleted = surveyService.hasSurvey(user.getId());
         String redirectPath = surveyCompleted ? "/dashboard" : "/surveys";
 
         return LoginResponseDTO.builder()
                 .loginId(user.getLoginId())
                 .nickname(user.getNickname())
+                .role(user.getRole())
                 .surveyCompleted(surveyCompleted)
                 .redirectPath(redirectPath)
                 .build();
