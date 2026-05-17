@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<form id="signupForm">
+    <input id="loginId" placeholder="아이디" required>
+    <input id="password" type="password" placeholder="비밀번호" required>
+    <input id="nickname" placeholder="닉네임" required>
+    <button>회원가입</button>
+    <a href="/auth/login">로그인</a>
+    <div id="msg" style="color:red;"></div>
+</form>
+<script>
+    const form = document.getElementById('signupForm');
+    const msgEl = document.getElementById('msg');
+
+    function getErrorMessage(body, fallback) {
+        if (body && typeof body.message === 'string' && body.message.trim() !== '') {
+            return body.message;
+        }
+        return fallback;
+    }
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        msgEl.textContent = '';
+
+        const payload = {
+            loginId: document.getElementById('loginId').value.trim(),
+            password: document.getElementById('password').value,
+            nickname: document.getElementById('nickname').value.trim()
+        };
+
+        try {
+            const res = await fetch('/api/signup', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            const body = await res.json().catch(() => null);
+
+            if (!res.ok) {
+                msgEl.textContent = getErrorMessage(body, '회원가입에 실패했습니다.');
+                return;
+            }
+
+            alert('회원가입이 완료되었습니다.');
+            location.href = '/auth/login';
+        } catch (err) {
+            console.error(err);
+            msgEl.textContent = '네트워크 오류가 발생했습니다.';
+        }
+    });
+</script>
+
+
+</body>
+</html>
