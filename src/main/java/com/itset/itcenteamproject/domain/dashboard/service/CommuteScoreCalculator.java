@@ -80,14 +80,14 @@ public class CommuteScoreCalculator {
      * @return 점수
      */
     private BigDecimal convertMinutesToScore(int minutes) {
-        //TODO: 팀 회의 후 수치값 적절하게 변경
-        if (minutes <= 10) return BigDecimal.valueOf(50);
-        if (minutes <= 20) return BigDecimal.valueOf(45);
-        if (minutes <= 30) return BigDecimal.valueOf(40);
-        if (minutes <= 45) return BigDecimal.valueOf(30);
-        if (minutes <= 60) return BigDecimal.valueOf(20);
-        if (minutes <= 90) return BigDecimal.valueOf(10);
-        return BigDecimal.valueOf(10);
+        if (minutes <= 10) return BigDecimal.valueOf(50);  // 만족도 100퍼
+        if (minutes <= 20) return BigDecimal.valueOf(45);  // 만족도 94퍼
+        if (minutes <= 30) return BigDecimal.valueOf(40);  // 만족도 86퍼
+        if (minutes <= 42) return BigDecimal.valueOf(35);  // 직장인 희망 통근시간
+        if (minutes <= 51) return BigDecimal.valueOf(25);  // 이직,이사 심각 고려 임계점
+        if (minutes <= 58) return BigDecimal.valueOf(15);  // 장시간 통근 임계점
+        if (minutes <= 90) return BigDecimal.valueOf(5);   // 장시간 통근 구간
+        return BigDecimal.valueOf(0);
     }
 
     //유효성 검증
