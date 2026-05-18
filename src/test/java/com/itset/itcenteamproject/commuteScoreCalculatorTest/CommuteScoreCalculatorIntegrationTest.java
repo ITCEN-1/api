@@ -1,5 +1,6 @@
 package com.itset.itcenteamproject.commuteScoreCalculatorTest;
 
+import com.itset.itcenteamproject.domain.dashboard.client.OdsayClient;
 import com.itset.itcenteamproject.domain.dashboard.service.CommuteScoreCalculator;
 import com.itset.itcenteamproject.domain.dashboard.client.OdsayApiKeys;
 import com.itset.itcenteamproject.domain.dashboard.model.RecommendedDong;
@@ -26,17 +27,19 @@ public class CommuteScoreCalculatorIntegrationTest {
     private CommuteScoreCalculator commuteScoreCalculator;
 
     @Autowired
+    private OdsayClient odsayClient;
+
+    @Autowired
     private OdsayApiKeys odsayApiKeys;
 
     @Test
     @DisplayName("오디세이 api 호출 테스트")
     void getCommuteMinutesByOdsayTest(){
         //given
-        Coordinate workplaceCoordinate = new Coordinate(126.9923298,37.57038842);
-        Integer destintationDongCode=1171010700;//가락동
-
+        Coordinate workplaceCoordinate = new Coordinate(126.9923298,37.57038842);// 종로 3가역
+        Coordinate startingCoordinate=new Coordinate(127.103050,37.512615);// 롯데타워
         //when
-        int min=commuteScoreCalculator.getCommuteMinutesByOdsay(workplaceCoordinate,destintationDongCode,odsayApiKeys.getNextKey());
+        int min=odsayClient.getCommuteMinutes(workplaceCoordinate,startingCoordinate);
 
         //then
         System.out.println("통근시간:" + min + "분!!!!");
@@ -86,8 +89,4 @@ public class CommuteScoreCalculatorIntegrationTest {
         });
 
     }
-
-
-
-
 }
