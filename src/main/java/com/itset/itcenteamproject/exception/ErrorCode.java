@@ -42,6 +42,7 @@ public enum ErrorCode {
     // 통근점수 산정 관련
     ODSAY_API_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "COM002", "오디세이 API 호출에 실패했습니다."),
     ODSAY_PARSE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "COM003", "오디세이 응답 파싱에 실패했습니다."),
+    ODSAY_BAD_API_RESPONSE(HttpStatus.INTERNAL_SERVER_ERROR, "COM004", "오디세이 API 호출 결과에 문제가 있습니다"),
 
     // 카카오 API 관련
     KAKAO_API_ERROR(HttpStatus.INTERNAL_SERVER_ERROR,"KA001","카카오 API 요청이 실패했습니다"),
