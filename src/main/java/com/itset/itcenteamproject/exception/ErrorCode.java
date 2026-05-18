@@ -50,7 +50,10 @@ public enum ErrorCode {
     INVALID_WORKPLACE_ADDRESS(HttpStatus.BAD_REQUEST,"KA003" , "직장 주소를 찾을 수 없습니다. 주소를 다시 확인해주세요."),
 
     // 전/월세 관련
-    NO_CONTRACT_DATA(HttpStatus.NOT_FOUND, "HOU001", "해당하는 전/월세 계약건 수가 존재하지 않습니다");
+    NO_CONTRACT_DATA(HttpStatus.NOT_FOUND, "HOU001", "해당하는 전/월세 계약건 수가 존재하지 않습니다"),
+
+    // 히스토리 관련
+    NO_HISTORY_DATA(HttpStatus.NOT_FOUND, "HI001", "설문에 해당하는 히스토리가 존재하지 않습니다.");
 
     private final HttpStatus status; //헤더 상태코드로 들어감
     private final String code; //errorCode.getCode 로 사용

@@ -116,7 +116,8 @@ public class DashboardService {
         long wolseCount = wolseMap.getOrDefault(dongCode, 0L);
 
         //설문조사에 있는 동-직장까지 걸리는 시간 메시지
-        History history = historyRepository.findHistoriesBySurveyId(surveyId);
+        History history = historyRepository.findHistoriesBySurveyId(surveyId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NO_HISTORY_DATA));
 
         Integer commuteTime = null;
         String commuteMessage = null;
