@@ -32,5 +32,11 @@ public class HistoryController {
     @GetMapping("/history/{surveyId}")
     public HistoryDTO getSurveyAndHistory(@PathVariable Long surveyId) {
         return historyService.getHistory(surveyId);
+      
+    @Operation(summary = "히스토리 조회",description = "세션 유저의 히스토리 조회")
+    @GetMapping("/history")
+    public List<HistoryDTO> getHistory(@Parameter(hidden = true) @SessionAttribute("loginUser") Long userId,
+                                       @PageableDefault Pageable pageable) {
+        return historyService.getHistory(userId, pageable);
     }
 }

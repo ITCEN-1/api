@@ -29,9 +29,8 @@ HistoryService {
     /**
      * NOTE: userId에 해당하는 Survey와 추천된 동(History)를 불러와 반환한다.
      */
-    public List<HistoryDTO> getHistories(String uid, Pageable pageable) {
+    public List<HistoryDTO> getHistory(Long userId, Pageable pageable) {
         List<HistoryDTO> result = new ArrayList<>();
-        Long userId = Long.parseLong(uid);
         // userID에 해당하는 Survey를 Page크기만큼 가져오기
         Page<Survey> surveyPage = surveyRepository.findSurveyByUserId(userId, pageable);
         log.info(surveyPage.getContent().toString());
