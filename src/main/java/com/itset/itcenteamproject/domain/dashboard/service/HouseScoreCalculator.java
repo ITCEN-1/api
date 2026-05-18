@@ -1,10 +1,12 @@
-package com.itset.itcenteamproject.domain.dashboard;
+package com.itset.itcenteamproject.domain.dashboard.service;
 
 import com.itset.itcenteamproject.domain.dashboard.model.RecommendedDong;
 import com.itset.itcenteamproject.domain.house.ContractTypeEnum;
 import com.itset.itcenteamproject.domain.house.ContractCntDTO;
 import com.itset.itcenteamproject.domain.house.HouseContractRepository;
-import com.itset.itcenteamproject.domain.survey.Survey;
+import com.itset.itcenteamproject.domain.survey.entity.Survey;
+import com.itset.itcenteamproject.exception.CustomException;
+import com.itset.itcenteamproject.exception.ErrorCode;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -15,10 +17,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
-class HouseScoreCalculator {
+public class HouseScoreCalculator {
     private final Map<String, HouseContractRepository> contractRepositoryMap;
 
-    HouseScoreCalculator(Map<String, HouseContractRepository> contractRepositoryMap) {
+    public HouseScoreCalculator(Map<String, HouseContractRepository> contractRepositoryMap) {
         this.contractRepositoryMap = contractRepositoryMap;
     }
 
@@ -26,6 +28,10 @@ class HouseScoreCalculator {
         List<RecommendedDong> newRecommendedDong = new ArrayList<>();
         List<ContractCntDTO> contractCntDTO = this.contractRepositoryMap.get(getContractType(survey).getBeanName())
                 .findContractCntByPreference(survey);
+
+        if (contractCntDTO.isEmpty()) {
+            throw new CustomException(ErrorCode.NO_CONTRACT_DATA);
+        }
         Long maxCnt = contractCntDTO.getFirst().getCnt();
 
         Map<Integer, Long> cntMap = contractCntDTO.stream()
@@ -46,6 +52,7 @@ class HouseScoreCalculator {
                                     .score(dong.getScore().add(BigDecimal.valueOf(additionalScore)))
                                     .longitude(dong.getLongitude())
                                     .latitude(dong.getLatitude())
+                                    .message(dong.getMessage()+" house: "+BigDecimal.valueOf(additionalScore))
                                     .build()
                     );
                 });

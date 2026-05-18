@@ -1,9 +1,9 @@
-package com.itset.itcenteamproject.domain.dashboard;
+package com.itset.itcenteamproject.domain.dashboard.client;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.itset.itcenteamproject.domain.infra.Coordinate;
+import com.itset.itcenteamproject.global.vo.Coordinate;
 import com.itset.itcenteamproject.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;

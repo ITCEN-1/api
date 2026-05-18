@@ -5,6 +5,7 @@ import com.itset.itcenteamproject.domain.user.dto.*;
 import com.itset.itcenteamproject.domain.user.service.SessionUserService;
 import com.itset.itcenteamproject.domain.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
+@Tag(name="users",description = "유저,인증 관련 api")
 public class UserApiController {
     //회원가입, 로그인 관련
     private final UserService userService;
@@ -22,7 +24,8 @@ public class UserApiController {
     private final SessionUserService sessionUserService;
 
     //회원가입
-    @PostMapping("/signup")
+    @Operation(summary = "회원가입")
+    @PostMapping("/auth/signup")
     public ResponseEntity<Void> signup(
             @RequestBody SignupRequestDTO dto
     ) {
@@ -32,6 +35,7 @@ public class UserApiController {
     }
 
     //로그인
+    @Operation(summary = "로그인")
     @PostMapping("/auth/login")
     public LoginResponseDTO login(
             @RequestBody LoginRequestDTO dto,
@@ -64,7 +68,18 @@ public class UserApiController {
                 .build();
     }
 
+    //로그아웃
+    @Operation(summary = "로그아웃")
+    @PostMapping("/auth/logout")
+    public ResponseEntity<Void> logout(HttpSession session) {
+        //인증 체크
+        sessionUserService.logout(session);
+
+        return ResponseEntity.noContent().build();
+    }
+
     //로그인 아이디 중복 확인
+    @Operation(summary = "동일 아이디 조회")
     @GetMapping("/users/check")
     public DupCheckResponseDTO checkLoginId(
             @RequestParam String loginId
@@ -74,34 +89,13 @@ public class UserApiController {
         return new DupCheckResponseDTO(true);
     }
 
-    //로그아웃
-    @PostMapping("/auth/logout")
-    public ResponseEntity<Void> logout(HttpSession session) {
-        //인증 체크
-        sessionUserService.logout(session);
-
-        return ResponseEntity.noContent().build();
-    }
-
     //로그인 된 사용자 정보 조회(세션 유지 테스트용)
     @GetMapping("/me")
+    @Operation(summary = "[Test] 유저 정보 조회",description = "세션 유저의 정보 조회")
     public UserResponseDTO me(HttpSession session) {
         Long userId = sessionUserService.getLoginUserId(session);
         User user = userService.findById(userId);
 
         return new UserResponseDTO(user);
-    }
-
-    //의도하지 않은 경로로 대시보드 진입 방지
-    //프론트에서 대시보드 페이지 진입 전 호출
-    @Operation(description = "의도하지 않은 경로로 대시보드 진입 방지," +
-            " 프론트에서 대시보드 페이지 진입 전 호출", summary = "대시보드 진입 전 체크" )
-    @GetMapping("/auth/survey-check")
-    public SurveyCheckResponseDTO checkSurvey(HttpSession session) {
-        Long userId = sessionUserService.getLoginUserId(session);
-        boolean surveyCompleted = surveyService.hasSurvey(userId);
-        String redirectPath = surveyCompleted ? "/dashboard" : "/surveys";
-
-        return new SurveyCheckResponseDTO(surveyCompleted, redirectPath);
     }
 }

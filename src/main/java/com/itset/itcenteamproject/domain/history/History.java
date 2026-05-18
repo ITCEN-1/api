@@ -1,12 +1,9 @@
 package com.itset.itcenteamproject.domain.history;
 
-import com.itset.itcenteamproject.domain.survey.Survey;
+import com.itset.itcenteamproject.domain.survey.entity.Survey;
 import com.itset.itcenteamproject.domain.user.User;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -18,6 +15,7 @@ import java.util.List;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@ToString
 @EntityListeners(AuditingEntityListener.class)
 public class History {
     @Id

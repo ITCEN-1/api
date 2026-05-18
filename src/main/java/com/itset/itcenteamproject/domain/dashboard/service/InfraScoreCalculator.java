@@ -1,4 +1,4 @@
-package com.itset.itcenteamproject.domain.dashboard;
+package com.itset.itcenteamproject.domain.dashboard.service;
 
 import com.itset.itcenteamproject.domain.dashboard.model.RecommendedDong;
 import com.itset.itcenteamproject.domain.infra.entity.DongLocation;
@@ -8,7 +8,7 @@ import com.itset.itcenteamproject.domain.infra.repository.LargeStoreRepository;
 import com.itset.itcenteamproject.domain.infra.repository.LibraryRepository;
 import com.itset.itcenteamproject.domain.infra.repository.SubwayRepository;
 import com.itset.itcenteamproject.domain.infra.service.PreferenceWeightService;
-import com.itset.itcenteamproject.domain.survey.Survey;
+import com.itset.itcenteamproject.domain.survey.entity.Survey;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -95,7 +95,7 @@ public class InfraScoreCalculator {
                             .latitude(r.dong.getLatitude())
                             .longitude(r.dong.getLongitude())
                             .score(BigDecimal.valueOf(score))
-                            .message("인프라 점수")
+                            .message("infra: "+BigDecimal.valueOf(score))
                             .build();
                 })
                 .toList();

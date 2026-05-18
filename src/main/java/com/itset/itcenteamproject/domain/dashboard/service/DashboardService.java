@@ -1,4 +1,4 @@
-package com.itset.itcenteamproject.domain.dashboard;
+package com.itset.itcenteamproject.domain.dashboard.service;
 
 import com.itset.itcenteamproject.domain.dashboard.dto.DongDetailResponse;
 import com.itset.itcenteamproject.domain.dashboard.dto.InfraDetailResponse;
@@ -17,7 +17,7 @@ import com.itset.itcenteamproject.domain.dashboard.model.RecommendedDong;
 import com.itset.itcenteamproject.domain.history.History;
 import com.itset.itcenteamproject.domain.history.HistoryItem;
 import com.itset.itcenteamproject.domain.history.HistoryRepository;
-import com.itset.itcenteamproject.domain.survey.Survey;
+import com.itset.itcenteamproject.domain.survey.entity.Survey;
 import com.itset.itcenteamproject.domain.survey.SurveyService;
 import com.itset.itcenteamproject.domain.survey.SurveyRepository;
 import com.itset.itcenteamproject.domain.user.User;
@@ -25,7 +25,6 @@ import com.itset.itcenteamproject.domain.user.UserRepository;
 import com.itset.itcenteamproject.exception.CustomException;
 import com.itset.itcenteamproject.exception.ErrorCode;
 import jakarta.transaction.Transactional;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -63,6 +62,11 @@ public class DashboardService {
         // 유저 Id 정보에서 설문 정보 가져오기
         User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(NOT_FOUND_USER));
         Survey survey = surveyRepository.findTopByUserIdOrderByCreatedAtDesc(userId).orElseThrow(() -> new CustomException(NOT_FOUND_SURVEY));
+
+        // 동일 설문에 대한 히스토리가 이미 존재하면 저장 생략
+        if (historyRepository.existsBySurveyId(survey.getId())) {
+            return recommendedDongList;
+        }
 
         // 히스토리 생성
         History history = History.builder()
@@ -112,7 +116,8 @@ public class DashboardService {
         long wolseCount = wolseMap.getOrDefault(dongCode, 0L);
 
         //설문조사에 있는 동-직장까지 걸리는 시간 메시지
-        History history = historyRepository.findHistoriesBySurveyId(surveyId, userId);
+        History history = historyRepository.findHistoriesBySurveyId(surveyId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NO_HISTORY_DATA));
 
         Integer commuteTime = null;
         String commuteMessage = null;
@@ -150,25 +155,21 @@ public class DashboardService {
     //인프라 요소별 상세 조회
     //type에 따라 이름/위도/경도 목록 반환
     public InfraDetailResponse getInfraDetails(
-            Long userId,
-            Long surveyId,
             Integer dongCode,
             InfraType type
     ) {
-        // 1) 설문 권한 검증 (본인 설문인지)
-        surveyService.findByIdAndUserId(surveyId, userId);
-
-        // 2) 동 존재 확인
+        // 1) 동 존재 확인
         dongLocationRepository.findById(dongCode)
                 .orElseThrow(() -> new CustomException(ErrorCode.INVALID_DONG_CODE));
 
-        // 3) type별 목록 조회 + 공통 DTO 변환
+        // 2) type별 목록 조회 + 공통 DTO 변환
         List<InfraItemResponse> items = switch (type) {
             //해당 동의 병원 엔티티 목록 조회
             case HOSPITAL -> hospitalRepository.findByDongCode(dongCode).stream()
                     //병원 엔티티 하나를 InfraItemResponse로 변환해서 필요한 필드 추출
                     //DB 엔티티를 API응답용 DTO로 매핑
                     .map(h -> InfraItemResponse.builder()
+                            .id(h.getId())
                             .name(h.getName())
                             .latitude(h.getLatitude())
                             .longitude(h.getLongitude())
@@ -177,6 +178,7 @@ public class DashboardService {
 
             case SUBWAY -> subwayRepository.findByDongCode(dongCode).stream()
                     .map(s -> InfraItemResponse.builder()
+                            .id(s.getId())
                             .name(s.getName())
                             .latitude(s.getLatitude())
                             .longitude(s.getLongitude())
@@ -186,6 +188,7 @@ public class DashboardService {
 
             case LIBRARY -> libraryRepository.findByDongCode(dongCode).stream()
                     .map(l -> InfraItemResponse.builder()
+                            .id(l.getId())
                             .name(l.getName())
                             .latitude(l.getLatitude())
                             .longitude(l.getLongitude())
@@ -194,6 +197,7 @@ public class DashboardService {
 
             case LARGE_STORE -> largeStoreRepository.findByDongCode(dongCode).stream()
                     .map(ls -> InfraItemResponse.builder()
+                            .id(ls.getId())
                             .name(ls.getName())
                             .latitude(ls.getLatitude())
                             .longitude(ls.getLongitude())
@@ -201,9 +205,8 @@ public class DashboardService {
                     .toList();
         };
 
-        // 4) 응답 반환
+        // 3) 응답 반환
         return InfraDetailResponse.builder()
-                .surveyId(surveyId)
                 .dongCode(dongCode)
                 .type(type)
                 .items(items)

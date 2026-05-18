@@ -1,6 +1,6 @@
 package com.itset.itcenteamproject.domain.house;
 
-import com.itset.itcenteamproject.domain.survey.Survey;
+import com.itset.itcenteamproject.domain.survey.entity.Survey;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

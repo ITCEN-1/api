@@ -1,5 +1,8 @@
 package com.itset.itcenteamproject.domain.survey;
 
+import com.itset.itcenteamproject.domain.survey.dto.SurveyCreateRequest;
+import com.itset.itcenteamproject.domain.survey.entity.Survey;
+import com.itset.itcenteamproject.domain.survey.entity.SurveySelectedDistrict;
 import com.itset.itcenteamproject.domain.user.User;
 import com.itset.itcenteamproject.domain.user.UserRepository;
 import com.itset.itcenteamproject.exception.CustomException;
@@ -17,7 +20,7 @@ public class SurveyService {
     private final UserRepository userRepository;
 
     @Transactional
-    public Long createSurvey(SurveyCreateRequest request,Long userId){
+    public Long createSurvey(SurveyCreateRequest request, Long userId){
 
         //유효성 검증
         validateSurvey(request);
@@ -43,30 +46,47 @@ public class SurveyService {
 
     //정상적인 설문(전세월세보증금)인지 검사:
     private void validateSurvey(SurveyCreateRequest request) {
+        // A. 필드 존재 여부 추출
+        boolean hasJeonse = request.getJeonseMin() != null || request.getJeonseMax() != null;
+        boolean hasMonthly = request.getMonthlyMin() != null || request.getMonthlyMax() != null;
+        boolean hasDeposit = request.getDepositMin() != null || request.getDepositMax() != null;
 
-        boolean hasJeonseMin = request.getJeonseMin() != null;
-        boolean hasJeonseMax = request.getJeonseMax() != null;
-        boolean hasMonthlyMin = request.getMonthlyMin() != null;
-        boolean hasMonthlyMax = request.getMonthlyMax() != null;
-        boolean hasDepositMin = request.getDepositMin() != null;
-        boolean hasDepositMax = request.getDepositMax() != null;
+        // B. 전세/월세 그룹 판별
+        boolean isJeonseGroup = hasJeonse;
+        boolean isMonthlyGroup = hasMonthly || hasDeposit;
 
-        boolean isJeonseGroup = hasJeonseMin || hasJeonseMax;
-        boolean isMonthlyGroup = hasMonthlyMin || hasMonthlyMax || hasDepositMin || hasDepositMax;
-
-        // 둘 다 없거나 둘 다 있음
-        if (!isJeonseGroup && !isMonthlyGroup || isJeonseGroup && isMonthlyGroup) {
+        // 1. 배타적 선택 검증 (둘 다 없거나 둘 다 있는 경우)
+        if (isJeonseGroup == isMonthlyGroup) {
             throw new CustomException(ErrorCode.INVALID_RENTAL_FILED);
         }
 
-        // 전세 쌍 불완전
-        if (isJeonseGroup && !(hasJeonseMin && hasJeonseMax)) {
-            throw new CustomException(ErrorCode.INVALID_JEONSE_FILED);
+        // 2. 전세 상세 검증
+        if (isJeonseGroup) {
+            // 필수 값 누락 체크
+            if (request.getJeonseMin() == null || request.getJeonseMax() == null) {
+                throw new CustomException(ErrorCode.INVALID_JEONSE_FILED);
+            }
+            // 대소 관계 체크 (기존 Validator 로직)
+            if (request.getJeonseMin() > request.getJeonseMax()) {
+                throw new CustomException(ErrorCode.INVALID_MIN_MAX_VALUE); // 에러코드 정의 필요
+            }
         }
 
-        // 월세/보증금 묶음 불완전
-        if (isMonthlyGroup && !(hasMonthlyMin && hasMonthlyMax && hasDepositMin && hasDepositMax)) {
-            throw new CustomException(ErrorCode.INVALID_MONTHLY_FILED);
+        // 3. 월세 상세 검증
+        if (isMonthlyGroup) {
+            // 필수 값 누락 체크 (보증금/월세 모두 있어야 함)
+            if (request.getMonthlyMin() == null || request.getMonthlyMax() == null ||
+                    request.getDepositMin() == null || request.getDepositMax() == null) {
+                throw new CustomException(ErrorCode.INVALID_MONTHLY_FILED);
+            }
+            // 보증금 대소 관계 체크
+            if (request.getDepositMin() > request.getDepositMax()) {
+                throw new CustomException(ErrorCode.INVALID_MIN_MAX_VALUE);
+            }
+            // 월세 대소 관계 체크
+            if (request.getMonthlyMin() > request.getMonthlyMax()) {
+                throw new CustomException(ErrorCode.INVALID_MIN_MAX_VALUE);
+            }
         }
     }
     //과거 설문을 봐도 본인 설문만 허용

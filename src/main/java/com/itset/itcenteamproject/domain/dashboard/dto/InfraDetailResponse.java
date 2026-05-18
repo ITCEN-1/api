@@ -13,7 +13,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class InfraDetailResponse {
-    private Long surveyId;
     private Integer dongCode;
     private InfraType type;
     private List<InfraItemResponse> items;

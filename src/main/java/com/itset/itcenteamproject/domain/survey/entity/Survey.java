@@ -1,11 +1,9 @@
-package com.itset.itcenteamproject.domain.survey;
+package com.itset.itcenteamproject.domain.survey.entity;
 
+import com.itset.itcenteamproject.domain.survey.PreferenceLevel;
 import com.itset.itcenteamproject.domain.user.User;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -16,6 +14,7 @@ import java.util.List;
 @Table(name = "surveys")
 @Entity
 @Getter
+@ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
 public class Survey {
@@ -46,6 +45,16 @@ public class Survey {
 
     @OneToMany(mappedBy = "survey" , cascade = CascadeType.ALL,orphanRemoval = true)
     private List<SurveySelectedDistrict>  surveySelectedDistrictList = new ArrayList<>();
+
+    //surveySelectedDistrictList 추가
+    public void addDistricts(List<String> districtNames) {
+        districtNames.stream()
+                .map(name -> SurveySelectedDistrict.builder()
+                        .survey(this)
+                        .districtName(name)
+                        .build())
+                .forEach(this.surveySelectedDistrictList::add);
+    }
 
     @CreatedDate
     @Column(updatable = false)

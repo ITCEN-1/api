@@ -1,10 +1,10 @@
-package com.itset.itcenteamproject.domain.dashboard;
+package com.itset.itcenteamproject.domain.dashboard.service;
 
-import com.itset.itcenteamproject.domain.infra.Coordinate;
+import com.itset.itcenteamproject.global.vo.Coordinate;
 import com.itset.itcenteamproject.domain.infra.entity.DongLocation;
 import com.itset.itcenteamproject.domain.infra.repository.DongLocationRepository;
-import com.itset.itcenteamproject.domain.survey.Survey;
-import com.itset.itcenteamproject.domain.survey.SurveySelectedDistrict;
+import com.itset.itcenteamproject.domain.survey.entity.Survey;
+import com.itset.itcenteamproject.domain.survey.entity.SurveySelectedDistrict;
 import com.itset.itcenteamproject.exception.CustomException;
 import com.itset.itcenteamproject.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
