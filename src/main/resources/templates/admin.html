@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <title>동네픽 · 운영 현황</title>
+  <meta name="viewport" content="width=1280">
+  <link rel="icon" th:href="@{/img/dongne-pick-mark.svg}">
+
+  <!-- 동네픽 디자인 토큰 + UI 키트 CSS (원본 그대로 재사용) -->
+  <link rel="stylesheet" th:href="@{/css/colors_and_type.css}">
+  <link rel="stylesheet" th:href="@{/css/styles.css}">
+
+  <!-- 차트 라이브러리: 유저 추이 라인 차트 -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+  <!-- ───────────────────── 상단 내비게이션 ───────────────────── -->
+  <nav class="dp-nav">
+    <a class="dp-nav__logo" href="#">
+      <img th:src="@{/img/dongne-pick-wordmark.png}" alt="동네픽">
+    </a>
+    <div class="dp-nav__links">
+      <a class="dp-nav__link" href="#">대시보드</a>
+      <a class="dp-nav__link" href="#">히스토리</a>
+      <a class="dp-nav__link" href="#">게시판</a>
+    </div>
+    <div class="dp-nav__right">
+      <a class="dp-nav__link active" href="#" style="font-size:12px">관리자</a>
+      <span style="font-size:13px;color:var(--fg-2)">정민준님</span>
+      <div class="dp-avatar">정</div>
+    </div>
+  </nav>
+
+  <div class="dp-page">
+    <!-- ───────────────────── 관리자 페이지 ───────────────────── -->
+    <div class="dp-admin">
+
+      <!-- 좌측 레일 -->
+      <aside class="dp-admin__rail">
+        <div class="dp-admin__rail-title">관리자</div>
+        <div th:each="item : ${railItems}"
+             class="dp-admin__rail-link"
+             th:classappend="${item.active} ? 'active' : ''">
+          <span th:replace="~{fragments :: icon(${item.icon}, 16)}"></span>
+          <span th:text="${item.label}">대시보드</span>
+        </div>
+      </aside>
+
+      <!-- 본문 -->
+      <main class="dp-admin__body">
+
+        <!-- 헤더 -->
+        <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:24px">
+          <div>
+            <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--fg-3)"
+                  th:text="'OVERVIEW · ' + ${period}">OVERVIEW · 2025년 11월</span>
+            <h1 class="dp-h1" style="color:var(--dp-navy-900);margin-top:6px">운영 현황</h1>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="dp-btn dp-btn--secondary" type="button">
+              <span th:replace="~{fragments :: icon('calendar', 16)}"></span>최근 30일
+            </button>
+            <button class="dp-btn dp-btn--secondary" type="button">
+              <span th:replace="~{fragments :: icon('download', 16)}"></span>내보내기
+            </button>
+          </div>
+        </div>
+
+        <!-- KPI 카드 4개 -->
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px">
+          <div class="dp-card" th:each="kpi : ${kpis}">
+            <div style="font-size:12px;color:var(--fg-2);font-weight:600" th:text="${kpi.label}">누적 유저</div>
+            <div style="display:flex;align-items:baseline;gap:6px;margin-top:4px">
+              <span style="font-family:var(--font-display);font-size:28px;font-weight:800;color:var(--dp-navy-900);line-height:1"
+                    th:text="${kpi.value}">6,127</span>
+              <span th:style="|font-size:12px;font-weight:700;color:${kpi.up ? 'var(--success)' : 'var(--danger)'}|"
+                    th:text="${kpi.delta}">+12.4%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 동 랭킹 + 유저 추이 -->
+        <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:16px">
+
+          <!-- 가장 많이 추천된 동 (상위 10) -->
+          <div class="dp-card">
+            <div th:replace="~{fragments :: cardHeader('가장 많이 추천된 동 (상위 10)', '최근 30일 기준')}"></div>
+            <div style="display:grid;gap:8px">
+              <div th:each="dong, stat : ${adminDongs}"
+                   style="display:grid;grid-template-columns:24px 80px 1fr 60px;align-items:center;gap:12px">
+                <span style="font-size:12px;color:var(--fg-3);font-weight:700" th:text="${stat.count}">1</span>
+                <span style="font-size:13px;font-weight:600;color:var(--fg-1)" th:text="${dong.name}">방배동</span>
+                <div style="height:8px;background:var(--dp-gray-100);border-radius:999px;overflow:hidden">
+                  <div th:style="|height:100%;width:${dong.count * 100.0 / maxDongCount}%;background:${stat.index &lt; 3 ? 'var(--primary)' : 'var(--dp-coral-200)'}|"></div>
+                </div>
+                <span style="font-size:12px;color:var(--fg-2);text-align:right;font-family:var(--font-mono)"
+                      th:text="${#numbers.formatInteger(dong.count, 1, 'COMMA')}">1,842</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 유저 추이 — Chart.js 라인 차트 -->
+          <div class="dp-card">
+            <div th:replace="~{fragments :: cardHeader('유저 추이', '월별 가입자')}"></div>
+            <div style="position:relative">
+              <canvas id="userTrendChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- 설문 평균 — 인프라 선호도 -->
+        <div class="dp-card">
+          <div th:replace="~{fragments :: cardHeader('설문 평균 — 인프라 선호도', '응답자 6,127명 기준 분포')}"></div>
+          <div style="display:grid;gap:14px">
+            <div th:each="row : ${surveyRows}"
+                 style="display:grid;grid-template-columns:80px 1fr 200px;align-items:center;gap:16px">
+              <span style="font-size:13px;font-weight:600;color:var(--fg-1)" th:text="${row.label}">지하철</span>
+              <div style="display:flex;height:18px;border-radius:4px;overflow:hidden">
+                <div style="background:var(--primary);display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700"
+                     th:styleappend="';width:' + ${row.high} + '%'"
+                     th:text="${row.high} + '%'">64%</div>
+                <div style="background:var(--dp-coral-200);display:flex;align-items:center;justify-content:center;color:var(--dp-coral-800);font-size:11px;font-weight:700"
+                     th:styleappend="';width:' + ${row.mid} + '%'"
+                     th:text="${row.mid} + '%'">28%</div>
+                <div style="background:var(--dp-gray-100);display:flex;align-items:center;justify-content:center;color:var(--fg-2);font-size:11px;font-weight:700"
+                     th:styleappend="';width:' + ${row.low} + '%'"
+                     th:text="${row.low} + '%'">8%</div>
+              </div>
+              <div style="display:flex;gap:10px;font-size:11px;color:var(--fg-2)">
+                <span><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--primary);margin-right:4px"></span>상</span>
+                <span><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--dp-coral-200);margin-right:4px"></span>중</span>
+                <span><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--dp-gray-100);margin-right:4px"></span>하</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- ───────────────────── 유저 추이 차트 ───────────────────── -->
+  <script th:inline="javascript">
+    /*<![CDATA[*/
+    const USER_TREND = /*[[${userTrend}]]*/ [];
+    const MONTHS = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
+
+    new Chart(document.getElementById('userTrendChart'), {
+      type: 'line',
+      data: {
+        labels: MONTHS,
+        datasets: [{
+          data: USER_TREND,
+          borderColor: '#FF6B4A',
+          backgroundColor: 'rgba(255,107,74,.12)',
+          borderWidth: 2.5,
+          fill: true,
+          tension: 0,
+          pointRadius: 3,
+          pointHoverRadius: 5,
+          pointBackgroundColor: '#FF6B4A',
+          pointBorderColor: '#fff',
+          pointBorderWidth: 1.5
+        }]
+      },
+      options: {
+        maintainAspectRatio: true,
+        aspectRatio: 1.82,
+        layout: { padding: { top: 8 } },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            displayColors: false,
+            backgroundColor: '#0F2540',
+            padding: 8,
+            callbacks: {
+              title: (items) => items[0].label,
+              label: (ctx) => ctx.parsed.y.toLocaleString() + '명'
+            }
+          }
+        },
+        scales: {
+          x: {
+            grid: { display: false },
+            border: { display: false },
+            ticks: { color: '#8C8C8C', font: { size: 9, family: 'Pretendard, sans-serif' } }
+          },
+          y: { display: false, beginAtZero: true }
+        }
+      }
+    });
+    /*]]>*/
+  </script>
+
+</body>
+</html>
