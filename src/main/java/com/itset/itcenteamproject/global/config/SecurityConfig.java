@@ -40,7 +40,10 @@ public class SecurityConfig {
                                 "/api/infra/**",
                                 "/api/dashboard/**",
                                 "/api/history/**",
-                                "/api/dashboards/test"
+                                "/api/dashboards/test",
+                                "/css/**",
+                                "/img/**",
+                                "/admin"
                         ).permitAll()
                         // 2.그 외 API는 인증 필요
                         .anyRequest().authenticated()
