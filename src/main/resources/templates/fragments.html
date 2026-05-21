@@ -1,0 +1,68 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- ============================================================
+     ICON — Lucide 모양 인라인 SVG. 원본 primitives.jsx 의 <Icon> 대체.
+     사용: th:replace="~{fragments :: icon('users', 16)}"
+     ============================================================ -->
+<svg th:fragment="icon(name, size)" xmlns="http://www.w3.org/2000/svg"
+     th:width="${size}" th:height="${size}" viewBox="0 0 24 24"
+     fill="none" stroke="currentColor" stroke-width="2"
+     stroke-linecap="round" stroke-linejoin="round"
+     style="display:inline-block;vertical-align:middle;flex:none"
+     th:switch="${name}">
+  <g th:case="'layout-dashboard'">
+    <rect x="3" y="3" width="7" height="9" rx="1"/>
+    <rect x="14" y="3" width="7" height="5" rx="1"/>
+    <rect x="14" y="12" width="7" height="9" rx="1"/>
+    <rect x="3" y="16" width="7" height="5" rx="1"/>
+  </g>
+  <g th:case="'map-pinned'">
+    <path d="M5 9.7c0 6.3 7 12.3 7 12.3s7-6 7-12.3a7 7 0 1 0-14 0z"/>
+    <circle cx="12" cy="10" r="3"/>
+  </g>
+  <g th:case="'users'">
+    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+    <circle cx="9" cy="7" r="4"/>
+    <path d="M22 21v-2a4 4 0 0 0-3-3.9"/>
+    <path d="M16 3.1a4 4 0 0 1 0 7.8"/>
+  </g>
+  <g th:case="'bar-chart-3'">
+    <path d="M3 3v18h18"/>
+    <path d="M8 17V9"/>
+    <path d="M13 17V5"/>
+    <path d="M18 17v-3"/>
+  </g>
+  <g th:case="'message-square'">
+    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+  </g>
+  <g th:case="'settings'">
+    <circle cx="12" cy="12" r="3"/>
+    <path d="M12 1v3M12 20v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M1 12h3M20 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/>
+  </g>
+  <g th:case="'calendar'">
+    <rect x="3" y="4" width="18" height="18" rx="2"/>
+    <path d="M16 2v4"/>
+    <path d="M8 2v4"/>
+    <path d="M3 10h18"/>
+  </g>
+  <g th:case="'download'">
+    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+    <polyline points="7 10 12 15 17 10"/>
+    <path d="M12 15V3"/>
+  </g>
+</svg>
+
+<!-- ============================================================
+     CARD HEADER — 원본 screens-admin.jsx 의 <CardHeader> 대체.
+     사용: th:replace="~{fragments :: cardHeader('제목', '부제')}"
+     ============================================================ -->
+<div th:fragment="cardHeader(title, sub)"
+     style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px">
+  <h3 style="font-size:15px;font-weight:700;color:var(--dp-navy-900)" th:text="${title}">제목</h3>
+  <span style="font-size:11px;color:var(--fg-3)" th:text="${sub}">부제</span>
+</div>
+
+</body>
+</html>
