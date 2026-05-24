@@ -15,22 +15,15 @@
 </head>
 <body>
 
-  <!-- ───────────────────── 상단 내비게이션 ───────────────────── -->
-  <nav class="dp-nav">
-    <a class="dp-nav__logo" href="#">
-      <img th:src="@{/img/dongne-pick-wordmark.png}" alt="동네픽">
-    </a>
-    <div class="dp-nav__links">
-      <a class="dp-nav__link" href="#">대시보드</a>
-      <a class="dp-nav__link" href="#">히스토리</a>
-      <a class="dp-nav__link" href="#">게시판</a>
-    </div>
-    <div class="dp-nav__right">
-      <a class="dp-nav__link active" href="#" style="font-size:12px">관리자</a>
-      <span style="font-size:13px;color:var(--fg-2)">정민준님</span>
-      <div class="dp-avatar">정</div>
-    </div>
-  </nav>
+  <!-- ───────────────────── 상단 바 (뒤로가기 + 홈) ───────────────────── -->
+  <header class="dp-topbar"
+          style="display:flex;align-items:center;gap:8px;padding:12px 24px;border-bottom:1px solid var(--dp-gray-100);background:#fff">
+    <button type="button" class="dp-btn dp-btn--secondary"
+            onclick="if (document.referrer &amp;&amp; new URL(document.referrer).host === location.host) { history.back(); } else { location.href='/'; }">
+      ← 뒤로
+    </button>
+    <a class="dp-btn dp-btn--secondary" th:href="@{/}">홈</a>
+  </header>
 
   <div class="dp-page">
     <!-- ───────────────────── 관리자 페이지 ───────────────────── -->
