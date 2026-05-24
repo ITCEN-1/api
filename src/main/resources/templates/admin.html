@@ -39,12 +39,6 @@
       <!-- 좌측 레일 -->
       <aside class="dp-admin__rail">
         <div class="dp-admin__rail-title">관리자</div>
-        <div th:each="item : ${railItems}"
-             class="dp-admin__rail-link"
-             th:classappend="${item.active} ? 'active' : ''">
-          <span th:replace="~{fragments :: icon(${item.icon}, 16)}"></span>
-          <span th:text="${item.label}">대시보드</span>
-        </div>
       </aside>
 
       <!-- 본문 -->
@@ -74,8 +68,6 @@
             <div style="display:flex;align-items:baseline;gap:6px;margin-top:4px">
               <span style="font-family:var(--font-display);font-size:28px;font-weight:800;color:var(--dp-navy-900);line-height:1"
                     th:text="${kpi.value}">6,127</span>
-              <span th:style="|font-size:12px;font-weight:700;color:${kpi.up ? 'var(--success)' : 'var(--danger)'}|"
-                    th:text="${kpi.delta}">+12.4%</span>
             </div>
           </div>
         </div>
@@ -102,7 +94,7 @@
 
           <!-- 유저 추이 — Chart.js 라인 차트 -->
           <div class="dp-card">
-            <div th:replace="~{fragments :: cardHeader('유저 추이', '월별 가입자')}"></div>
+            <div th:replace="~{fragments :: cardHeader('유저 추이', '최근 10일 일별 가입자')}"></div>
             <div style="position:relative">
               <canvas id="userTrendChart"></canvas>
             </div>
@@ -115,17 +107,17 @@
           <div style="display:grid;gap:14px">
             <div th:each="row : ${surveyRows}"
                  style="display:grid;grid-template-columns:80px 1fr 200px;align-items:center;gap:16px">
-              <span style="font-size:13px;font-weight:600;color:var(--fg-1)" th:text="${row.label}">지하철</span>
+              <span style="font-size:13px;font-weight:600;color:var(--fg-1)" th:text="${row.infraType}">지하철</span>
               <div style="display:flex;height:18px;border-radius:4px;overflow:hidden">
                 <div style="background:var(--primary);display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700"
-                     th:styleappend="';width:' + ${row.high} + '%'"
-                     th:text="${row.high} + '%'">64%</div>
+                     th:styleappend="';width:' + ${row.highRate} + '%'"
+                     th:text="${row.highRate} + '%'">64%</div>
                 <div style="background:var(--dp-coral-200);display:flex;align-items:center;justify-content:center;color:var(--dp-coral-800);font-size:11px;font-weight:700"
-                     th:styleappend="';width:' + ${row.mid} + '%'"
-                     th:text="${row.mid} + '%'">28%</div>
+                     th:styleappend="';width:' + ${row.middleRate} + '%'"
+                     th:text="${row.middleRate} + '%'">28%</div>
                 <div style="background:var(--dp-gray-100);display:flex;align-items:center;justify-content:center;color:var(--fg-2);font-size:11px;font-weight:700"
-                     th:styleappend="';width:' + ${row.low} + '%'"
-                     th:text="${row.low} + '%'">8%</div>
+                     th:styleappend="';width:' + ${row.lowRate} + '%'"
+                     th:text="${row.lowRate} + '%'">8%</div>
               </div>
               <div style="display:flex;gap:10px;font-size:11px;color:var(--fg-2)">
                 <span><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--primary);margin-right:4px"></span>상</span>
@@ -144,14 +136,15 @@
   <script th:inline="javascript">
     /*<![CDATA[*/
     const USER_TREND = /*[[${userTrend}]]*/ [];
-    const MONTHS = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
+    const TREND_LABELS = USER_TREND.map(p => p.label);
+    const TREND_DATA = USER_TREND.map(p => p.count);
 
     new Chart(document.getElementById('userTrendChart'), {
       type: 'line',
       data: {
-        labels: MONTHS,
+        labels: TREND_LABELS,
         datasets: [{
-          data: USER_TREND,
+          data: TREND_DATA,
           borderColor: '#FF6B4A',
           backgroundColor: 'rgba(255,107,74,.12)',
           borderWidth: 2.5,
