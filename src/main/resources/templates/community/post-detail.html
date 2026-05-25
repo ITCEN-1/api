@@ -3,144 +3,342 @@
 <head>
     <meta charset="UTF-8">
     <title>게시글 상세</title>
+
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 24px;
+        }
+
+        .page {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 12px;
+        }
+
+        .top-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .section {
+            margin-bottom: 32px;
+        }
+
+        .post-meta,
+        .comment-meta {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 12px;
+        }
+
+        .post-content {
+            white-space: pre-wrap;
+            border-top: 1px solid #ddd;
+            border-bottom: 1px solid #ddd;
+            padding: 20px 0;
+            margin: 20px 0;
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .form-row {
+            margin-bottom: 12px;
+        }
+
+        textarea {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 8px;
+            resize: vertical;
+        }
+
+        .comment-form {
+            margin-bottom: 24px;
+        }
+
+        .comment-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .comment-item {
+            border-top: 1px solid #ddd;
+            padding-top: 16px;
+        }
+
+        .comment-content {
+            white-space: pre-wrap;
+            margin: 8px 0 12px;
+        }
+
+        .comment-edit-area {
+            display: none;
+            margin-top: 12px;
+        }
+
+        .empty-message {
+            color: #666;
+            padding: 16px 0;
+        }
+
+        button,
+        a.button-link {
+            padding: 6px 10px;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            border: 1px solid #aaa;
+            background: #fff;
+            font-size: 14px;
+        }
+
+        form.inline-form {
+            display: inline;
+        }
+
+        @media (max-width: 760px) {
+            .top-bar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+        }
+    </style>
 </head>
+
 <body>
+<div class="page">
 
-<!-- 보기 영역 -->
-<div id="viewArea">
-    <h2 th:text="${post.title}">제목</h2>
+    <header class="top-bar">
+        <h2>게시글 상세</h2>
 
-    <div>작성자: <span th:text="${post.writerName}">작성자</span></div>
-    <div>지역:
-        <span th:text="${post.districtName}">구</span>
-        <span th:text="${post.dongName}">동</span>
-    </div>
-    <div>작성일:
-        <span th:text="${#temporals.format(post.createdAt,'yyyy-MM-dd HH:mm')}">작성일</span>
-    </div>
-    <div>조회수: <span th:text="${post.viewCount}">0</span></div>
+        <div class="top-actions">
+            <a class="button-link" th:href="@{/communities/posts}">목록</a>
+            <a class="button-link" th:href="@{/communities/posts/new}">글쓰기</a>
+            <button type="button" id="logoutBtn">로그아웃</button>
+        </div>
+    </header>
 
-    <hr>
-    <pre th:text="${post.content}">본문</pre>
+    <section class="section">
+        <h2 th:text="${post.title}">게시글 제목</h2>
 
-    <!-- 작성자 본인일 때만 수정 버튼 노출 -->
-    <button type="button" id="editBtn" th:if="${editable}">수정</button>
+        <div class="post-meta">
+            <span>
+                작성자:
+                <strong th:text="${post.writerName}">작성자</strong>
+            </span>
 
-    <form th:if="${editable}"
-          th:action="@{/communities/posts/{postId}/delete(postId=${post.postId})}"
-          method="post"
-          style="display:inline;"
-          onsubmit="return confirm('정말 삭제하시겠습니까?');">
-        <button type="submit">삭제</button>
-    </form>
+            <span>
+                지역:
+                <span th:text="${post.districtName}">구</span>
+                <span th:text="${post.dongName}">동</span>
+            </span>
 
-    <a href="/communities/posts">목록</a>
-</div>
+            <span>
+                작성일:
+                <span th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm')}">
+                    2026-05-25 10:00
+                </span>
+            </span>
 
-<!-- 작성자 본인일 때만 수정 폼 자체를 렌더링 -->
-<div id="editArea" style="display:none;" th:if="${editable}">
-    <h2>게시글 수정</h2>
-
-    <form th:action="@{/communities/posts/{postId}/edit(postId=${post.postId})}"
-          method="post">
-
-        <div>
-            <label>구 선택</label><br/>
-            <select id="districtSelect" name="districtName">
-                <option value="">구를 선택하세요</option>
-                <option th:each="dist : ${districts}"
-                        th:value="${dist}"
-                        th:text="${dist}"
-                        th:selected="${dist == post.districtName}">
-                </option>
-            </select>
+            <span>
+                조회수:
+                <span th:text="${post.viewCount}">0</span>
+            </span>
         </div>
 
-        <div>
-            <label>동 선택</label><br/>
-            <select id="dongSelect" name="dongCode" required>
-                <option value="">동을 선택하세요</option>
-                <option th:each="d : ${dongs}"
-                        th:value="${d.dongCode}"
-                        th:text="${d.dongName}"
-                        th:selected="${d.dongCode == post.dongCode}">
-                </option>
-            </select>
+        <div class="post-content" th:text="${post.content}">
+            게시글 본문
         </div>
 
-        <div>
-            <label>제목</label><br/>
-            <input type="text" name="title" th:value="${post.title}" maxlength="100" required/>
+        <div class="actions">
+            <a class="button-link"
+               th:if="${editable}"
+               th:href="@{/communities/posts/{postId}/edit(postId=${post.postId})}">
+                수정
+            </a>
+
+            <form th:if="${editable}"
+                  class="inline-form"
+                  th:action="@{/communities/posts/{postId}/delete(postId=${post.postId})}"
+                  method="post"
+                  onsubmit="return confirm('게시글을 삭제하시겠습니까?');">
+                <button type="submit">삭제</button>
+            </form>
+        </div>
+    </section>
+
+    <section class="section">
+        <h3>댓글</h3>
+
+        <form class="comment-form"
+              th:action="@{/communities/posts/{postId}/comments(postId=${post.postId})}"
+              method="post">
+
+            <div class="form-row">
+                <textarea name="content"
+                          rows="3"
+                          maxlength="500"
+                          required
+                          placeholder="댓글을 입력하세요"></textarea>
+            </div>
+
+            <div class="actions">
+                <button type="submit">댓글 작성</button>
+            </div>
+        </form>
+
+        <div class="empty-message" th:if="${#lists.isEmpty(comments)}">
+            아직 댓글이 없습니다.
         </div>
 
-        <div>
-            <label>본문</label><br/>
-            <textarea name="content" rows="8" cols="80" required th:text="${post.content}"></textarea>
-        </div>
+        <div class="comment-list" th:if="${!#lists.isEmpty(comments)}">
+            <article class="comment-item"
+                     th:each="comment : ${comments}"
+                     th:data-comment-id="${comment.commentId}">
 
-        <button type="submit">수정 완료</button>
-        <button type="button" id="cancelEditBtn">취소</button>
-    </form>
+                <div class="comment-view-area">
+                    <div class="comment-meta">
+                        <span>
+                            작성자:
+                            <strong th:text="${comment.writerName}">작성자</strong>
+                        </span>
+
+                        <span>
+                            작성일:
+                            <span th:text="${#temporals.format(comment.createdAt, 'yyyy-MM-dd HH:mm')}">
+                                2026-05-25 10:00
+                            </span>
+                        </span>
+                    </div>
+
+                    <div class="comment-content" th:text="${comment.content}">
+                        댓글 내용
+                    </div>
+
+                    <div class="actions"
+                         th:if="${loginUserId != null and loginUserId == comment.writerId}">
+                        <button type="button"
+                                class="comment-edit-btn"
+                                th:data-comment-id="${comment.commentId}">
+                            수정
+                        </button>
+
+                        <form class="inline-form"
+                              th:action="@{/communities/posts/{postId}/comments/{commentId}/delete(
+                                  postId=${post.postId},
+                                  commentId=${comment.commentId}
+                              )}"
+                              method="post"
+                              onsubmit="return confirm('댓글을 삭제하시겠습니까?');">
+                            <button type="submit">삭제</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="comment-edit-area"
+                     th:id="'commentEditArea-' + ${comment.commentId}">
+
+                    <form th:action="@{/communities/posts/{postId}/comments/{commentId}/edit(
+                              postId=${post.postId},
+                              commentId=${comment.commentId}
+                          )}"
+                          method="post">
+
+                        <div class="form-row">
+                            <textarea name="content"
+                                      rows="3"
+                                      maxlength="500"
+                                      required
+                                      th:text="${comment.content}"></textarea>
+                        </div>
+
+                        <div class="actions">
+                            <button type="submit">수정 완료</button>
+
+                            <button type="button"
+                                    class="comment-edit-cancel-btn"
+                                    th:data-comment-id="${comment.commentId}">
+                                취소
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </article>
+        </div>
+    </section>
 </div>
 
 <script>
-    const viewArea = document.getElementById('viewArea');
-    const editArea = document.getElementById('editArea');
-    const editBtn = document.getElementById('editBtn');
-    const cancelEditBtn = document.getElementById('cancelEditBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
 
-    // editable=false이면 editBtn/editArea가 렌더링되지 않으므로 null 체크 필요
-    if (editBtn && editArea) {
-        editBtn.addEventListener('click', () => {
-            viewArea.style.display = 'none';
-            editArea.style.display = 'block';
-        });
-    }
-
-    if (cancelEditBtn && editArea) {
-        cancelEditBtn.addEventListener('click', () => {
-            editArea.style.display = 'none';
-            viewArea.style.display = 'block';
-        });
-    }
-
-    const districtSelect = document.getElementById('districtSelect');
-    const dongSelect = document.getElementById('dongSelect');
-
-    // 수정 폼이 없는 사용자에게는 districtSelect/dongSelect도 없으므로 null 체크
-    if (districtSelect && dongSelect) {
-        function resetDong() {
-            dongSelect.innerHTML = '<option value="">동을 선택하세요</option>';
-        }
-
-        districtSelect.addEventListener('change', async () => {
-            const district = districtSelect.value;
-            resetDong();
-
-            if (!district) return;
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', async () => {
+            if (!confirm('로그아웃하시겠습니까?')) {
+                return;
+            }
 
             try {
-                const res = await fetch(`/communities/dongs?district=${encodeURIComponent(district)}`);
-                if (!res.ok) {
-                    alert('동 목록을 불러오지 못했습니다.');
+                const response = await fetch('/api/auth/logout', {
+                    method: 'POST'
+                });
+
+                if (response.ok) {
+                    location.href = '/auth/login';
                     return;
                 }
 
-                const body = await res.json();
-                const dongs = Array.isArray(body) ? body : (body.content ?? []);
-
-                dongs.forEach(d => {
-                    const option = document.createElement('option');
-                    option.value = d.dongCode;
-                    option.textContent = d.dongName;
-                    dongSelect.appendChild(option);
-                });
-            } catch (e) {
-                console.error(e);
-                alert('동 목록을 불러오지 못했습니다.');
+                alert('로그아웃에 실패했습니다.');
+            } catch (error) {
+                console.error(error);
+                alert('로그아웃에 실패했습니다.');
             }
         });
     }
+
+    document.querySelectorAll('.comment-edit-btn').forEach((button) => {
+        button.addEventListener('click', () => {
+            const commentId = button.dataset.commentId;
+            const commentItem = button.closest('.comment-item');
+            const viewArea = commentItem.querySelector('.comment-view-area');
+            const editArea = document.getElementById(`commentEditArea-${commentId}`);
+
+            viewArea.style.display = 'none';
+            editArea.style.display = 'block';
+        });
+    });
+
+    document.querySelectorAll('.comment-edit-cancel-btn').forEach((button) => {
+        button.addEventListener('click', () => {
+            const commentId = button.dataset.commentId;
+            const commentItem = button.closest('.comment-item');
+            const viewArea = commentItem.querySelector('.comment-view-area');
+            const editArea = document.getElementById(`commentEditArea-${commentId}`);
+
+            editArea.style.display = 'none';
+            viewArea.style.display = 'block';
+        });
+    });
 </script>
 </body>
 </html>
