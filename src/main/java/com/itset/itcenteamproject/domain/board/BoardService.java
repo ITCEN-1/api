@@ -38,6 +38,32 @@ public class BoardService {
         return boardRepository.save(board).getId();
     }
 
+    // 게시글 수정 화면에 기존 게시글 값을 채워 넣기 위한 메서드
+    @Transactional(readOnly = true)
+    public BoardUpdateRequest getPostForEdit(Long userId, Long postId) {
+        // 수정할 게시글을 조회한다.
+        Board board = boardRepository.findById(postId)
+                .orElseThrow(() -> new CustomException(ErrorCode.BAD_REQUEST));
+
+        // 현재 로그인한 사용자와 게시글 작성자가 다르면 수정할 수 없다.
+        if (!board.getUser().getId().equals(userId)) {
+            throw new CustomException(ErrorCode.BAD_REQUEST);
+        }
+
+        // 게시글에 저장된 dongCode로 동 정보를 조회한다.
+        DongLocation dong = dongLocationRepository.findById(board.getDongCode())
+                .orElseThrow(() -> new CustomException(ErrorCode.INVALID_DONG_CODE));
+
+        // 수정 화면에 채워 넣을 form DTO를 만든다.
+        BoardUpdateRequest form = new BoardUpdateRequest();
+        form.setDistrictName(dong.getDistrictName());
+        form.setDongCode(dong.getDongCode());
+        form.setTitle(board.getTitle());
+        form.setContent(board.getContent());
+
+        return form;
+    }
+
     //수정 요청을 받아 실제 게시글 값을 변경
     @Transactional
     public void updatePost(Long userId, Long postId, BoardUpdateRequest req) {

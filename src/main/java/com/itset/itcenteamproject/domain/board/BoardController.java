@@ -111,6 +111,23 @@ public class BoardController {
         return "community/post-detail";
     }
 
+    // 게시글 수정 화면 보여줌
+    @GetMapping("/posts/{postId}/edit")
+    public String editPostForm(
+            @PathVariable Long postId,
+            HttpSession session,
+            Model model
+    ) {
+        Long userId = sessionUserService.getLoginUserId(session);
+        BoardUpdateRequest form = boardService.getPostForEdit(userId, postId);
+        model.addAttribute("districts", boardService.getDistricts());
+        model.addAttribute("dongs", boardService.getDongsByDistrict(form.getDistrictName()));
+        model.addAttribute("form", form);
+        model.addAttribute("postId", postId);
+
+        return "community/post-edit";
+    }
+
     //수정 저장
     @PostMapping("/posts/{postId}/edit")
     public String updatePost(
