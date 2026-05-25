@@ -27,9 +27,6 @@ import static com.itset.itcenteamproject.exception.ErrorCode.*;
 @Slf4j
 public class CommuteScoreCalculator {
 
-    private static final int BATCH_SIZE = 3;
-    private static final long BATCH_DELAY_MS = 500L;
-
     private final LocationService locationUtil;
     private final OdsayClient odsayClient;
 
@@ -44,21 +41,23 @@ public class CommuteScoreCalculator {
     public List<RecommendedDong> calculate(Coordinate workplaceCoordinate, List<RecommendedDong> recommendedDongList){
         List<RecommendedDong> result = new ArrayList<>(recommendedDongList.size());
 
-        for (int i = 0; i < recommendedDongList.size(); i += BATCH_SIZE) {
-            List<RecommendedDong> batch = recommendedDongList.subList(
-                    i, Math.min(i + BATCH_SIZE, recommendedDongList.size()));
+        for (int i = 0; i < recommendedDongList.size(); i += 3) {
+            //리스트 3개 묶음으로 짜르기
+            List<RecommendedDong> batch = recommendedDongList.subList(i, Math.min(i + 3, recommendedDongList.size()));//마지막 줄에서 10을 넘어가지 않도록
 
             List<CompletableFuture<RecommendedDong>> futures = batch.stream()
                     .map(rd -> CompletableFuture.supplyAsync(() -> calculateOne(rd, workplaceCoordinate)))
                     .toList();
 
+            // 정상적으로 futures 가 채워졌다면 (자바스크립트 Promise 랑 비슷하게 동작함)
             futures.stream()
                     .map(CompletableFuture::join)
                     .forEach(result::add);
 
-            if (i + BATCH_SIZE < recommendedDongList.size()) {
+            //한 묶음에 대한 호출이 끝난 경우 0.5초 대기
+            if (i + 3 < recommendedDongList.size()) {
                 try {
-                    Thread.sleep(BATCH_DELAY_MS);
+                    Thread.sleep(500);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                     throw new CustomException(ODSAY_API_ERROR);
