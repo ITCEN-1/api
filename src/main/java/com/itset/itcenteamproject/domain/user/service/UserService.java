@@ -28,25 +28,34 @@ public class UserService {
         User user = User.builder()
                 .loginId(dto.getLoginId())
                 .password(passwordEncoder.encode(dto.getPassword()))
-                .nickname(dto.getNickname())
+                .nickname(dto.getNickname().trim())
                 .build();
         userRepository.save(user);
     }
 
     //회원가입 버튼 눌렀을 때(회원가입 직전) 검사
     private void validateSignup(SignupRequestDTO dto) {
-        //아이디 형식 검사
-        if (!dto.getLoginId().matches(ID_REGEX)) {
+        // 아이디 형식을 검사한다.
+        if (dto.getLoginId() == null || !dto.getLoginId().matches(ID_REGEX)) {
             throw new CustomException(ErrorCode.INVALID_LOGIN_ID);
         }
-        //아이디 중복 검사, true면 예외
+
+        // 닉네임 입력 여부를 검사한다.
+        if (dto.getNickname() == null || dto.getNickname().isBlank()) {
+            throw new CustomException(ErrorCode.INVALID_INPUT_VALUE);
+        }
+
+        // 로그인 아이디 중복을 검사한다.
         if (userRepository.existsByLoginId(dto.getLoginId())) {
             throw new CustomException(ErrorCode.DUPLICATE_LOGIN_ID);
         }
-        //닉네임 중복 검사, true면 예외
-        /*if (userRepository.existsByNickname(dto.getNickname())) {
+
+        // 닉네임은 앞뒤 공백을 제거한 값으로 중복 검사한다.
+        String nickname = dto.getNickname().trim();
+
+        if (userRepository.existsByNickname(nickname)) {
             throw new CustomException(ErrorCode.DUPLICATE_NICKNAME);
-        }*/
+        }
     }
 
     //로그인
