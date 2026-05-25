@@ -1,6 +1,7 @@
 package com.itset.itcenteamproject.domain.board;
 
 import com.itset.itcenteamproject.domain.board.dto.*;
+import com.itset.itcenteamproject.domain.comment.CommentRepository;
 import com.itset.itcenteamproject.domain.infra.entity.DongLocation;
 import com.itset.itcenteamproject.domain.infra.repository.DongLocationRepository;
 import com.itset.itcenteamproject.domain.user.*;
@@ -19,7 +20,7 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
     private final DongLocationRepository dongLocationRepository;
-
+    private final CommentRepository commentRepository;
     @Transactional(readOnly = true)
     public Page<BoardListItemDTO> getPosts(BoardSearchCondition c, int page) {
         return boardRepository.searchPosts(c.getTitleKeyword(), c.getDistrictName(), c.getDongCode(), PageRequest.of(page, 10));
@@ -103,7 +104,7 @@ public class BoardService {
         }
 
         // 3) 게시글 삭제
-        // 현재 댓글 기능이 없으므로 실제 delete로 처리
+        commentRepository.deleteByBoardId(postId);
         boardRepository.delete(board);
     }
 
