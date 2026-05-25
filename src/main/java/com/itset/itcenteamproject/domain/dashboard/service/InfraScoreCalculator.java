@@ -2,6 +2,7 @@ package com.itset.itcenteamproject.domain.dashboard.service;
 
 import com.itset.itcenteamproject.domain.dashboard.model.RecommendedDong;
 import com.itset.itcenteamproject.domain.infra.entity.DongLocation;
+import com.itset.itcenteamproject.domain.infra.repository.DongCountDTO;
 import com.itset.itcenteamproject.domain.infra.repository.DongLocationRepository;
 import com.itset.itcenteamproject.domain.infra.repository.HospitalRepository;
 import com.itset.itcenteamproject.domain.infra.repository.LargeStoreRepository;
@@ -15,6 +16,8 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -43,6 +46,12 @@ public class InfraScoreCalculator {
         //후보 동 코드들에 해당하는 동 정보(이름, 좌표, 면적) 조회
         List<DongLocation> candidates = dongLocationRepository.findByDongCodeIn(filteredDongCodes);
 
+        //인프라별 count를 한 번에 집계
+        Map<Integer, Long> subwayCountMap = toCountMap(subwayRepository.countByDongCodeIn(filteredDongCodes));
+        Map<Integer, Long> hospitalCountMap = toCountMap(hospitalRepository.countByDongCodeIn(filteredDongCodes));
+        Map<Integer, Long> libraryCountMap = toCountMap(libraryRepository.countByDongCodeIn(filteredDongCodes));
+        Map<Integer, Long> largeStoreCountMap = toCountMap(largeStoreRepository.countByDongCodeIn(filteredDongCodes));
+
         //중간 계산 저장용 리스트. Row에는 동 1개에 대한 count/density 묶음이 들어감
         List<Row> rows = new ArrayList<>();
         // 1) 동별 count + density(밀도) 계산
@@ -50,11 +59,11 @@ public class InfraScoreCalculator {
             //면적이 null, 0이면 1.0으로(0나누기 에러 방지)
             double area = (dong.getDongArea() == null || dong.getDongArea() <= 0.0) ? 1.0 : dong.getDongArea();
 
-            //해당 동의 인프라 실제 개수 조회
-            long subwayCount = subwayRepository.countByDongCode(dong.getDongCode());
-            long hospitalCount = hospitalRepository.countByDongCode(dong.getDongCode());
-            long libraryCount = libraryRepository.countByDongCode(dong.getDongCode());
-            long largeStoreCount = largeStoreRepository.countByDongCode(dong.getDongCode());
+            //GROUP BY 결과에 없는 동코드는 기본값 0
+            long subwayCount = subwayCountMap.getOrDefault(dong.getDongCode(), 0L);
+            long hospitalCount = hospitalCountMap.getOrDefault(dong.getDongCode(), 0L);
+            long libraryCount = libraryCountMap.getOrDefault(dong.getDongCode(), 0L);
+            long largeStoreCount = largeStoreCountMap.getOrDefault(dong.getDongCode(), 0L);
 
             //밀도 계산(개수/면적)
             rows.add(new Row(
@@ -104,6 +113,11 @@ public class InfraScoreCalculator {
     private double normalizeTo25(double value, double max) {
         if (max <= 0.0) return 0.0;
         return (value / max) * 25.0;
+    }
+
+    //통 조회 결과에서 동 코드에 해당하는 카운트 수 찾기
+    private Map<Integer, Long> toCountMap(List<DongCountDTO> list) {
+        return list.stream().collect(Collectors.toMap(DongCountDTO::dongCode, DongCountDTO::cnt));
     }
 
     private static class Row {
