@@ -91,9 +91,10 @@ public class BoardService {
         return boardRepository.findDetailById(postId).orElseThrow(() -> new CustomException(ErrorCode.BAD_REQUEST));
     }
 
+    // 게시글 검색/작성 화면에서 사용할 구 목록을 조회
     @Transactional(readOnly = true)
     public List<String> getDistricts() {
-        return dongLocationRepository.findAll().stream().map(DongLocation::getDistrictName).distinct().sorted().toList();
+        return dongLocationRepository.findAllDistrictNames();
     }
 
     @Transactional(readOnly = true)
