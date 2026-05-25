@@ -10,7 +10,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StopWatch;
 import java.util.List;
 
 import static com.itset.itcenteamproject.exception.ErrorCode.NOT_FOUND_SURVEY;
@@ -31,53 +30,36 @@ public class CalculatorOrchestrator {
     //현재 유저의 가장 최근 설문 내용을 기반으로 점수를 산정
     @Transactional
     public List<RecommendedDong> getRankingListFromCurrentSurvey(Long userId){
-        StopWatch sw = new StopWatch("getRankingListFromCurrentSurvey");
 
         // 유저 Id 정보에서 설문 정보 가져오기
-        sw.start("findSurvey");
         Survey survey = surveyRepository.findTopByUserIdOrderByCreatedAtDesc(userId).orElseThrow(()-> new CustomException(NOT_FOUND_SURVEY));
-        sw.stop();
 
         // surveySelectedDistrictList ['마포구','송파구',...] -> 동 리스트로 변환 with DongLocationRepository
-        sw.start("getDongCodesBySurvey");
         List<Integer> filteredDongCodes= locationService.getDongCodesBySurvey(survey);
-        sw.stop();
         log.info("[Perf] filteredDongCodes size={}", filteredDongCodes.size());
 
         //점수 산정
 
         //1. 인프라 점수 산정 100 -> 100
-        sw.start("infraScore");
         List<RecommendedDong> infraStepRecommendedDongList = infraScoreCalculator.calculateTopDongs(survey,filteredDongCodes);
-        sw.stop();
 
         //2. 인프라 점수에 집값 점수 추가 100 -> 10
-        sw.start("houseScore");
         List<RecommendedDong> houseStepRecommendedDongList = houseScoreCalculator.calcHousePriceScore(survey,infraStepRecommendedDongList);
-        sw.stop();
 
         //3(optional). WorkplaceAddress 가 있다면 인프라+집값 점수로 산정된 상위 10개 동에 통근시간 점수 추가 10->10
         if(survey.getWorkplaceAddress()!=null){
-            sw.start("kakaoGeocoding");
             Coordinate workplaceCoordinate=kakaoGeocodingClient.addressToCoordinate(survey.getWorkplaceAddress());
-            sw.stop();
 
-            sw.start("commuteScore");
             List<RecommendedDong> commuteStepRecommendedDongList = commuteScoreCalculator.calculate(workplaceCoordinate,houseStepRecommendedDongList);
-            sw.stop();
 
-            sw.start("scoreDongList");
             List<RecommendedDong> result = scoreDongList(commuteStepRecommendedDongList);
-            sw.stop();
-            log.info("[Perf] {}", sw.prettyPrint());
+
             return result;
         }
 
         //최종 결과에 순위 부여
-        sw.start("scoreDongList");
         List<RecommendedDong> result = scoreDongList(houseStepRecommendedDongList);
-        sw.stop();
-        log.info("[Perf] {}", sw.prettyPrint());
+
         return result;
     }
 
