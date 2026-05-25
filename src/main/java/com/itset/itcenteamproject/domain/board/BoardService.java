@@ -38,28 +38,6 @@ public class BoardService {
         return boardRepository.save(board).getId();
     }
 
-    //수정 화면에 기존 글 값을 채워 넣기 위해
-    @Transactional(readOnly = true)
-    public BoardUpdateRequest getPostForEdit(Long userId, Long postId) {
-        Board board = boardRepository.findById(postId)
-                .orElseThrow(() -> new CustomException(ErrorCode.BAD_REQUEST));
-
-        if (!board.getUser().getId().equals(userId)) {
-            throw new CustomException(ErrorCode.BAD_REQUEST);
-        }
-
-        DongLocation dong = dongLocationRepository.findById(board.getDongCode())
-                .orElseThrow(() -> new CustomException(ErrorCode.INVALID_DONG_CODE));
-
-        BoardUpdateRequest form = new BoardUpdateRequest();
-        form.setDistrictName(dong.getDistrictName());
-        form.setDongCode(dong.getDongCode());
-        form.setTitle(board.getTitle());
-        form.setContent(board.getContent());
-
-        return form;
-    }
-
     //수정 요청을 받아 실제 게시글 값을 변경
     @Transactional
     public void updatePost(Long userId, Long postId, BoardUpdateRequest req) {
@@ -82,6 +60,25 @@ public class BoardService {
                 req.getTitle().trim(),
                 req.getContent().trim()
         );
+    }
+
+    // 게시글 삭제
+    @Transactional
+    public void deletePost(Long userId, Long postId) {
+        // 1) 삭제할 게시글 조회
+        Board board = boardRepository.findById(postId)
+                .orElseThrow(() -> new CustomException(ErrorCode.BAD_REQUEST));
+
+        // 2) 작성자 본인인지 확인
+        // board.getUser().getId() = 게시글 작성자 ID
+        // userId = 현재 로그인한 사용자 ID
+        if (!board.getUser().getId().equals(userId)) {
+            throw new CustomException(ErrorCode.BAD_REQUEST);
+        }
+
+        // 3) 게시글 삭제
+        // 현재 댓글 기능이 없으므로 실제 delete로 처리
+        boardRepository.delete(board);
     }
 
     @Transactional
