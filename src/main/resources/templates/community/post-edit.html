@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>게시글 수정</title>
+
+    <style>
+        body { font-family: sans-serif; margin: 24px; }
+        .page { max-width: 900px; margin: 0 auto; }
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding-bottom: 12px; border-bottom: 1px solid #ddd; }
+        .top-actions, .actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+        .section { margin-bottom: 32px; }
+        .form-row { margin-bottom: 12px; }
+        .location-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        input[type="text"], textarea, select { width: 100%; box-sizing: border-box; padding: 8px; }
+        textarea { resize: vertical; }
+        button, a.button-link { padding: 6px 10px; cursor: pointer; text-decoration: none; color: inherit; border: 1px solid #aaa; background: #fff; font-size: 14px; }
+
+        @media (max-width: 760px) {
+            .top-bar { flex-direction: column; align-items: flex-start; gap: 12px; }
+            .location-row { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+
+<body>
+<div class="page">
+
+    <header class="top-bar">
+        <h2>게시글 수정</h2>
+
+        <div class="top-actions">
+            <a class="button-link" th:href="@{/communities/posts}">목록</a>
+            <a class="button-link" th:href="@{/communities/posts/new}">글쓰기</a>
+            <button type="button" id="logoutBtn">로그아웃</button>
+        </div>
+    </header>
+
+    <section class="section">
+        <form th:action="@{/communities/posts/{postId}/edit(postId=${postId})}"
+              th:object="${form}"
+              method="post">
+
+            <div class="location-row">
+                <div class="form-row">
+                    <label for="districtSelect">구 선택</label>
+                    <select id="districtSelect" th:field="*{districtName}">
+                        <option value="">구를 선택하세요</option>
+                        <option th:each="dist : ${districts}"
+                                th:value="${dist}"
+                                th:text="${dist}"
+                                th:selected="${dist == form.districtName}">
+                            구
+                        </option>
+                    </select>
+                </div>
+
+                <div class="form-row">
+                    <label for="dongSelect">동 선택</label>
+                    <select id="dongSelect" th:field="*{dongCode}" required>
+                        <option value="">동을 선택하세요</option>
+                        <option th:each="d : ${dongs}"
+                                th:value="${d.dongCode}"
+                                th:text="${d.dongName}"
+                                th:selected="${d.dongCode == form.dongCode}">
+                            동
+                        </option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <label for="title">제목</label>
+                <input id="title"
+                       type="text"
+                       th:field="*{title}"
+                       maxlength="100"
+                       required>
+            </div>
+
+            <div class="form-row">
+                <label for="content">본문</label>
+                <textarea id="content"
+                          th:field="*{content}"
+                          rows="10"
+                          required></textarea>
+            </div>
+
+            <div class="actions">
+                <button type="submit">수정 완료</button>
+                <a class="button-link"
+                   th:href="@{/communities/posts/{postId}(postId=${postId})}">
+                    취소
+                </a>
+            </div>
+        </form>
+    </section>
+</div>
+
+<script>
+    // 로그아웃 버튼 처리다.
+    document.getElementById('logoutBtn')?.addEventListener('click', async () => {
+        if (!confirm('로그아웃하시겠습니까?')) {
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/auth/logout', {
+                method: 'POST'
+            });
+
+            if (response.ok) {
+                location.href = '/auth/login';
+                return;
+            }
+
+            alert('로그아웃에 실패했습니다.');
+        } catch (error) {
+            console.error(error);
+            alert('로그아웃에 실패했습니다.');
+        }
+    });
+
+    const districtSelect = document.getElementById('districtSelect');
+    const dongSelect = document.getElementById('dongSelect');
+
+    function resetDongOptions() {
+        dongSelect.innerHTML = '<option value="">동을 선택하세요</option>';
+    }
+
+    // 구를 변경하면 해당 구의 동 목록을 다시 가져온다.
+    if (districtSelect && dongSelect) {
+        districtSelect.addEventListener('change', async () => {
+            resetDongOptions();
+
+            const district = districtSelect.value;
+
+            if (!district) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/communities/dongs?district=${encodeURIComponent(district)}`);
+
+                if (!response.ok) {
+                    alert('동 목록을 불러오지 못했습니다.');
+                    return;
+                }
+
+                const body = await response.json();
+
+                // GlobalResponseWrapper 때문에 응답이 ApiResponse로 감싸질 수 있다.
+                // 순수 배열이면 body를 쓰고, 감싸진 응답이면 body.content를 사용한다.
+                const dongs = Array.isArray(body) ? body : body.content;
+
+                if (!Array.isArray(dongs)) {
+                    alert('동 목록 응답 형식이 올바르지 않습니다.');
+                    return;
+                }
+
+                dongs.forEach((dong) => {
+                    const option = document.createElement('option');
+                    option.value = dong.dongCode;
+                    option.textContent = dong.dongName;
+                    dongSelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error(error);
+                alert('동 목록을 불러오지 못했습니다.');
+            }
+        });
+    }
+</script>
+</body>
+</html>
