@@ -114,4 +114,25 @@ public class BoardController {
         redirectAttributes.addFlashAttribute("successMessage", "게시글이 수정되었습니다.");
         return "redirect:/communities/posts/" + postId;
     }
+
+
+    //게시글 삭제
+    @PostMapping("/posts/{postId}/delete")
+    public String deletePost(
+            @PathVariable Long postId,
+            HttpSession session,
+            RedirectAttributes redirectAttributes
+    ) {
+        // 1) 현재 로그인한 사용자 ID 조회
+        // 로그인하지 않은 사용자는 SessionUserService에서 SESSION_EXPIRED 예외 발생
+        Long userId = sessionUserService.getLoginUserId(session);
+
+        // 2) 삭제 처리
+        // 실제 권한 검사는 service에서 다시 수행
+        boardService.deletePost(userId, postId);
+
+        // 3) 삭제 후 목록으로 이동
+        redirectAttributes.addFlashAttribute("successMessage", "게시글이 삭제되었습니다.");
+        return "redirect:/communities/posts";
+    }
 }

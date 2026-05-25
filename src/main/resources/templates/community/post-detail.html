@@ -25,6 +25,15 @@
 
     <!-- 작성자 본인일 때만 수정 버튼 노출 -->
     <button type="button" id="editBtn" th:if="${editable}">수정</button>
+
+    <form th:if="${editable}"
+          th:action="@{/communities/posts/{postId}/delete(postId=${post.postId})}"
+          method="post"
+          style="display:inline;"
+          onsubmit="return confirm('정말 삭제하시겠습니까?');">
+        <button type="submit">삭제</button>
+    </form>
+
     <a href="/communities/posts">목록</a>
 </div>
 
