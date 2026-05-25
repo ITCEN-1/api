@@ -30,4 +30,6 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
         order by c.createdAt asc
     """)
     List<CommentListItem> findCommentsByBoardId(@Param("boardId") Long boardId);
+
+    void deleteByBoardId(Long boardId);
 }
