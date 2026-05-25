@@ -1,6 +1,8 @@
 package com.itset.itcenteamproject.domain.board;
 
 import com.itset.itcenteamproject.domain.board.dto.*;
+import com.itset.itcenteamproject.domain.comment.CommentService;
+import com.itset.itcenteamproject.domain.comment.dto.CommentListItem;
 import com.itset.itcenteamproject.domain.user.service.SessionUserService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +20,9 @@ import java.util.List;
 public class BoardController {
     private final BoardService boardService;
     private final SessionUserService sessionUserService;
+    private final CommentService commentService;
 
+    // 게시글 조회, 검색
     @GetMapping("/posts")
     public String getPostList(@RequestParam(required = false) String titleKeyword, @RequestParam(required = false) String district,
                               @RequestParam(required = false) Integer dongCode, @RequestParam(defaultValue = "0") int page, Model model) {
@@ -57,12 +61,14 @@ public class BoardController {
         return "community/post-form";
     }
 
+    // 동 추출
     @GetMapping("/dongs")
     @ResponseBody
     public List<BoardDongOptionDTO> getDongsByDistrict(@RequestParam String district) {
         return boardService.getDongsByDistrict(district);
     }
 
+    // 게시글 등록
     @PostMapping("/posts")
     public String createPost(
             @ModelAttribute("form") BoardCreateRequest form,
@@ -80,6 +86,7 @@ public class BoardController {
     }
 
 
+    // 게시글 상세보기 + 댓글
     @GetMapping("/posts/{postId}")
     public String getPostDetail(
             @PathVariable Long postId,
@@ -91,10 +98,15 @@ public class BoardController {
         Long loginUserId = (Long) session.getAttribute("loginUser");
         boolean editable = loginUserId != null && loginUserId.equals(post.getWriterId());
 
+        List<CommentListItem> comments = commentService.getComments(postId);
+
         model.addAttribute("post", post);
         model.addAttribute("editable", editable);
         model.addAttribute("districts", boardService.getDistricts());
         model.addAttribute("dongs", boardService.getDongsByDistrict(post.getDistrictName()));
+
+        model.addAttribute("comments", comments);
+        model.addAttribute("loginUserId", loginUserId);
 
         return "community/post-detail";
     }
