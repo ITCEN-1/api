@@ -14,11 +14,6 @@ spring:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.MySQLDialect
-        generate_statistics: true
-        session:
-          events:
-            log:
-              LOG_QUERIES_SLOWER_THAN_MS: 50
 
 springdoc:
   api-docs:
@@ -32,10 +27,3 @@ kakao:
 
 odsay:
   rest-api-keys: ${ODSAY_REST_API_KEY_LIST}
-
-logging:
-  level:
-    com.itset.itcenteamproject.domain.dashboard.service.CommuteScoreCalculator: DEBUG
-    com.itset.itcenteamproject.domain.dashboard.service.CalculatorOrchestrator: INFO
-    org.hibernate.stat: DEBUG
-    org.hibernate.SQL_SLOW: INFO
