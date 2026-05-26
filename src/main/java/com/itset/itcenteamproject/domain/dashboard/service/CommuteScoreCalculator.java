@@ -63,13 +63,6 @@ public class CommuteScoreCalculator {
                     .latitude(rd.getLatitude())
                     .message(newMessage)
                     .build());
-
-            // 429 에러를 막기 위해 각 요청마다 대기를 준다
-            try {
-                Thread.sleep(50); //300ms 대기
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
         }
         return newRecommendedDong;
     }
