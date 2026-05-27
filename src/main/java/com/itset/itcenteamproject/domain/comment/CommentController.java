@@ -37,11 +37,7 @@ public class CommentController {
         commentService.createComment(userId, postId, form);
 
         if (isAjax(request)) {
-            model.addAttribute("comments", commentService.getComments(postId));
-            model.addAttribute("loginUserId", userId);
-            model.addAttribute("postId", postId);
-
-            return "community/post-detail :: commentSection";
+            return renderCommentSection(postId, userId, model);
         }
 
         redirectAttributes.addFlashAttribute("successMessage", "댓글이 작성되었습니다.");
@@ -64,11 +60,7 @@ public class CommentController {
         commentService.updateComment(userId, commentId, form);
 
         if (isAjax(request)) {
-            model.addAttribute("comments", commentService.getComments(postId));
-            model.addAttribute("loginUserId", userId);
-            model.addAttribute("postId", postId);
-
-            return "community/post-detail :: commentSection";
+            return renderCommentSection(postId, userId, model);
         }
 
         redirectAttributes.addFlashAttribute("successMessage", "댓글이 수정되었습니다.");
@@ -90,11 +82,7 @@ public class CommentController {
         commentService.deleteComment(userId, commentId);
 
         if (isAjax(request)) {
-            model.addAttribute("comments", commentService.getComments(postId));
-            model.addAttribute("loginUserId", userId);
-            model.addAttribute("postId", postId);
-
-            return "community/post-detail :: commentSection";
+            return renderCommentSection(postId, userId, model);
         }
 
         redirectAttributes.addFlashAttribute("successMessage", "댓글이 삭제되었습니다.");
@@ -103,5 +91,13 @@ public class CommentController {
 
     private boolean isAjax(HttpServletRequest request) {
         return "XMLHttpRequest".equals(request.getHeader("X-Requested-With"));
+    }
+
+    private String renderCommentSection(Long postId, Long userId, Model model) {
+        model.addAttribute("comments", commentService.getComments(postId));
+        model.addAttribute("loginUserId", userId);
+        model.addAttribute("postId", postId);
+
+        return "community/post-detail :: commentSection";
     }
 }
