@@ -319,30 +319,6 @@
         });
     }
 
-    document.querySelectorAll('.comment-edit-btn').forEach((button) => {
-        button.addEventListener('click', () => {
-            const commentId = button.dataset.commentId;
-            const commentItem = button.closest('.comment-item');
-            const viewArea = commentItem.querySelector('.comment-view-area');
-            const editArea = document.getElementById(`commentEditArea-${commentId}`);
-
-            viewArea.style.display = 'none';
-            editArea.style.display = 'block';
-        });
-    });
-
-    document.querySelectorAll('.comment-edit-cancel-btn').forEach((button) => {
-        button.addEventListener('click', () => {
-            const commentId = button.dataset.commentId;
-            const commentItem = button.closest('.comment-item');
-            const viewArea = commentItem.querySelector('.comment-view-area');
-            const editArea = document.getElementById(`commentEditArea-${commentId}`);
-
-            editArea.style.display = 'none';
-            viewArea.style.display = 'block';
-        });
-    });
-
     //댓글 작성/수정/삭제 폼 submit
     document.addEventListener('submit', async (event) => {
         const form = event.target;
@@ -380,7 +356,7 @@
         document.getElementById('commentSection').outerHTML = html;
     });
 
-    // 댓글 수정/취소 폼 submit
+    // 댓글 수정/취소 버튼 클릭
     document.addEventListener('click', (event) => {
         const editButton = event.target.closest('.comment-edit-btn');
         const cancelButton = event.target.closest('.comment-edit-cancel-btn');
