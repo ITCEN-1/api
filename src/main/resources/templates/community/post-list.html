@@ -35,9 +35,10 @@
 <body>
 <div class="page">
     <header class="top-bar">
-        <h2>게시글 목록</h2>
+        <h2 th:text="${pageTitle}">게시글 목록</h2>
         <div class="top-actions">
             <a class="button-link" th:href="@{/communities/posts}">목록</a>
+            <a class="button-link" th:href="@{/communities/my/posts}">내 글</a>
             <a class="button-link" th:href="@{/communities/posts/new}">글쓰기</a>
             <button type="button" id="logoutBtn">로그아웃</button>
         </div>
@@ -46,7 +47,7 @@
     <section class="section">
         <div class="message" th:if="${successMessage}" th:text="${successMessage}">처리 메시지</div>
 
-        <form class="filter-form" th:action="@{/communities/posts}" method="get">
+        <form class="filter-form" th:action="@{${listUrl}}" method="get">
             <input type="text" name="titleKeyword" placeholder="제목 검색" th:value="${titleKeyword}">
             <select id="districtSelect" name="district">
                 <option value="">구 전체</option>
@@ -82,10 +83,18 @@
 
         <div class="pager-wrap">
             <div class="pager">
-                <a class="button-link" th:if="${postPage.hasPrevious()}" th:href="@{/communities/posts(page=${postPage.number - 1}, titleKeyword=${titleKeyword}, district=${district}, dongCode=${dongCode})}">이전</a>
+                <a class="button-link"
+                   th:if="${postPage.hasPrevious()}"
+                   th:href="@{${listUrl}(page=${postPage.number - 1}, titleKeyword=${titleKeyword}, district=${district}, dongCode=${dongCode})}">
+                    이전
+                </a>
                 <span class="disabled" th:if="${!postPage.hasPrevious()}">이전</span>
                 <span class="current" th:text="${postPage.number + 1} + ' / ' + ${postPage.totalPages == 0 ? 1 : postPage.totalPages}">1 / 1</span>
-                <a class="button-link" th:if="${postPage.hasNext()}" th:href="@{/communities/posts(page=${postPage.number + 1}, titleKeyword=${titleKeyword}, district=${district}, dongCode=${dongCode})}">다음</a>
+                <a class="button-link"
+                   th:if="${postPage.hasNext()}"
+                   th:href="@{${listUrl}(page=${postPage.number + 1}, titleKeyword=${titleKeyword}, district=${district}, dongCode=${dongCode})}">
+                    다음
+                </a>
                 <span class="disabled" th:if="${!postPage.hasNext()}">다음</span>
             </div>
             <div class="pager-right">

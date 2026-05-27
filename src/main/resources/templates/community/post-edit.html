@@ -31,6 +31,7 @@
 
         <div class="top-actions">
             <a class="button-link" th:href="@{/communities/posts}">목록</a>
+            <a class="button-link" th:href="@{/communities/my/posts}">내 글</a>
             <a class="button-link" th:href="@{/communities/posts/new}">글쓰기</a>
             <button type="button" id="logoutBtn">로그아웃</button>
         </div>
@@ -98,7 +99,7 @@
 </div>
 
 <script>
-    // 로그아웃 버튼 처리다.
+    // 로그아웃 버튼 처리
     document.getElementById('logoutBtn')?.addEventListener('click', async () => {
         if (!confirm('로그아웃하시겠습니까?')) {
             return;
@@ -149,8 +150,6 @@
 
                 const body = await response.json();
 
-                // GlobalResponseWrapper 때문에 응답이 ApiResponse로 감싸질 수 있다.
-                // 순수 배열이면 body를 쓰고, 감싸진 응답이면 body.content를 사용한다.
                 const dongs = Array.isArray(body) ? body : body.content;
 
                 if (!Array.isArray(dongs)) {

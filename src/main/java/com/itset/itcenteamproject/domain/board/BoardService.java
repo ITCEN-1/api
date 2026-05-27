@@ -21,11 +21,26 @@ public class BoardService {
     private final UserRepository userRepository;
     private final DongLocationRepository dongLocationRepository;
     private final CommentRepository commentRepository;
+
+    //게시글 조회
     @Transactional(readOnly = true)
     public Page<BoardListItemDTO> getPosts(BoardSearchCondition c, int page) {
         return boardRepository.searchPosts(c.getTitleKeyword(), c.getDistrictName(), c.getDongCode(), PageRequest.of(page, 10));
     }
 
+    //내 게시글 조회
+    @Transactional(readOnly = true)
+    public Page<BoardListItemDTO> getMyPosts(Long userId, BoardSearchCondition c, int page) {
+        return boardRepository.searchMyPosts(
+                userId,
+                c.getTitleKeyword(),
+                c.getDistrictName(),
+                c.getDongCode(),
+                PageRequest.of(page, 10)
+        );
+    }
+
+    //게시글 작성
     @Transactional
     public Long createPost(Long userId, BoardCreateRequest req) {
         if (req.getDongCode() == null) throw new IllegalArgumentException("동을 선택해주세요.");

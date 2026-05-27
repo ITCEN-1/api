@@ -50,6 +50,51 @@ public class BoardController {
         model.addAttribute("dongs", boardService.getDongsByDistrict(district));
         model.addAttribute("postPage", postPage);
         model.addAttribute("posts", postPage.getContent());
+
+        model.addAttribute("isMyPosts", false);
+        model.addAttribute("pageTitle", "게시글 목록");
+        model.addAttribute("listUrl", "/communities/posts");
+        return "community/post-list";
+    }
+
+    // 내 게시글 조회
+    @GetMapping("/my/posts")
+    public String getMyPostList(@RequestParam(required = false) String titleKeyword,
+                                @RequestParam(required = false) String district,
+                                @RequestParam(required = false) Integer dongCode,
+                                @RequestParam(defaultValue = "0") int page,
+                                HttpSession session,
+                                Model model) {
+        Long userId = sessionUserService.getLoginUserId(session);
+
+        BoardSearchCondition c = new BoardSearchCondition();
+        c.setTitleKeyword(titleKeyword);
+
+        if (dongCode != null) {
+            c.setDongCode(dongCode);
+            c.setDistrictName(district);
+        } else if (district != null && !district.isBlank()) {
+            c.setDistrictName(district);
+            c.setDongCode(null);
+        } else {
+            c.setDistrictName(null);
+            c.setDongCode(null);
+        }
+
+        Page<BoardListItemDTO> postPage = boardService.getMyPosts(userId, c, page);
+
+        model.addAttribute("titleKeyword", titleKeyword);
+        model.addAttribute("district", district);
+        model.addAttribute("dongCode", dongCode);
+        model.addAttribute("districts", boardService.getDistricts());
+        model.addAttribute("dongs", boardService.getDongsByDistrict(district));
+        model.addAttribute("postPage", postPage);
+        model.addAttribute("posts", postPage.getContent());
+
+        model.addAttribute("isMyPosts", true);
+        model.addAttribute("pageTitle", "내가 쓴 게시글");
+        model.addAttribute("listUrl", "/communities/my/posts");
+
         return "community/post-list";
     }
 
