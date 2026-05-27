@@ -189,11 +189,12 @@
         </div>
     </section>
 
-    <section class="section">
+    <section class="section" id="commentSection" th:fragment="commentSection">
         <h3>댓글</h3>
 
+        <!--        댓글 작성 폼-->
         <form class="comment-form"
-              th:action="@{/communities/posts/{postId}/comments(postId=${post.postId})}"
+              th:action="@{/communities/posts/{postId}/comments(postId=${postId})}"
               method="post">
 
             <div class="form-row">
@@ -245,13 +246,13 @@
                             수정
                         </button>
 
-                        <form class="inline-form"
+<!--                        댓글 삭제 폼-->
+                        <form class="inline-form comment-delete-form"
                               th:action="@{/communities/posts/{postId}/comments/{commentId}/delete(
-                                  postId=${post.postId},
+                                  postId=${postId},
                                   commentId=${comment.commentId}
                               )}"
-                              method="post"
-                              onsubmit="return confirm('댓글을 삭제하시겠습니까?');">
+                              method="post">
                             <button type="submit">삭제</button>
                         </form>
                     </div>
@@ -260,8 +261,9 @@
                 <div class="comment-edit-area"
                      th:id="'commentEditArea-' + ${comment.commentId}">
 
-                    <form th:action="@{/communities/posts/{postId}/comments/{commentId}/edit(
-                              postId=${post.postId},
+<!--                    댓글 수정 폼-->
+                    <form class="comment-edit-form" th:action="@{/communities/posts/{postId}/comments/{commentId}/edit(
+                              postId=${postId},
                               commentId=${comment.commentId}
                           )}"
                           method="post">
@@ -339,6 +341,70 @@
             editArea.style.display = 'none';
             viewArea.style.display = 'block';
         });
+    });
+
+    //댓글 작성/수정/삭제 폼 submit
+    document.addEventListener('submit', async (event) => {
+        const form = event.target;
+
+        const isCommentCreate = form.classList.contains('comment-form');
+        const isCommentEdit = form.classList.contains('comment-edit-form');
+        const isCommentDelete = form.classList.contains('comment-delete-form');
+
+        if (!isCommentCreate && !isCommentEdit && !isCommentDelete) {
+            return;
+        }
+
+        event.preventDefault();
+
+        if (isCommentDelete && !confirm('댓글을 삭제하시겠습니까?')) {
+            return;
+        }
+
+        const formData = new FormData(form);
+
+        const response = await fetch(form.action, {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: formData
+        });
+
+        if (!response.ok) {
+            alert('댓글 처리에 실패했습니다.');
+            return;
+        }
+
+        const html = await response.text();
+        document.getElementById('commentSection').outerHTML = html;
+    });
+
+    // 댓글 수정/취소 폼 submit
+    document.addEventListener('click', (event) => {
+        const editButton = event.target.closest('.comment-edit-btn');
+        const cancelButton = event.target.closest('.comment-edit-cancel-btn');
+
+        if (editButton) {
+            const commentId = editButton.dataset.commentId;
+            const commentItem = editButton.closest('.comment-item');
+            const viewArea = commentItem.querySelector('.comment-view-area');
+            const editArea = document.getElementById(`commentEditArea-${commentId}`);
+
+            viewArea.style.display = 'none';
+            editArea.style.display = 'block';
+            return;
+        }
+
+        if (cancelButton) {
+            const commentId = cancelButton.dataset.commentId;
+            const commentItem = cancelButton.closest('.comment-item');
+            const viewArea = commentItem.querySelector('.comment-view-area');
+            const editArea = document.getElementById(`commentEditArea-${commentId}`);
+
+            editArea.style.display = 'none';
+            viewArea.style.display = 'block';
+        }
     });
 </script>
 </body>
