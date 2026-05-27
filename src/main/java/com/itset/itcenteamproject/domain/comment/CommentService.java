@@ -80,10 +80,10 @@ public class CommentService {
     //댓글 본문 검증 메서드
     private void validateContent(String content) {
         if (content == null || content.isBlank()) {
-            throw new IllegalArgumentException("댓글 내용을 입력해야 한다.");
+            throw new CustomException(ErrorCode.REQUIRED_COMMENT_CONTENT);
         }
         if (content.length() > 500) {
-            throw new IllegalArgumentException("댓글은 500자 이하로 입력해야 한다.");
+            throw new CustomException(ErrorCode.COMMENT_CONTENT_TOO_LONG);
         }
     }
 }
