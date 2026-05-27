@@ -246,7 +246,7 @@
                             수정
                         </button>
 
-<!--                        댓글 삭제 폼-->
+                        <!--                        댓글 삭제 폼-->
                         <form class="inline-form comment-delete-form"
                               th:action="@{/communities/posts/{postId}/comments/{commentId}/delete(
                                   postId=${postId},
@@ -261,7 +261,7 @@
                 <div class="comment-edit-area"
                      th:id="'commentEditArea-' + ${comment.commentId}">
 
-<!--                    댓글 수정 폼-->
+                    <!--                    댓글 수정 폼-->
                     <form class="comment-edit-form" th:action="@{/communities/posts/{postId}/comments/{commentId}/edit(
                               postId=${postId},
                               commentId=${comment.commentId}
