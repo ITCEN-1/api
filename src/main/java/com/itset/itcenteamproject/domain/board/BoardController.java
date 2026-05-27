@@ -26,34 +26,9 @@ public class BoardController {
     @GetMapping("/posts")
     public String getPostList(@RequestParam(required = false) String titleKeyword, @RequestParam(required = false) String district,
                               @RequestParam(required = false) Integer dongCode, @RequestParam(defaultValue = "0") int page, Model model) {
-        BoardSearchCondition c = new BoardSearchCondition();
-        c.setTitleKeyword(titleKeyword);
-        // 검색 규칙:
-        // 1) 동 선택 시: 동 기준 검색(구도 함께 전달 가능)
-        // 2) 동 미선택 + 구 선택 시: 구 기준 검색
-        // 3) 둘 다 미선택: 전체 검색
-        if (dongCode != null) {
-            c.setDongCode(dongCode);
-            c.setDistrictName(district);
-        } else if (district != null && !district.isBlank()) {
-            c.setDistrictName(district);
-            c.setDongCode(null);
-        } else {
-            c.setDistrictName(null);
-            c.setDongCode(null);
-        }
+        BoardSearchCondition c = createSearchCondition(titleKeyword, district, dongCode);
         Page<BoardListItemDTO> postPage = boardService.getPosts(c, page);
-        model.addAttribute("titleKeyword", titleKeyword);
-        model.addAttribute("district", district);
-        model.addAttribute("dongCode", dongCode);
-        model.addAttribute("districts", boardService.getDistricts());
-        model.addAttribute("dongs", boardService.getDongsByDistrict(district));
-        model.addAttribute("postPage", postPage);
-        model.addAttribute("posts", postPage.getContent());
-
-        model.addAttribute("isMyPosts", false);
-        model.addAttribute("pageTitle", "게시글 목록");
-        model.addAttribute("listUrl", "/communities/posts");
+        addPostListModel(model, titleKeyword, district, dongCode, postPage, false, "게시글 목록", "/communities/posts");
         return "community/post-list";
     }
 
@@ -67,33 +42,9 @@ public class BoardController {
                                 Model model) {
         Long userId = sessionUserService.getLoginUserId(session);
 
-        BoardSearchCondition c = new BoardSearchCondition();
-        c.setTitleKeyword(titleKeyword);
-
-        if (dongCode != null) {
-            c.setDongCode(dongCode);
-            c.setDistrictName(district);
-        } else if (district != null && !district.isBlank()) {
-            c.setDistrictName(district);
-            c.setDongCode(null);
-        } else {
-            c.setDistrictName(null);
-            c.setDongCode(null);
-        }
-
+        BoardSearchCondition c = createSearchCondition(titleKeyword, district, dongCode);
         Page<BoardListItemDTO> postPage = boardService.getMyPosts(userId, c, page);
-
-        model.addAttribute("titleKeyword", titleKeyword);
-        model.addAttribute("district", district);
-        model.addAttribute("dongCode", dongCode);
-        model.addAttribute("districts", boardService.getDistricts());
-        model.addAttribute("dongs", boardService.getDongsByDistrict(district));
-        model.addAttribute("postPage", postPage);
-        model.addAttribute("posts", postPage.getContent());
-
-        model.addAttribute("isMyPosts", true);
-        model.addAttribute("pageTitle", "내가 쓴 게시글");
-        model.addAttribute("listUrl", "/communities/my/posts");
+        addPostListModel(model, titleKeyword, district, dongCode, postPage, true, "내가 쓴 게시글", "/communities/my/posts");
 
         return "community/post-list";
     }
@@ -210,5 +161,50 @@ public class BoardController {
         // 3) 삭제 후 목록으로 이동
         redirectAttributes.addFlashAttribute("successMessage", "게시글이 삭제되었습니다.");
         return "redirect:/communities/posts";
+    }
+
+    //전체 게시글 검색, 내 게시글 검색 중복 메서드
+    private BoardSearchCondition createSearchCondition(String titleKeyword, String district, Integer dongCode) {
+        BoardSearchCondition c = new BoardSearchCondition();
+        c.setTitleKeyword(titleKeyword);
+
+        // 검색 규칙:
+        // 1) 동 선택 시: 동 기준 검색(구도 함께 전달 가능)
+        // 2) 동 미선택 + 구 선택 시: 구 기준 검색
+        // 3) 둘 다 미선택: 전체 검색
+        if (dongCode != null) {
+            c.setDongCode(dongCode);
+            c.setDistrictName(district);
+        } else if (district != null && !district.isBlank()) {
+            c.setDistrictName(district);
+            c.setDongCode(null);
+        } else {
+            c.setDistrictName(null);
+            c.setDongCode(null);
+        }
+
+        return c;
+    }
+
+    private void addPostListModel(
+            Model model,
+            String titleKeyword,
+            String district,
+            Integer dongCode,
+            Page<BoardListItemDTO> postPage,
+            boolean isMyPosts,
+            String pageTitle,
+            String listUrl
+    ) {
+        model.addAttribute("titleKeyword", titleKeyword);
+        model.addAttribute("district", district);
+        model.addAttribute("dongCode", dongCode);
+        model.addAttribute("districts", boardService.getDistricts());
+        model.addAttribute("dongs", boardService.getDongsByDistrict(district));
+        model.addAttribute("postPage", postPage);
+        model.addAttribute("posts", postPage.getContent());
+        model.addAttribute("isMyPosts", isMyPosts);
+        model.addAttribute("pageTitle", pageTitle);
+        model.addAttribute("listUrl", listUrl);
     }
 }
