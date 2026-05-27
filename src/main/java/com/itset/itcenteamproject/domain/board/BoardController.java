@@ -153,6 +153,8 @@ public class BoardController {
         model.addAttribute("comments", comments);
         model.addAttribute("loginUserId", loginUserId);
 
+        model.addAttribute("postId", postId);
+
         return "community/post-detail";
     }
 

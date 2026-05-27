@@ -43,9 +43,7 @@ public class BoardService {
     //게시글 작성
     @Transactional
     public Long createPost(Long userId, BoardCreateRequest req) {
-        if (req.getDongCode() == null) throw new IllegalArgumentException("동을 선택해주세요.");
-        if (req.getTitle() == null || req.getTitle().isBlank()) throw new IllegalArgumentException("제목을 입력해주세요.");
-        if (req.getContent() == null || req.getContent().isBlank()) throw new IllegalArgumentException("본문을 입력해주세요.");
+        validatePostRequest(req.getDongCode(), req.getTitle(), req.getContent());
 
         User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
         dongLocationRepository.findById(req.getDongCode()).orElseThrow(() -> new CustomException(ErrorCode.INVALID_DONG_CODE));
@@ -83,9 +81,7 @@ public class BoardService {
     //수정 요청을 받아 실제 게시글 값을 변경
     @Transactional
     public void updatePost(Long userId, Long postId, BoardUpdateRequest req) {
-        if (req.getDongCode() == null) throw new IllegalArgumentException("동을 선택해주세요.");
-        if (req.getTitle() == null || req.getTitle().isBlank()) throw new IllegalArgumentException("제목을 입력해주세요.");
-        if (req.getContent() == null || req.getContent().isBlank()) throw new IllegalArgumentException("본문을 입력해주세요.");
+        validatePostRequest(req.getDongCode(), req.getTitle(), req.getContent());
 
         Board board = boardRepository.findById(postId)
                 .orElseThrow(() -> new CustomException(ErrorCode.BAD_REQUEST));
@@ -149,5 +145,17 @@ public class BoardService {
         return dongLocationRepository.findAllByDistrictName(district.trim()).stream()
                 .sorted(Comparator.comparing(DongLocation::getDongName))
                 .map(d -> new BoardDongOptionDTO(d.getDongCode(), d.getDongName())).toList();
+    }
+
+    private void validatePostRequest(Integer dongCode, String title, String content) {
+        if (dongCode == null) {
+            throw new CustomException(ErrorCode.REQUIRED_DONG_CODE);
+        }
+        if (title == null || title.isBlank()) {
+            throw new CustomException(ErrorCode.REQUIRED_TITLE);
+        }
+        if (content == null || content.isBlank()) {
+            throw new CustomException(ErrorCode.REQUIRED_CONTENT);
+        }
     }
 }

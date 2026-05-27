@@ -17,6 +17,12 @@ public enum ErrorCode {
     METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "C002", "허용되지 않은 메서드입니다."),
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "C003", "서버 내부 오류입니다."),
 
+    // 게시판, 댓글관련
+    REQUIRED_TITLE(HttpStatus.BAD_REQUEST, "C004", "제목을 입력해주세요."),
+    REQUIRED_CONTENT(HttpStatus.BAD_REQUEST, "C005", "본문을 입력해주세요."),
+    REQUIRED_COMMENT_CONTENT(HttpStatus.BAD_REQUEST, "C006", "댓글 내용을 입력해주세요."),
+    COMMENT_CONTENT_TOO_LONG(HttpStatus.BAD_REQUEST, "C007", "댓글은 500자 이하로 입력해주세요."),
+
     // User관련 추가
     BAD_REQUEST(HttpStatus.BAD_REQUEST, "U001", "잘못된 요청입니다."),
     INVALID_LOGIN_ID(HttpStatus.BAD_REQUEST, "U002", "아이디는 6~12자 영문+숫자 조합이어야 합니다."),
@@ -37,6 +43,7 @@ public enum ErrorCode {
     INVALID_MIN_MAX_VALUE(HttpStatus.BAD_REQUEST, "SUR005", "최소 금액이 최대 금액보다 작아야합니다."),
 
     // DongLocation 관련
+    REQUIRED_DONG_CODE(HttpStatus.BAD_REQUEST, "DON000", "동을 선택해주세요."),
     INVALID_DONG_CODE(HttpStatus.BAD_REQUEST,"DON001","유효하지 않은 동 코드입니다. (1111010100 ~ 1174011000)"),
 
     // 통근점수 산정 관련
