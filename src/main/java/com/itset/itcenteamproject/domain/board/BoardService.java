@@ -123,11 +123,18 @@ public class BoardService {
         boardRepository.delete(board);
     }
 
+    // 조회수 증가 (본인 게시글 조회 수 제한)
     @Transactional
-    public BoardDetailDTO getPostDetailAndIncreaseView(Long postId) {
-        Board board = boardRepository.findById(postId).orElseThrow(() -> new CustomException(ErrorCode.BAD_REQUEST));
-        board.increaseViewCount();
-        return boardRepository.findDetailById(postId).orElseThrow(() -> new CustomException(ErrorCode.BAD_REQUEST));
+    public BoardDetailDTO getPostDetailAndIncreaseView(Long postId, Long loginUserId) {
+        Board board = boardRepository.findById(postId)
+                .orElseThrow(() -> new CustomException(ErrorCode.BAD_REQUEST));
+        boolean isWriter = loginUserId != null && board.getUser().getId().equals(loginUserId);
+
+        if (!isWriter) {
+            board.increaseViewCount();
+        }
+        return boardRepository.findDetailById(postId)
+                .orElseThrow(() -> new CustomException(ErrorCode.BAD_REQUEST));
     }
 
     // 게시글 검색/작성 화면에서 사용할 구 목록을 조회

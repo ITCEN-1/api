@@ -138,9 +138,9 @@ public class BoardController {
             HttpSession session,
             Model model
     ) {
-        BoardDetailDTO post = boardService.getPostDetailAndIncreaseView(postId);
-
         Long loginUserId = (Long) session.getAttribute("loginUser");
+        BoardDetailDTO post = boardService.getPostDetailAndIncreaseView(postId, loginUserId);
+
         boolean editable = loginUserId != null && loginUserId.equals(post.getWriterId());
 
         List<CommentListItem> comments = commentService.getComments(postId);
