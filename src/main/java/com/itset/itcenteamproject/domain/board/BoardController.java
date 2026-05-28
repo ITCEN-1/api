@@ -196,9 +196,21 @@ public class BoardController {
             String pageTitle,
             String listUrl
     ) {
+        List<BoardDongOptionDTO> dongs = boardService.getDongsByDistrict(district);
+
+        String dongName = null;
+        if (dongCode != null) {
+            dongName = dongs.stream()
+                    .filter(d -> d.getDongCode().equals(dongCode))
+                    .map(BoardDongOptionDTO::getDongName)
+                    .findFirst()
+                    .orElse(null);
+        }
+
         model.addAttribute("titleKeyword", titleKeyword);
         model.addAttribute("district", district);
         model.addAttribute("dongCode", dongCode);
+        model.addAttribute("dongName", dongName);
         model.addAttribute("districts", boardService.getDistricts());
         model.addAttribute("dongs", boardService.getDongsByDistrict(district));
         model.addAttribute("postPage", postPage);
