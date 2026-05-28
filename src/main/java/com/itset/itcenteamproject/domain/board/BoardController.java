@@ -74,7 +74,7 @@ public class BoardController {
         Long userId = sessionUserService.getLoginUserId(session);
         Long postId = boardService.createPost(userId, form);
 
-        redirectAttributes.addFlashAttribute("successMessage", "게시글이 작성되었습니다. #" + postId);
+        redirectAttributes.addFlashAttribute("successMessage", "게시글이 작성되었습니다.");
         redirectAttributes.addAttribute("district", form.getDistrictName());
         redirectAttributes.addAttribute("dongCode", form.getDongCode());
 
