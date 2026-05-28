@@ -23,7 +23,7 @@ public class User {
         this.loginId = loginId;
         this.password = password;
         this.nickname = nickname;
-        this.role = "USER";  // 회원가입으로 생성되는 계정은 기본 일반 사용자
+        this.role = "ROLE_USER";  // 회원가입으로 생성되는 계정은 기본 일반 사용자
     }
 
     @Column(name = "login_id", unique = true, nullable = false)
@@ -45,7 +45,7 @@ public class User {
     private LocalDateTime createdAt;
 
     public boolean isAdmin() {
-        return "ADMIN".equals(this.role);
+        return "ROLE_ADMIN".equals(this.role);
     }
 
 }
