@@ -2,84 +2,78 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>게시글 목록</title>
-    <style>
-        body { font-family: sans-serif; margin: 24px; }
-        .page { max-width: 1000px; margin: 0 auto; }
-        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding-bottom: 12px; border-bottom: 1px solid #ddd; }
-        .top-actions, .actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-        .section { margin-bottom: 24px; }
-        .message { margin-bottom: 16px; padding: 10px; border: 1px solid #ddd; }
-        .filter-form { display: grid; grid-template-columns: 1.5fr 1fr 1fr auto auto; gap: 8px; align-items: center; }
-        input[type="text"], select { width: 100%; box-sizing: border-box; padding: 8px; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { border-bottom: 1px solid #ddd; padding: 10px; text-align: left; }
-        .post-title-link { color: inherit; text-decoration: none; }
-        .post-title-link:hover { text-decoration: underline; }
-        .empty-message { padding: 24px 0; color: #666; border-top: 1px solid #ddd; border-bottom: 1px solid #ddd; }
-        .pager-wrap { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; margin-top: 20px; }
-        .pager { grid-column: 2; display: flex; gap: 8px; align-items: center; justify-content: center; }
-        .pager-right { grid-column: 3; justify-self: end; }
-        button, a.button-link { padding: 6px 10px; cursor: pointer; text-decoration: none; color: inherit; border: 1px solid #aaa; background: #fff; font-size: 14px; }
-        .disabled, .current { padding: 6px 10px; border: 1px solid #ddd; }
-        .disabled { color: #aaa; }
-        @media (max-width: 760px) {
-            .top-bar { flex-direction: column; align-items: flex-start; gap: 12px; }
-            .filter-form { grid-template-columns: 1fr; }
-            .pager-wrap { grid-template-columns: 1fr; gap: 12px; }
-            .pager, .pager-right { grid-column: 1; justify-self: center; }
-            th:nth-child(1), td:nth-child(1), th:nth-child(5), td:nth-child(5) { display: none; }
-        }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${pageTitle}">게시글 목록</title>
+    <link rel="stylesheet" href="/css/community.css" th:href="@{/css/community.css}">
 </head>
 <body>
-<div class="page">
-    <header class="top-bar">
-        <h2 th:text="${pageTitle}">게시글 목록</h2>
-        <div class="top-actions">
-            <a class="button-link" th:href="@{/communities/posts}">목록</a>
-            <a class="button-link" th:href="@{/communities/my/posts}">내 글</a>
-            <a class="button-link" th:href="@{/communities/posts/new}">글쓰기</a>
-            <button type="button" id="logoutBtn">로그아웃</button>
-        </div>
-    </header>
+<nav th:replace="~{fragments/nav :: communityNav}"></nav>
 
-    <section class="section">
-        <div class="message" th:if="${successMessage}" th:text="${successMessage}">처리 메시지</div>
+<main class="dp-page">
+    <div class="page">
+        <header class="top-bar">
+            <div>
+                <h1>우리 동네 게시판</h1>
+                <p>같은 동네에 사는 사람들과 소소한 정보를 나눠보세요.</p>
+            </div>
+            <a class="button-link primary" th:href="@{/communities/posts/new}" href="/communities/posts/new">새 글 쓰기</a>
+        </header>
 
-        <form class="filter-form" th:action="@{${listUrl}}" method="get">
-            <input type="text" name="titleKeyword" placeholder="제목 검색" th:value="${titleKeyword}">
-            <select id="districtSelect" name="district">
-                <option value="">구 전체</option>
-                <option th:each="dist : ${districts}" th:value="${dist}" th:text="${dist}" th:selected="${dist == district}">구</option>
-            </select>
-            <select id="dongSelect" name="dongCode">
-                <option value="">동 전체</option>
-                <option th:each="d : ${dongs}" th:value="${d.dongCode}" th:text="${d.dongName}" th:selected="${dongCode != null and d.dongCode == dongCode}">동</option>
-            </select>
-            <button type="submit">검색</button>
-            <a class="button-link" th:href="@{/communities/posts}">초기화</a>
-        </form>
-    </section>
+        <section class="section">
+            <div class="message" th:if="${successMessage}" th:text="${successMessage}">처리 메시지</div>
 
-    <section class="section">
-        <table th:if="${!postPage.isEmpty()}">
-            <thead>
-            <tr><th>ID</th><th>제목</th><th>작성자</th><th>지역</th><th>작성일</th><th>조회수</th></tr>
-            </thead>
-            <tbody>
-            <tr th:each="post : ${posts}">
-                <td th:text="${post.postId}">1</td>
-                <td><a class="post-title-link" th:href="@{/communities/posts/{postId}(postId=${post.postId})}" th:text="${post.title}">제목</a></td>
-                <td th:text="${post.writerName}">작성자</td>
-                <td><span th:text="${post.districtName}">구</span> <span th:text="${post.dongName}">동</span></td>
-                <td th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm')}">2026-05-25 10:00</td>
-                <td th:text="${post.viewCount}">0</td>
-            </tr>
-            </tbody>
-        </table>
+            <div class="card">
+                <div class="card__body">
+                    <form class="filter-form" th:action="@{${listUrl}}" method="get">
+                        <input type="text" name="titleKeyword" placeholder="제목 검색" th:value="${titleKeyword}">
+                        <select id="districtSelect" name="district">
+                            <option value="">구 전체</option>
+                            <option th:each="dist : ${districts}" th:value="${dist}" th:text="${dist}" th:selected="${dist == district}">구</option>
+                        </select>
+                        <select id="dongSelect" name="dongCode">
+                            <option value="">동 전체</option>
+                            <option th:each="d : ${dongs}" th:value="${d.dongCode}" th:text="${d.dongName}" th:selected="${dongCode != null and d.dongCode == dongCode}">동</option>
+                        </select>
+                        <button type="submit">검색</button>
+                        <a class="button-link" th:href="@{/communities/posts}" href="/communities/posts">초기화</a>
+                    </form>
+                </div>
+            </div>
+        </section>
 
-        <div class="empty-message" th:if="${postPage.isEmpty()}">게시글이 없습니다.</div>
+        <section class="section card">
+            <div class="table-wrap" th:if="${!postPage.isEmpty()}">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>제목</th>
+                        <th>작성자</th>
+                        <th>지역</th>
+                        <th>작성일</th>
+                        <th>조회수</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="post : ${posts}">
+                        <td th:text="${post.postId}">1</td>
+                        <td>
+                            <a class="post-title-link" th:href="@{/communities/posts/{postId}(postId=${post.postId})}" th:text="${post.title}">제목</a>
+                        </td>
+                        <td th:text="${post.writerName}">작성자</td>
+                        <td>
+                            <span th:text="${post.districtName}">구</span>
+                            <span th:text="${post.dongName}">동</span>
+                        </td>
+                        <td th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm')}">2026-05-25 10:00</td>
+                        <td th:text="${post.viewCount}">0</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="empty-message" th:if="${postPage.isEmpty()}">게시글이 없습니다.</div>
+        </section>
 
         <div class="pager-wrap">
             <div class="pager">
@@ -98,11 +92,11 @@
                 <span class="disabled" th:if="${!postPage.hasNext()}">다음</span>
             </div>
             <div class="pager-right">
-                <a class="button-link" th:href="@{/communities/posts}">전체 목록</a>
+                <a class="button-link" th:href="@{/communities/posts}" href="/communities/posts">전체 목록</a>
             </div>
         </div>
-    </section>
-</div>
+    </div>
+</main>
 
 <script>
     document.getElementById('logoutBtn')?.addEventListener('click', async () => {

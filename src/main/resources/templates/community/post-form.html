@@ -2,74 +2,67 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>게시글 작성</title>
-    <style>
-        body { font-family: sans-serif; margin: 24px; }
-        .page { max-width: 900px; margin: 0 auto; }
-        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding-bottom: 12px; border-bottom: 1px solid #ddd; }
-        .top-actions, .actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-        .section { margin-bottom: 32px; }
-        .form-row { margin-bottom: 12px; }
-        .location-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        input[type="text"], textarea, select { width: 100%; box-sizing: border-box; padding: 8px; }
-        textarea { resize: vertical; }
-        button, a.button-link { padding: 6px 10px; cursor: pointer; text-decoration: none; color: inherit; border: 1px solid #aaa; background: #fff; font-size: 14px; }
-        @media (max-width: 760px) {
-            .top-bar { flex-direction: column; align-items: flex-start; gap: 12px; }
-            .location-row { grid-template-columns: 1fr; }
-        }
-    </style>
+    <link rel="stylesheet" href="/css/community.css" th:href="@{/css/community.css}">
 </head>
 <body>
-<div class="page">
-    <header class="top-bar">
-        <h2>게시글 작성</h2>
-        <div class="top-actions">
-            <a class="button-link" th:href="@{/communities/posts}">목록</a>
-            <a class="button-link" th:href="@{/communities/my/posts}">내 글</a>
-            <a class="button-link" th:href="@{/communities/posts/new}">글쓰기</a>
-            <button type="button" id="logoutBtn">로그아웃</button>
-        </div>
-    </header>
+<nav th:replace="~{fragments/nav :: communityNav}"></nav>
 
-    <section class="section">
-        <form th:action="@{/communities/posts}" th:object="${form}" method="post">
-            <div class="location-row">
-                <div class="form-row">
-                    <label for="districtSelect">구 선택</label>
-                    <select id="districtSelect" th:field="*{districtName}">
-                        <option value="">구를 선택하세요</option>
-                        <option th:each="dist : ${districts}" th:value="${dist}" th:text="${dist}">구</option>
-                    </select>
-                </div>
-
-                <div class="form-row">
-                    <label for="dongSelect">동 선택</label>
-                    <select id="dongSelect" th:field="*{dongCode}" required>
-                        <option value="">동을 선택하세요</option>
-                        <option th:each="d : ${dongs}" th:value="${d.dongCode}" th:text="${d.dongName}">동</option>
-                    </select>
-                </div>
+<main class="dp-page">
+    <div class="page page--narrow">
+        <header class="top-bar">
+            <div>
+                <h1>게시글 작성</h1>
+                <p>동네 사람들과 나누고 싶은 이야기를 남겨보세요.</p>
             </div>
+        </header>
 
-            <div class="form-row">
-                <label for="title">제목</label>
-                <input id="title" type="text" th:field="*{title}" maxlength="100" required>
-            </div>
+        <section class="section card">
+            <div class="card__body">
+                <form th:action="@{/communities/posts}" th:object="${form}" method="post">
+                    <div class="location-row">
+                        <div class="form-row">
+                            <label for="districtSelect">구 선택</label>
+                            <select id="districtSelect" th:field="*{districtName}">
+                                <option value="">구를 선택하세요</option>
+                                <option th:each="dist : ${districts}" th:value="${dist}" th:text="${dist}">구</option>
+                            </select>
+                        </div>
 
-            <div class="form-row">
-                <label for="content">본문</label>
-                <textarea id="content" th:field="*{content}" rows="10" required></textarea>
-            </div>
+                        <div class="form-row">
+                            <label for="dongSelect">동 선택</label>
+                            <select id="dongSelect" th:field="*{dongCode}" required>
+                                <option value="">동을 선택하세요</option>
+                                <option th:each="d : ${dongs}" th:value="${d.dongCode}" th:text="${d.dongName}">동</option>
+                            </select>
+                        </div>
+                    </div>
 
-            <div class="actions">
-                <button type="submit">작성</button>
-                <a class="button-link" th:href="@{/communities/posts}">취소</a>
+                    <div class="form-row">
+                        <label for="title">제목</label>
+                        <input id="title" type="text" th:field="*{title}" maxlength="100" required>
+                    </div>
+
+                    <div class="form-row">
+                        <label for="content">본문</label>
+                        <textarea id="content" th:field="*{content}" rows="10" required></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <label for="image">이미지</label>
+                        <input id="image" type="file" name="image" accept="image/*">
+                    </div>
+
+                    <div class="actions">
+                        <button type="submit">작성</button>
+                        <a class="button-link" th:href="@{/communities/posts}" href="/communities/posts">취소</a>
+                    </div>
+                </form>
             </div>
-            <input type="file" name="image" accept="image/*">
-        </form>
-    </section>
-</div>
+        </section>
+    </div>
+</main>
 
 <script>
     document.getElementById('logoutBtn')?.addEventListener('click', async () => {
@@ -105,7 +98,6 @@
                 }
 
                 const body = await response.json();
-
                 const dongs = Array.isArray(body) ? body : body.content;
 
                 if (!Array.isArray(dongs)) {
