@@ -13,10 +13,15 @@
     <div class="page">
         <header class="top-bar">
             <div>
-                <h1>우리 동네 게시판</h1>
+                <h1 th:text="${dongName != null ? district + ' ' + dongName + ' 게시판' : (district != null  and !#strings.isEmpty(district) ? district + ' 게시판' : '동네 게시판')}">
+                    동네 게시판
+                </h1>
                 <p>같은 동네에 사는 사람들과 소소한 정보를 나눠보세요.</p>
             </div>
+            <div class="actions">
+            <a class="button-link" th:href="@{/communities/my/posts}" href="/communities/my/posts">내 글 보기</a>
             <a class="button-link primary" th:href="@{/communities/posts/new}" href="/communities/posts/new">새 글 쓰기</a>
+            </div>
         </header>
 
         <section class="section">
@@ -46,9 +51,8 @@
                 <table>
                     <thead>
                     <tr>
-                        <th>ID</th>
-                        <th>제목</th>
                         <th>작성자</th>
+                        <th>제목</th>
                         <th>지역</th>
                         <th>작성일</th>
                         <th>조회수</th>
@@ -56,16 +60,15 @@
                     </thead>
                     <tbody>
                     <tr th:each="post : ${posts}">
-                        <td th:text="${post.postId}">1</td>
+                        <td th:text="${post.writerName}">작성자</td>
                         <td>
                             <a class="post-title-link" th:href="@{/communities/posts/{postId}(postId=${post.postId})}" th:text="${post.title}">제목</a>
                         </td>
-                        <td th:text="${post.writerName}">작성자</td>
                         <td>
                             <span th:text="${post.districtName}">구</span>
                             <span th:text="${post.dongName}">동</span>
                         </td>
-                        <td th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm')}">2026-05-25 10:00</td>
+                        <td th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd')}">2026-05-25</td>
                         <td th:text="${post.viewCount}">0</td>
                     </tr>
                     </tbody>
@@ -91,66 +94,11 @@
                 </a>
                 <span class="disabled" th:if="${!postPage.hasNext()}">다음</span>
             </div>
-            <div class="pager-right">
-                <a class="button-link" th:href="@{/communities/posts}" href="/communities/posts">전체 목록</a>
-            </div>
         </div>
     </div>
 </main>
 
-<script>
-    document.getElementById('logoutBtn')?.addEventListener('click', async () => {
-        if (!confirm('로그아웃하시겠습니까?')) return;
-        const res = await fetch('/api/auth/logout', { method: 'POST' });
-        if (res.ok) location.href = '/auth/login';
-        else alert('로그아웃에 실패했습니다.');
-    });
-
-    const districtSelect = document.getElementById('districtSelect');
-    const dongSelect = document.getElementById('dongSelect');
-
-    function resetDongOptions() {
-        dongSelect.innerHTML = '<option value="">동을 선택하세요</option>';
-    }
-
-    if (districtSelect && dongSelect) {
-        districtSelect.addEventListener('change', async () => {
-            resetDongOptions();
-
-            const district = districtSelect.value;
-
-            if (!district) {
-                return;
-            }
-
-            try {
-                const response = await fetch(`/communities/dongs?district=${encodeURIComponent(district)}`);
-
-                if (!response.ok) {
-                    alert('동 목록을 불러오지 못했습니다.');
-                    return;
-                }
-
-                const body = await response.json();
-                const dongs = Array.isArray(body) ? body : body.content;
-
-                if (!Array.isArray(dongs)) {
-                    alert('동 목록 응답 형식이 올바르지 않습니다.');
-                    return;
-                }
-
-                dongs.forEach((dong) => {
-                    const option = document.createElement('option');
-                    option.value = dong.dongCode;
-                    option.textContent = dong.dongName;
-                    dongSelect.appendChild(option);
-                });
-            } catch (error) {
-                console.error(error);
-                alert('동 목록을 불러오지 못했습니다.');
-            }
-        });
-    }
-</script>
+<script th:src="@{/js/community.js}"></script>
+<script th:src="@{/js/community-location.js}"></script>
 </body>
 </html>

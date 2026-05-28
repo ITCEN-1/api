@@ -246,7 +246,7 @@ select {
 }
 
 textarea {
-    resize: vertical;
+    resize: none;
 }
 
 input:focus,
@@ -340,6 +340,17 @@ tbody tr:hover {
 .comment-edit-area {
     display: none;
     margin-top: 12px;
+}
+
+.comment-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.comment-count {
+    color: var(--primary);
+    font-weight: 800;
 }
 
 .empty-message {

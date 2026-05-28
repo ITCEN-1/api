@@ -11,7 +11,6 @@
         <a class="dp-nav__link active" th:href="@{/communities/posts}" href="/communities/posts">게시판</a>
     </div>
     <div class="dp-nav__right">
-        <a class="dp-nav__link" th:href="@{/communities/my/posts}" href="/communities/my/posts">내 글</a>
         <a class="dp-nav__link"
            th:if="${session.loginUser == null}"
            th:href="@{/auth/login}"

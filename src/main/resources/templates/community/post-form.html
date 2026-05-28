@@ -49,11 +49,6 @@
                         <textarea id="content" th:field="*{content}" rows="10" required></textarea>
                     </div>
 
-                    <div class="form-row">
-                        <label for="image">이미지</label>
-                        <input id="image" type="file" name="image" accept="image/*">
-                    </div>
-
                     <div class="actions">
                         <button type="submit">작성</button>
                         <a class="button-link" th:href="@{/communities/posts}" href="/communities/posts">취소</a>
@@ -64,59 +59,7 @@
     </div>
 </main>
 
-<script>
-    document.getElementById('logoutBtn')?.addEventListener('click', async () => {
-        if (!confirm('로그아웃하시겠습니까?')) return;
-        const res = await fetch('/api/auth/logout', { method: 'POST' });
-        if (res.ok) location.href = '/auth/login';
-        else alert('로그아웃에 실패했습니다.');
-    });
-
-    const districtSelect = document.getElementById('districtSelect');
-    const dongSelect = document.getElementById('dongSelect');
-
-    function resetDongOptions() {
-        dongSelect.innerHTML = '<option value="">동을 선택하세요</option>';
-    }
-
-    if (districtSelect && dongSelect) {
-        districtSelect.addEventListener('change', async () => {
-            resetDongOptions();
-
-            const district = districtSelect.value;
-
-            if (!district) {
-                return;
-            }
-
-            try {
-                const response = await fetch(`/communities/dongs?district=${encodeURIComponent(district)}`);
-
-                if (!response.ok) {
-                    alert('동 목록을 불러오지 못했습니다.');
-                    return;
-                }
-
-                const body = await response.json();
-                const dongs = Array.isArray(body) ? body : body.content;
-
-                if (!Array.isArray(dongs)) {
-                    alert('동 목록 응답 형식이 올바르지 않습니다.');
-                    return;
-                }
-
-                dongs.forEach((dong) => {
-                    const option = document.createElement('option');
-                    option.value = dong.dongCode;
-                    option.textContent = dong.dongName;
-                    dongSelect.appendChild(option);
-                });
-            } catch (error) {
-                console.error(error);
-                alert('동 목록을 불러오지 못했습니다.');
-            }
-        });
-    }
-</script>
+<script th:src="@{/js/community.js}"></script>
+<script th:src="@{/js/community-location.js}"></script>
 </body>
 </html>
