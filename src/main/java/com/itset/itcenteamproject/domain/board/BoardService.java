@@ -25,7 +25,7 @@ public class BoardService {
     //게시글 조회
     @Transactional(readOnly = true)
     public Page<BoardListItemDTO> getPosts(BoardSearchCondition c, int page) {
-        return boardRepository.searchPosts(c.getTitleKeyword(), c.getDistrictName(), c.getDongCode(), PageRequest.of(page, 10));
+        return boardRepository.searchPosts(c.getTitleKeyword(), c.getDistrictName(), c.getDongCode(), PageRequest.of(page, 9));
     }
 
     //내 게시글 조회
@@ -36,7 +36,7 @@ public class BoardService {
                 c.getTitleKeyword(),
                 c.getDistrictName(),
                 c.getDongCode(),
-                PageRequest.of(page, 10)
+                PageRequest.of(page, 9)
         );
     }
 
