@@ -1,6 +1,8 @@
 package com.itset.itcenteamproject.domain.survey;
 
 import com.itset.itcenteamproject.domain.survey.dto.SurveyCreateRequest;
+import com.itset.itcenteamproject.domain.survey.dto.SurveyCreateResponse;
+import com.itset.itcenteamproject.domain.survey.dto.SurveyDTO;
 import com.itset.itcenteamproject.domain.survey.entity.Survey;
 import com.itset.itcenteamproject.domain.survey.entity.SurveySelectedDistrict;
 import com.itset.itcenteamproject.domain.user.User;
@@ -20,7 +22,7 @@ public class SurveyService {
     private final UserRepository userRepository;
 
     @Transactional
-    public Long createSurvey(SurveyCreateRequest request, Long userId){
+    public SurveyCreateResponse createSurvey(SurveyCreateRequest request, Long userId){
 
         //유효성 검증
         validateSurvey(request);
@@ -41,7 +43,8 @@ public class SurveyService {
                 // 연관관계 cascade 덕분에 트랜잭션 내에서 한 번에 커밋됨
             });
         }
-        return survey.getId();
+
+        return SurveyCreateResponse.from(survey);
     }
 
     //정상적인 설문(전세월세보증금)인지 검사:
