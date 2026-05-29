@@ -39,7 +39,8 @@ public class CommuteScoreCalculatorIntegrationTest {
         Coordinate workplaceCoordinate = new Coordinate(126.9923298,37.57038842);// 종로 3가역
         Coordinate startingCoordinate=new Coordinate(127.103050,37.512615);// 롯데타워
         //when
-        int min=odsayClient.getCommuteMinutes(workplaceCoordinate,startingCoordinate);
+        String odsayResponse=odsayClient.getCommuteMinutes(workplaceCoordinate,startingCoordinate);
+        int min=odsayClient.convertOdsayResponseToTotalMinutes(odsayResponse);
 
         //then
         System.out.println("통근시간:" + min + "분!!!!");
