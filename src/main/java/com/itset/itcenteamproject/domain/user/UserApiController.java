@@ -1,12 +1,10 @@
 package com.itset.itcenteamproject.domain.user;
 
-import com.itset.itcenteamproject.domain.survey.SurveyService;
 import com.itset.itcenteamproject.domain.user.dto.*;
 import com.itset.itcenteamproject.domain.user.service.SessionUserService;
 import com.itset.itcenteamproject.domain.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,8 +16,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserApiController {
     //회원가입, 로그인 관련
     private final UserService userService;
-    //설문 관련
-    private final SurveyService surveyService;
+    //설문 관련, LoginSuccessHandler에서 사용
     //세션 관련
     private final SessionUserService sessionUserService;
 
@@ -32,50 +29,6 @@ public class UserApiController {
         userService.signup(dto);
 
         return ResponseEntity.status(201).build();
-    }
-
-    //로그인
-    @Operation(summary = "로그인")
-    @PostMapping("/auth/login")
-    public LoginResponseDTO login(
-            @RequestBody LoginRequestDTO dto,
-            HttpSession session
-    ) {
-        User user = userService.login(dto);
-        sessionUserService.login(session, user.getId());
-
-        // 관리자는 설문 여부와 관계없이 관리자 페이지로 이동
-        if (user.isAdmin()) {
-            return LoginResponseDTO.builder()
-                    .loginId(user.getLoginId())
-                    .nickname(user.getNickname())
-                    .role(user.getRole())
-                    .surveyCompleted(false)
-                    .redirectPath("/admin")
-                    .build();
-        }
-
-        //일반 사용자는 설문 여부 확인 후 페이지 이동(프론트)
-        boolean surveyCompleted = surveyService.hasSurvey(user.getId());
-        String redirectPath = surveyCompleted ? "/dashboard" : "/surveys";
-
-        return LoginResponseDTO.builder()
-                .loginId(user.getLoginId())
-                .nickname(user.getNickname())
-                .role(user.getRole())
-                .surveyCompleted(surveyCompleted)
-                .redirectPath(redirectPath)
-                .build();
-    }
-
-    //로그아웃
-    @Operation(summary = "로그아웃")
-    @PostMapping("/auth/logout")
-    public ResponseEntity<Void> logout(HttpSession session) {
-        //인증 체크
-        sessionUserService.logout(session);
-
-        return ResponseEntity.noContent().build();
     }
 
     //로그인 아이디 중복 확인
@@ -92,8 +45,8 @@ public class UserApiController {
     //로그인 된 사용자 정보 조회(세션 유지 테스트용)
     @GetMapping("/me")
     @Operation(summary = "[Test] 유저 정보 조회",description = "세션 유저의 정보 조회")
-    public UserResponseDTO me(HttpSession session) {
-        Long userId = sessionUserService.getLoginUserId(session);
+    public UserResponseDTO me() {
+        Long userId = sessionUserService.getLoginUserId();
         User user = userService.findById(userId);
 
         return new UserResponseDTO(user);
