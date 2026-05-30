@@ -26,14 +26,17 @@ public enum ErrorCode {
     // User관련 추가
     BAD_REQUEST(HttpStatus.BAD_REQUEST, "U001", "잘못된 요청입니다."),
     INVALID_LOGIN_ID(HttpStatus.BAD_REQUEST, "U002", "아이디는 6~12자 영문+숫자 조합이어야 합니다."),
+    INVALID_LOGIN_PW(HttpStatus.BAD_REQUEST, "U003", "비밀번호는 6자 이상, 영문+숫자+특수문자 조합(공백 제외)이어야 합니다."),
+    INVALID_LOGIN_NAME(HttpStatus.BAD_REQUEST, "U004", "닉네임은 10자 이내여야 합니다."),
 
-    DUPLICATE_LOGIN_ID(HttpStatus.CONFLICT, "U003", "이미 사용 중인 아이디입니다."),
-    DUPLICATE_NICKNAME(HttpStatus.CONFLICT, "U004", "이미 사용 중인 닉네임입니다."),
 
-    LOGIN_FAILED(HttpStatus.UNAUTHORIZED, "U005", "아이디 또는 비밀번호가 올바르지 않습니다."),
-    SESSION_EXPIRED(HttpStatus.UNAUTHORIZED, "U006", "세션이 만료되었습니다."),
+    DUPLICATE_LOGIN_ID(HttpStatus.CONFLICT, "U005", "이미 사용 중인 아이디입니다."),
+    DUPLICATE_NICKNAME(HttpStatus.CONFLICT, "U006", "이미 사용 중인 닉네임입니다."),
 
-    NOT_FOUND_USER(HttpStatus.NOT_FOUND,"U007","존재하지 않는 유저입니다"),
+    LOGIN_FAILED(HttpStatus.UNAUTHORIZED, "U007", "아이디 또는 비밀번호가 올바르지 않습니다."),
+    SESSION_EXPIRED(HttpStatus.UNAUTHORIZED, "U008", "세션이 만료되었습니다."),
+
+    NOT_FOUND_USER(HttpStatus.NOT_FOUND,"U009","존재하지 않는 유저입니다"),
 
     // 설문 관련
     INVALID_RENTAL_FILED(HttpStatus.BAD_REQUEST,"SUR001","정상적인 전세 또는 월세+보증금 입력이 아닙니다"),
