@@ -4,7 +4,6 @@ import com.itset.itcenteamproject.domain.board.dto.*;
 import com.itset.itcenteamproject.domain.comment.CommentService;
 import com.itset.itcenteamproject.domain.comment.dto.CommentListItem;
 import com.itset.itcenteamproject.domain.user.service.SessionUserService;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
@@ -38,9 +37,8 @@ public class BoardController {
                                 @RequestParam(required = false) String district,
                                 @RequestParam(required = false) Integer dongCode,
                                 @RequestParam(defaultValue = "0") int page,
-                                HttpSession session,
                                 Model model) {
-        Long userId = sessionUserService.getLoginUserId(session);
+        Long userId = sessionUserService.getLoginUserId();
 
         BoardSearchCondition c = createSearchCondition(titleKeyword, district, dongCode);
         Page<BoardListItemDTO> postPage = boardService.getMyPosts(userId, c, page);
@@ -68,10 +66,9 @@ public class BoardController {
     @PostMapping("/posts")
     public String createPost(
             @ModelAttribute("form") BoardCreateRequest form,
-            HttpSession session,
             RedirectAttributes redirectAttributes
     ) {
-        Long userId = sessionUserService.getLoginUserId(session);
+        Long userId = sessionUserService.getLoginUserId();
         Long postId = boardService.createPost(userId, form);
 
         redirectAttributes.addFlashAttribute("successMessage", "게시글이 작성되었습니다.");
@@ -86,10 +83,9 @@ public class BoardController {
     @GetMapping("/posts/{postId}")
     public String getPostDetail(
             @PathVariable Long postId,
-            HttpSession session,
             Model model
     ) {
-        Long loginUserId = (Long) session.getAttribute("loginUser");
+        Long loginUserId = sessionUserService.getLoginUserId();
         BoardDetailDTO post = boardService.getPostDetailAndIncreaseView(postId, loginUserId);
 
         boolean editable = loginUserId != null && loginUserId.equals(post.getWriterId());
@@ -113,10 +109,9 @@ public class BoardController {
     @GetMapping("/posts/{postId}/edit")
     public String editPostForm(
             @PathVariable Long postId,
-            HttpSession session,
             Model model
     ) {
-        Long userId = sessionUserService.getLoginUserId(session);
+        Long userId = sessionUserService.getLoginUserId();
         BoardUpdateRequest form = boardService.getPostForEdit(userId, postId);
         model.addAttribute("districts", boardService.getDistricts());
         model.addAttribute("dongs", boardService.getDongsByDistrict(form.getDistrictName()));
@@ -131,10 +126,9 @@ public class BoardController {
     public String updatePost(
             @PathVariable Long postId,
             @ModelAttribute("form") BoardUpdateRequest form,
-            HttpSession session,
             RedirectAttributes redirectAttributes
     ) {
-        Long userId = sessionUserService.getLoginUserId(session);
+        Long userId = sessionUserService.getLoginUserId();
 
         boardService.updatePost(userId, postId, form);
 
@@ -147,12 +141,11 @@ public class BoardController {
     @PostMapping("/posts/{postId}/delete")
     public String deletePost(
             @PathVariable Long postId,
-            HttpSession session,
             RedirectAttributes redirectAttributes
     ) {
         // 1) 현재 로그인한 사용자 ID 조회
         // 로그인하지 않은 사용자는 SessionUserService에서 SESSION_EXPIRED 예외 발생
-        Long userId = sessionUserService.getLoginUserId(session);
+        Long userId = sessionUserService.getLoginUserId();
 
         // 2) 삭제 처리
         // 실제 권한 검사는 service에서 다시 수행

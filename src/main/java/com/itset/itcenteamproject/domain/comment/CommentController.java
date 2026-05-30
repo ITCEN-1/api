@@ -4,7 +4,6 @@ import com.itset.itcenteamproject.domain.comment.dto.CommentCreateRequest;
 import com.itset.itcenteamproject.domain.comment.dto.CommentUpdateRequest;
 import com.itset.itcenteamproject.domain.user.service.SessionUserService;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -27,12 +26,11 @@ public class CommentController {
     public String createComment(
             @PathVariable Long postId,
             @ModelAttribute CommentCreateRequest form,
-            HttpSession session,
             HttpServletRequest request,
             Model model,
             RedirectAttributes redirectAttributes
     ) {
-        Long userId = sessionUserService.getLoginUserId(session);
+        Long userId = sessionUserService.getLoginUserId();
 
         commentService.createComment(userId, postId, form);
 
@@ -50,12 +48,11 @@ public class CommentController {
             @PathVariable Long postId,
             @PathVariable Long commentId,
             @ModelAttribute CommentUpdateRequest form,
-            HttpSession session,
             HttpServletRequest request,
             Model model,
             RedirectAttributes redirectAttributes
     ) {
-        Long userId = sessionUserService.getLoginUserId(session);
+        Long userId = sessionUserService.getLoginUserId();
 
         commentService.updateComment(userId, commentId, form);
 
@@ -72,12 +69,11 @@ public class CommentController {
     public String deleteComment(
             @PathVariable Long postId,
             @PathVariable Long commentId,
-            HttpSession session,
             HttpServletRequest request,
             Model model,
             RedirectAttributes redirectAttributes
     ) {
-        Long userId = sessionUserService.getLoginUserId(session);
+        Long userId = sessionUserService.getLoginUserId();
 
         commentService.deleteComment(userId, commentId);
 
