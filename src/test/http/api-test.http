@@ -1,11 +1,11 @@
 ### 1) 회원가입
-POST http://localhost:8080/api/signup
+POST http://localhost:8080/api/auth/signup
 Content-Type: application/json
 
 {
-  "loginId": "test003",
+  "loginId": "test009",
   "password": "1234",
-  "nickname": "test003"
+  "nickname": "test009"
 }
 
 ### 2) 로그인
@@ -13,7 +13,7 @@ POST http://localhost:8080/api/auth/login
 Content-Type: application/json
 
 {
-  "loginId": "test002",
+  "loginId": "test007",
   "password": "1234"
 }
 
