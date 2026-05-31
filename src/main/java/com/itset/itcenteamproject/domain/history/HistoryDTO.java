@@ -1,5 +1,6 @@
 package com.itset.itcenteamproject.domain.history;
 
+import com.itset.itcenteamproject.domain.dashboard.model.RecommendedDong;
 import com.itset.itcenteamproject.domain.survey.dto.SurveyDTO;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,5 +13,5 @@ import java.util.List;
 @Builder
 public class HistoryDTO {
     private SurveyDTO surveyDto;
-    private List<HistoryItemDTO> rankings;
+    private List<RecommendedDong> rankings;
 }
