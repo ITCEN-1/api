@@ -42,9 +42,9 @@ public class UserApiController {
         return new DupCheckResponseDTO(true);
     }
 
-    //로그인 된 사용자 정보 조회(세션 유지 테스트용)
+    //로그인 된 사용자 정보 조회(세션 유지 확인용)
     @GetMapping("/me")
-    @Operation(summary = "[Test] 유저 정보 조회",description = "세션 유저의 정보 조회")
+    @Operation(summary = "유저 정보 조회",description = "세션 유저의 정보 조회")
     public UserResponseDTO me() {
         Long userId = sessionUserService.getLoginUserId();
         User user = userService.findById(userId);
