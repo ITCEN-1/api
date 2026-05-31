@@ -16,7 +16,7 @@ import java.util.List;
 @Builder
 public class SurveyCreateResponse {
     private Long surveyId;
-    private String workPlaceAddress;
+    private String workplaceAddress;
     private Integer jeonseMin;
     private Integer jeonseMax;
     private Integer monthlyMin;
@@ -35,7 +35,7 @@ public class SurveyCreateResponse {
     public static SurveyCreateResponse from(Survey survey) {
         return SurveyCreateResponse.builder()
                 .surveyId(survey.getId())
-                .workPlaceAddress(survey.getWorkplaceAddress())
+                .workplaceAddress(survey.getWorkplaceAddress())
                 .jeonseMin(survey.getJeonseMin())
                 .jeonseMax(survey.getJeonseMax())
                 .monthlyMin(survey.getMonthlyMin())
