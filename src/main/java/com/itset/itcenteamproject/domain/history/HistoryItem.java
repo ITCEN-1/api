@@ -1,5 +1,6 @@
 package com.itset.itcenteamproject.domain.history;
 
+import com.itset.itcenteamproject.domain.infra.entity.DongLocation;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -27,6 +28,10 @@ public class HistoryItem {
     private Integer dongCode;
 
     private Integer commuteTime;
+
+    @OneToOne
+    @JoinColumn(name="dongCode", referencedColumnName = "dong_code", insertable = false, updatable = false)
+    private DongLocation dongLocation;;
 
     @Builder
     public HistoryItem(History history, Integer ranking,Integer dongCode, Integer commuteTime) {
