@@ -8,6 +8,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @RequestMapping("/auth")
 public class AuthPageController {
-    @GetMapping("/login") public String loginPage() { return "auth/login"; }
-    @GetMapping("/signup") public String signupPage() { return "auth/signup"; }
+    @GetMapping("/login") public String loginPage() { return "redirect:http://localhost:5173/login"; }
+    @GetMapping("/signup") public String signupPage() { return "redirect:http://localhost:5173/signup"; }
 }
