@@ -84,8 +84,17 @@ public class UserService {
 
     //로그인 아이디 중복검사
     public void checkLoginIdDuplicate(String loginId) {
-        if (userRepository.existsByLoginId(loginId)) {
+        String trimmedLoginId = loginId.trim();
+        if (userRepository.existsByLoginId(trimmedLoginId)) {
             throw new CustomException(ErrorCode.DUPLICATE_LOGIN_ID);
+        }
+    }
+
+    //닉네임 중복검사
+    public void checkNicknameDuplicate(String nickname) {
+        String trimmedNickname = nickname.trim();
+        if (userRepository.existsByNickname(trimmedNickname)) {
+            throw new CustomException(ErrorCode.DUPLICATE_NICKNAME);
         }
     }
 
