@@ -13,5 +13,5 @@ import java.util.List;
 @Builder
 public class HistoryDTO {
     private SurveyDTO surveyDto;
-    private List<RecommendedDong> rankings;
+    private List<RecommendedDong> recommendedDongs;
 }

@@ -45,7 +45,7 @@ HistoryService {
                     .orElseThrow(() -> new CustomException(ErrorCode.NO_HISTORY_DATA));
             log.info(history.toString());
             // Ranking데이터 가져오기
-            List<RecommendedDong> rankings = history.getHistoryItems().stream()
+            List<RecommendedDong> recommendedDongs = history.getHistoryItems().stream()
                     //HistoryItemDTO가 사라져서 변환로직이 사려졌기 때문에 HistoryService 에 만들어둠
                     .map(HistoryService::toRecommendedDong)
                     .toList();
@@ -53,7 +53,7 @@ HistoryService {
             result.add(
                     HistoryDTO.builder()
                             .surveyDto(surveyDto)
-                            .rankings(rankings)
+                            .recommendedDongs(recommendedDongs)
                             .build()
             );
         }
@@ -70,7 +70,7 @@ HistoryService {
         return HistoryDTO.builder()
                 .surveyDto(SurveyDTO.from(survey))
                 //HistoryItemDTO가 사라져서 변환로직이 사려졌기 때문에 HistoryService 에 만들어둠
-                .rankings(history.getHistoryItems().stream()
+                .recommendedDongs(history.getHistoryItems().stream()
                         .map(HistoryService::toRecommendedDong)
                         .collect(Collectors.toList()))
                 .build();
