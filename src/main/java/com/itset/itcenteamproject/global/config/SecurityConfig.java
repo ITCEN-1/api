@@ -86,6 +86,13 @@ public class SecurityConfig {
                 )
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint((request, response, authException) -> {
+                            String uri = request.getRequestURI();
+
+                            if (uri.startsWith("/communities")) {
+                                response.sendRedirect("http://localhost:5173/login");
+                                return;
+                            }
+
                             response.setStatus(ErrorCode.SESSION_EXPIRED.getStatus().value());
                             response.setContentType("application/json;charset=UTF-8");
                             objectMapper.writeValue(response.getWriter(), ApiResponse.error(ErrorCode.SESSION_EXPIRED));
