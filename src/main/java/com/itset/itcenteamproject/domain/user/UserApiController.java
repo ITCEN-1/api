@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserApiController {
     //회원가입, 로그인 관련
     private final UserService userService;
-    //설문 관련, LoginSuccessHandler에서 사용
+    //설문 관련은 LoginSuccessHandler에서 사용
     //세션 관련
     private final SessionUserService sessionUserService;
 
@@ -38,6 +38,16 @@ public class UserApiController {
             @RequestParam String loginId
     ) {
         userService.checkLoginIdDuplicate(loginId);
+
+        return new DupCheckResponseDTO(true);
+    }
+
+    //닉네임 중복 확인
+    @GetMapping("/users/check-nickname")
+    public DupCheckResponseDTO checkNickname(
+            @RequestParam String nickname
+    ) {
+        userService.checkNicknameDuplicate(nickname);
 
         return new DupCheckResponseDTO(true);
     }
