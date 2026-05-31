@@ -73,7 +73,9 @@ public class SecurityConfig {
 //                                "/communities/**",
                                 "/api/auth/**",
                                 "/api/signup",
-                                "/api/users/check"/*,
+                                "/api/users/check",
+                                "/api/users/check-nickname"
+                                /*,
                                 "/api/surveys/**",
                                 "/api/infra/**",
                                 "/api/dashboard/**",
