@@ -32,7 +32,7 @@ HistoryService {
     public List<HistoryDTO> getHistory(Long userId, Pageable pageable) {
         List<HistoryDTO> result = new ArrayList<>();
         // userID에 해당하는 Survey를 Page크기만큼 가져오기
-        Page<Survey> surveyPage = surveyRepository.findSurveyByUserId(userId, pageable);
+        Page<Survey> surveyPage = surveyRepository.findByUserIdOrderByCreatedAtDesc(userId, pageable);
         log.info(surveyPage.getContent().toString());
 
         // Survey를 순회하며 SurveyId에 해당하는 History 및 Ranking 데이터를 가져온다.

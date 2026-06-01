@@ -4,6 +4,7 @@ import com.itset.itcenteamproject.domain.survey.PreferenceLevel;
 import com.itset.itcenteamproject.domain.user.User;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.BatchSize;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -43,8 +44,9 @@ public class Survey {
     @JoinColumn(name="user_id", nullable = false)//FK 컬럼명
     private User user;
 
+    @BatchSize(size=5)
     @OneToMany(mappedBy = "survey" , cascade = CascadeType.ALL,orphanRemoval = true)
-    private List<SurveySelectedDistrict>  surveySelectedDistrictList = new ArrayList<>();
+    private List<SurveySelectedDistrict> surveySelectedDistrictList = new ArrayList<>();
 
     //surveySelectedDistrictList 추가
     public void addDistricts(List<String> districtNames) {
