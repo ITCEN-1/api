@@ -37,7 +37,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
                 .loginId(user.getLoginId())
                 .nickname(user.getNickname())
                 .role(user.getRole())
-                .surveyCompleted(surveyCompleted)
+                .isSurveyed(surveyCompleted)
                 .redirectPath(redirectPath)
                 .build();
 

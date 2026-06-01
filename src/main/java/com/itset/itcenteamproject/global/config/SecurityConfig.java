@@ -70,7 +70,9 @@ public class SecurityConfig {
                                 "/api/hello",
                                 "/api/hello/*",
                                 "/api/auth/**",
-                                "/api/dashboard/test"
+                                "/api/dashboard/test",
+                                "/api/users/**",
+                                "/api/me"
                         ).permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers(
