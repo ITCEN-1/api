@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>게시글 수정</title>
+    <link rel="stylesheet" href="/css/community.css" th:href="@{/css/community.css}">
+</head>
+<body>
+<nav th:replace="~{fragments/nav :: communityNav}"></nav>
+
+<main class="dp-page">
+    <div class="page page--narrow">
+        <header class="top-bar">
+            <div>
+                <h1>게시글 수정</h1>
+                <p>작성한 글의 내용과 지역 정보를 수정할 수 있어요.</p>
+            </div>
+        </header>
+
+        <section class="section card">
+            <div class="card__body">
+                <form th:action="@{/communities/posts/{postId}/edit(postId=${postId})}"
+                      th:object="${form}"
+                      method="post">
+
+                    <div class="location-row">
+                        <div class="form-row">
+                            <label for="districtSelect">구 선택</label>
+                            <select id="districtSelect" th:field="*{districtName}">
+                                <option value="">구를 선택하세요</option>
+                                <option th:each="dist : ${districts}"
+                                        th:value="${dist}"
+                                        th:text="${dist}"
+                                        th:selected="${dist == form.districtName}">
+                                    구
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="form-row">
+                            <label for="dongSelect">동 선택</label>
+                            <select id="dongSelect" th:field="*{dongCode}" required>
+                                <option value="">동을 선택하세요</option>
+                                <option th:each="d : ${dongs}"
+                                        th:value="${d.dongCode}"
+                                        th:text="${d.dongName}"
+                                        th:selected="${d.dongCode == form.dongCode}">
+                                    동
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <label for="title">제목</label>
+                        <input id="title"
+                               type="text"
+                               th:field="*{title}"
+                               maxlength="100"
+                               required>
+                    </div>
+
+                    <div class="form-row">
+                        <label for="content">본문</label>
+                        <textarea id="content"
+                                  th:field="*{content}"
+                                  rows="10"
+                                  required></textarea>
+                    </div>
+
+                    <div class="actions">
+                        <button type="submit">수정 완료</button>
+                        <a class="button-link"
+                           th:href="@{/communities/posts/{postId}(postId=${postId})}">
+                            취소
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </div>
+</main>
+
+<script th:src="@{/js/community.js}"></script>
+<script th:src="@{/js/community-location.js}"></script>
+</body>
+</html>

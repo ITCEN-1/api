@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+<body>
+<nav class="dp-nav" th:fragment="communityNav">
+    <a class="dp-nav__logo" th:href="@{/communities/posts}" href="/communities/posts">
+        <img th:src="@{/images/header-logo.png}" src="/images/header-logo.png" alt="동네픽">
+    </a>
+    <div class="dp-nav__links">
+        <a class="dp-nav__link" href="#">대시보드</a>
+        <a class="dp-nav__link" href="#">히스토리</a>
+        <a class="dp-nav__link active" th:href="@{/communities/posts}" href="/communities/posts">게시판</a>
+    </div>
+    <div class="dp-nav__right">
+        <a class="dp-nav__link"
+           sec:authorize="isAnonymous()"
+           th:href="@{/auth/login}"
+           href="/auth/login">
+            로그인
+        </a>
+
+        <button type="button"
+                class="dp-nav__link"
+                id="logoutBtn"
+                sec:authorize="isAuthenticated()">
+            로그아웃
+        </button>
+        <div class="dp-avatar">덕</div>
+    </div>
+</nav>
+</body>
+</html>

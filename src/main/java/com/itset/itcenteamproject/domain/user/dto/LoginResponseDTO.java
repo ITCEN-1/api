@@ -10,6 +10,7 @@ import lombok.Getter;
 public class LoginResponseDTO {
     private String loginId;
     private String nickname;
+    private String role;
     private boolean surveyCompleted;
     private String redirectPath;
 }

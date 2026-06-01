@@ -1,11 +1,11 @@
 ### 1) 회원가입
-POST http://localhost:8080/api/signup
+POST http://localhost:8080/api/auth/signup
 Content-Type: application/json
 
 {
-  "loginId": "test003",
+  "loginId": "test009",
   "password": "1234",
-  "nickname": "test003"
+  "nickname": "test009"
 }
 
 ### 2) 로그인
@@ -13,7 +13,7 @@ POST http://localhost:8080/api/auth/login
 Content-Type: application/json
 
 {
-  "loginId": "test002",
+  "loginId": "test007",
   "password": "1234"
 }
 
@@ -62,3 +62,5 @@ GET http://localhost:8080/api/dashboard/dongs/1168010800/elements?surveyId=1&typ
 ### 6) 인프라 요소별 상세 조회 - 대규모점포
 GET http://localhost:8080/api/dashboard/dongs/1168010800/elements?surveyId=1&type=LARGE_STORE
 
+### 게시판 조회 테스트
+GET http://localhost:8080/communities/dongs?district=관악구
