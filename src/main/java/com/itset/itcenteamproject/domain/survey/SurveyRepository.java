@@ -5,7 +5,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-
 import java.util.Optional;
 
 
@@ -16,4 +15,10 @@ public interface SurveyRepository extends JpaRepository<Survey, Long> {
     Optional<Survey> findSurveyById(Long surveyId);
     Optional<Survey> findTopByUserIdOrderByCreatedAtDesc(Long userId);
     Optional<Survey> findByIdAndUserId(Long id, Long userId);
+
+    //인프라 선호도 별 응답 수 (컬럼명을 파라미터로 동적 지정할 수 없어 4종 분리)
+    long countByPreferenceHospital(PreferenceLevel level);
+    long countByPreferenceLargeStore(PreferenceLevel level);
+    long countByPreferenceSubway(PreferenceLevel level);
+    long countByPreferenceLibrary(PreferenceLevel level);
 }

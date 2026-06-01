@@ -57,6 +57,7 @@ public class CommuteScoreCalculator {
             newRecommendedDong.add(RecommendedDong.builder()
                     .commuteTime(commuteMinutes)
                     .dongCode(rd.getDongCode())
+                    .districtName(rd.getDistrictName())
                     .dongName(rd.getDongName())
                     .score(newScore)
                     .longitude(rd.getLongitude())

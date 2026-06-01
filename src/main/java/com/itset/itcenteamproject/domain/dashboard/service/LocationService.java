@@ -12,6 +12,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -23,6 +25,12 @@ public class LocationService {
         DongLocation dongLocation = dongLocationRepository.findById(dongCode)//dongCode가 PK이므로 굳이 findByDongCode를 따로 안만듦( @Id 어노테이션이라 자동인식)
                 .orElseThrow(()-> new CustomException(ErrorCode.INVALID_DONG_CODE));
         return new Coordinate(dongLocation.getLongitude(),dongLocation.getLatitude());
+    }
+
+    // 동 코드 리스트를 한글 동 이름 맵(코드 -> 이름)으로 변환 (단일 쿼리, N+1 방지)
+    public Map<Integer, String> getDongNamesByDongCodes(List<Integer> dongCodes){
+        return dongLocationRepository.findByDongCodeIn(dongCodes).stream()
+                .collect(Collectors.toMap(DongLocation::getDongCode, DongLocation::getDongName));
     }
 
     // 설문의 선택 구 리스트에 속한 법정동코드 리스트 반환

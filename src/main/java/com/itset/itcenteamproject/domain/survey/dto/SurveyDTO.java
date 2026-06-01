@@ -2,6 +2,7 @@ package com.itset.itcenteamproject.domain.survey.dto;
 
 import com.itset.itcenteamproject.domain.survey.PreferenceLevel;
 import com.itset.itcenteamproject.domain.survey.entity.Survey;
+import com.itset.itcenteamproject.domain.survey.entity.SurveySelectedDistrict;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -9,7 +10,6 @@ import lombok.Setter;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 @Builder
 public class SurveyDTO {
     private Long surveyId;
-    private String workPlaceAddress;
+    private String workplaceAddress;
     private Integer jeonseMin;
     private Integer jeonseMax;
     private Integer monthlyMin;
@@ -28,7 +28,7 @@ public class SurveyDTO {
     private PreferenceLevel preferenceHospital;
     private PreferenceLevel preferenceSubway;
     private PreferenceLevel preferenceLibrary;
-    private List<SurveySelectedDistrictDTO> surveySelectedDistrictList;
+    private List<String> selectedDistricts;
     private String submittedAt;
 
     protected SurveyDTO() {}
@@ -36,7 +36,7 @@ public class SurveyDTO {
     public static SurveyDTO from(Survey survey) {
         return SurveyDTO.builder()
                 .surveyId(survey.getId())
-                .workPlaceAddress(survey.getWorkplaceAddress())
+                .workplaceAddress(survey.getWorkplaceAddress())
                 .jeonseMin(survey.getJeonseMin())
                 .jeonseMax(survey.getJeonseMax())
                 .monthlyMin(survey.getMonthlyMin())
@@ -47,9 +47,9 @@ public class SurveyDTO {
                 .preferenceHospital(survey.getPreferenceHospital())
                 .preferenceSubway(survey.getPreferenceSubway())
                 .preferenceLibrary(survey.getPreferenceLibrary())
-                .surveySelectedDistrictList(survey.getSurveySelectedDistrictList().stream()
-                        .map(SurveySelectedDistrictDTO::from)
-                        .collect(Collectors.toList()))
+                .selectedDistricts(survey.getSurveySelectedDistrictList().stream()
+                        .map(SurveySelectedDistrict::getDistrictName)
+                        .toList())
                 .submittedAt(survey.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
                 .build();
     }

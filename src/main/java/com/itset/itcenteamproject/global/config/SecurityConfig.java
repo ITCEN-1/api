@@ -80,6 +80,7 @@ public class SecurityConfig {
                                 "/api/infra/**",
                                 "/api/dashboard/**",
                                 "/api/history/**",
+                                "/api/dashboards/test",
                                 "/api/dashboards/test"*/
                         ).permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
