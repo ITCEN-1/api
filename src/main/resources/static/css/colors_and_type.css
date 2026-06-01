@@ -1,0 +1,231 @@
+/* =========================================================================
+   동네픽 (Dongne-Pick) — Design Tokens
+   살고싶은 동네가 생겼다
+   ========================================================================= */
+
+/* --- Web fonts --------------------------------------------------------- */
+@font-face {
+  font-family: "KNPS Kkomi";
+  src: url("./fonts/KNPSKkomi.otf") format("opentype");
+  font-weight: 400 800;
+  font-style: normal;
+  font-display: swap;
+}
+/* Pretendard — Korean body font, loaded via CDN */
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css");
+
+:root {
+  /* =====================================================================
+     COLOR — Brand
+     동네픽 uses a warm coral "front-door" primary that reads as friendly
+     Korean lifestyle (think 당근/직방), with a fresh recommend-green accent
+     and a trust navy. Neutrals are Ant Design's gray scale.
+     ===================================================================== */
+
+  --dp-coral-50:  #FFF1ED;
+  --dp-coral-100: #FFD9CC;
+  --dp-coral-200: #FFB39B;
+  --dp-coral-300: #FF8D6A;
+  --dp-coral-400: #FF7A55;      /* hover */
+  --dp-coral-500: #FF6B4A;      /* PRIMARY — 동네 Coral */
+  --dp-coral-600: #E5532F;      /* active */
+  --dp-coral-700: #B53A1C;
+  --dp-coral-800: #82270F;
+
+  --dp-mint-50:   #E8FAF1;
+  --dp-mint-100:  #C7F2DE;
+  --dp-mint-300:  #6DDBA9;
+  --dp-mint-500:  #1FB87A;      /* "추천" accent / map rank pill */
+  --dp-mint-600:  #129561;
+  --dp-mint-700:  #0A6F47;
+
+  --dp-navy-50:   #EDF1F7;
+  --dp-navy-100:  #CFD8E5;
+  --dp-navy-300:  #6B7E99;
+  --dp-navy-500:  #2A3F5F;
+  --dp-navy-700:  #15263F;
+  --dp-navy-900:  #0F2540;      /* deep info / sidebar headers */
+
+  --dp-yellow-100: #FFF6D6;
+  --dp-yellow-500: #F5B400;     /* 별점 stars, "신규" badges */
+
+  --dp-red-100: #FFE2E0;
+  --dp-red-500: #FF4D4F;        /* danger / 위험 — from Ant */
+
+  /* =====================================================================
+     COLOR — Neutral (Ant Design gray scale)
+     ===================================================================== */
+  --dp-white:    #FFFFFF;
+  --dp-gray-25:  #FCFCFD;
+  --dp-gray-50:  #FAFAFA;
+  --dp-gray-100: #F5F5F5;
+  --dp-gray-150: #F0F0F0;       /* default border */
+  --dp-gray-200: #E8E8E8;
+  --dp-gray-300: #D9D9D9;       /* input border */
+  --dp-gray-400: #BFBFBF;
+  --dp-gray-500: #8C8C8C;       /* tertiary text */
+  --dp-gray-600: #595959;       /* secondary text */
+  --dp-gray-700: #434343;
+  --dp-gray-800: #262626;       /* primary text */
+  --dp-gray-900: #1F1F1F;
+  --dp-black:    #000000;
+
+  /* =====================================================================
+     COLOR — Semantic
+     ===================================================================== */
+  --fg-1: var(--dp-gray-800);       /* primary text   rgba(0,0,0,.88) ish */
+  --fg-2: var(--dp-gray-600);       /* secondary text */
+  --fg-3: var(--dp-gray-500);       /* tertiary / placeholder */
+  --fg-4: var(--dp-gray-400);       /* disabled */
+  --fg-on-primary: #FFFFFF;
+
+  --bg-1: var(--dp-white);          /* card / surface */
+  --bg-2: var(--dp-gray-50);        /* page background */
+  --bg-3: var(--dp-gray-100);       /* subtle fills, hover row */
+  --bg-tint-primary: var(--dp-coral-50);
+  --bg-tint-success: var(--dp-mint-50);
+  --bg-tint-info:    var(--dp-navy-50);
+
+  --border-1: var(--dp-gray-150);   /* default 1px divider */
+  --border-2: var(--dp-gray-300);   /* control border */
+  --border-strong: var(--dp-gray-400);
+
+  --primary:        var(--dp-coral-500);
+  --primary-hover:  var(--dp-coral-400);
+  --primary-active: var(--dp-coral-600);
+  --primary-tint:   var(--dp-coral-50);
+
+  --success: var(--dp-mint-500);
+  --warning: var(--dp-yellow-500);
+  --danger:  var(--dp-red-500);
+  --info:    var(--dp-navy-500);
+
+  /* Map-specific tokens (Kakao Map overlay) */
+  --map-marker-rank: var(--dp-coral-500);
+  --map-marker-poi:  var(--dp-navy-500);
+  --map-marker-subway: #1F8FFF;
+  --map-marker-hospital: var(--dp-red-500);
+  --map-marker-library: #7B61FF;
+  --map-marker-store: var(--dp-yellow-500);
+
+  /* =====================================================================
+     TYPE — Families
+     ===================================================================== */
+  --font-display: "KNPS Kkomi", "Pretendard Variable", "Pretendard",
+                  -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo",
+                  "Malgun Gothic", sans-serif;
+  --font-body:    "Pretendard Variable", "Pretendard",
+                  -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo",
+                  "Malgun Gothic", "Segoe UI", Roboto, sans-serif;
+  --font-mono:    "JetBrains Mono", "Menlo", "Monaco", Consolas, monospace;
+
+  /* =====================================================================
+     TYPE — Scale (semantic, all in px)
+     Anchored on Ant Design 14px body + KNPS Kkomi for display
+     ===================================================================== */
+  --fs-display-1: 56px;   --lh-display-1: 1.1;   --fw-display-1: 700;
+  --fs-display-2: 40px;   --lh-display-2: 1.15;  --fw-display-2: 700;
+  --fs-h1: 30px;          --lh-h1: 1.25;         --fw-h1: 700;
+  --fs-h2: 24px;          --lh-h2: 1.3;          --fw-h2: 700;
+  --fs-h3: 20px;          --lh-h3: 1.4;          --fw-h3: 600;
+  --fs-h4: 16px;          --lh-h4: 1.5;          --fw-h4: 600;
+  --fs-body-lg: 16px;     --lh-body-lg: 1.5;     --fw-body-lg: 400;
+  --fs-body:    14px;     --lh-body:    1.57;    --fw-body:    400;
+  --fs-body-sm: 13px;     --lh-body-sm: 1.54;    --fw-body-sm: 400;
+  --fs-caption: 12px;     --lh-caption: 1.5;     --fw-caption: 400;
+  --fs-overline:11px;     --lh-overline:1.4;     --fw-overline:600;
+
+  /* =====================================================================
+     SPACING — 4px base
+     ===================================================================== */
+  --sp-0:  0;
+  --sp-1:  4px;
+  --sp-2:  8px;
+  --sp-3:  12px;
+  --sp-4:  16px;
+  --sp-5:  20px;
+  --sp-6:  24px;
+  --sp-7:  32px;
+  --sp-8:  40px;
+  --sp-9:  48px;
+  --sp-10: 64px;
+  --sp-11: 80px;
+  --sp-12: 120px;
+
+  /* =====================================================================
+     RADIUS — small (Ant base = 2px), with friendlier Korean app radii
+     ===================================================================== */
+  --r-xs:   2px;     /* Ant default */
+  --r-sm:   4px;
+  --r-md:   6px;     /* default 동네픽 controls */
+  --r-lg:   10px;    /* cards */
+  --r-xl:   16px;    /* hero card / modal */
+  --r-pill: 999px;
+
+  /* =====================================================================
+     SHADOWS — soft, layered (no neon glow)
+     ===================================================================== */
+  --shadow-xs: 0 1px 2px 0 rgba(15,37,64,.04);
+  --shadow-sm: 0 1px 2px 0 rgba(15,37,64,.06), 0 1px 3px 0 rgba(15,37,64,.04);
+  --shadow-md: 0 4px 12px -2px rgba(15,37,64,.08), 0 2px 4px -2px rgba(15,37,64,.04);
+  --shadow-lg: 0 12px 32px -8px rgba(15,37,64,.12), 0 4px 8px -4px rgba(15,37,64,.06);
+  --shadow-xl: 0 24px 48px -12px rgba(15,37,64,.18);
+  --shadow-marker: 0 4px 12px -2px rgba(255,107,74,.40), 0 2px 4px rgba(15,37,64,.10);
+  --shadow-focus-primary: 0 0 0 3px rgba(255,107,74,.20);
+  --shadow-focus-info:    0 0 0 3px rgba(24,144,255,.20);
+
+  /* Z-index */
+  --z-map:     1;
+  --z-overlay: 100;
+  --z-sidebar: 200;
+  --z-nav:     300;
+  --z-popover: 400;
+  --z-modal:   500;
+  --z-toast:   600;
+
+  /* Motion */
+  --ease-out: cubic-bezier(.2,.8,.2,1);
+  --ease-in-out: cubic-bezier(.4,0,.2,1);
+  --dur-fast: 120ms;
+  --dur-med:  200ms;
+  --dur-slow: 320ms;
+}
+
+/* =========================================================================
+   Reset + base body
+   ========================================================================= */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--fg-1);
+  background: var(--bg-2);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* =========================================================================
+   Semantic type classes
+   ========================================================================= */
+.dp-display-1 { font-family: var(--font-display); font-size: var(--fs-display-1); line-height: var(--lh-display-1); font-weight: var(--fw-display-1); letter-spacing: -.02em; }
+.dp-display-2 { font-family: var(--font-display); font-size: var(--fs-display-2); line-height: var(--lh-display-2); font-weight: var(--fw-display-2); letter-spacing: -.02em; }
+.dp-h1 { font-family: var(--font-body); font-size: var(--fs-h1); line-height: var(--lh-h1); font-weight: var(--fw-h1); letter-spacing: -.01em; }
+.dp-h2 { font-family: var(--font-body); font-size: var(--fs-h2); line-height: var(--lh-h2); font-weight: var(--fw-h2); letter-spacing: -.01em; }
+.dp-h3 { font-family: var(--font-body); font-size: var(--fs-h3); line-height: var(--lh-h3); font-weight: var(--fw-h3); }
+.dp-h4 { font-family: var(--font-body); font-size: var(--fs-h4); line-height: var(--lh-h4); font-weight: var(--fw-h4); }
+.dp-body-lg { font-size: var(--fs-body-lg); line-height: var(--lh-body-lg); font-weight: var(--fw-body-lg); }
+.dp-body    { font-size: var(--fs-body);    line-height: var(--lh-body);    font-weight: var(--fw-body); }
+.dp-body-sm { font-size: var(--fs-body-sm); line-height: var(--lh-body-sm); font-weight: var(--fw-body-sm); }
+.dp-caption { font-size: var(--fs-caption); line-height: var(--lh-caption); font-weight: var(--fw-caption); color: var(--fg-2); }
+.dp-overline{ font-size: var(--fs-overline);line-height: var(--lh-overline);font-weight: var(--fw-overline); text-transform: uppercase; letter-spacing: .08em; color: var(--fg-2); }
+
+/* default heading mapping */
+h1 { font-size: var(--fs-h1); line-height: var(--lh-h1); font-weight: var(--fw-h1); letter-spacing: -.01em; margin: 0; }
+h2 { font-size: var(--fs-h2); line-height: var(--lh-h2); font-weight: var(--fw-h2); letter-spacing: -.01em; margin: 0; }
+h3 { font-size: var(--fs-h3); line-height: var(--lh-h3); font-weight: var(--fw-h3); margin: 0; }
+h4 { font-size: var(--fs-h4); line-height: var(--lh-h4); font-weight: var(--fw-h4); margin: 0; }
+p  { margin: 0; }
+code, kbd, pre, samp { font-family: var(--font-mono); }
