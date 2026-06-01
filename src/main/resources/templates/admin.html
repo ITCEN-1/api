@@ -46,10 +46,10 @@
           </div>
           <div style="display:flex;gap:8px">
             <button class="dp-btn dp-btn--secondary" type="button">
-              <span th:replace="~{fragments :: icon('calendar', 16)}"></span>최근 30일
+              <span th:replace="~{fragments/fragments :: icon('calendar', 16)}"></span>최근 30일
             </button>
             <button class="dp-btn dp-btn--secondary" type="button">
-              <span th:replace="~{fragments :: icon('download', 16)}"></span>내보내기
+              <span th:replace="~{fragments/fragments :: icon('download', 16)}"></span>내보내기
             </button>
           </div>
         </div>
@@ -70,7 +70,7 @@
 
           <!-- 가장 많이 추천된 동 (상위 10) -->
           <div class="dp-card">
-            <div th:replace="~{fragments :: cardHeader('가장 많이 추천된 동 (상위 10)', '최근 30일 기준')}"></div>
+            <div th:replace="~{fragments/fragments :: cardHeader('가장 많이 추천된 동 (상위 10)', '최근 30일 기준')}"></div>
             <div style="display:grid;gap:8px">
               <div th:each="dong, stat : ${adminDongs}"
                    style="display:grid;grid-template-columns:24px 80px 1fr 60px;align-items:center;gap:12px">
@@ -87,7 +87,7 @@
 
           <!-- 유저 추이 — Chart.js 라인 차트 -->
           <div class="dp-card">
-            <div th:replace="~{fragments :: cardHeader('유저 추이', '최근 10일 일별 가입자')}"></div>
+            <div th:replace="~{fragments/fragments :: cardHeader('유저 추이', '최근 10일 일별 가입자')}"></div>
             <div style="position:relative">
               <canvas id="userTrendChart"></canvas>
             </div>
@@ -96,7 +96,7 @@
 
         <!-- 설문 평균 — 인프라 선호도 -->
         <div class="dp-card">
-          <div th:replace="~{fragments :: cardHeader('설문 평균 — 인프라 선호도', '응답자 6,127명 기준 분포')}"></div>
+          <div th:replace="~{fragments/fragments :: cardHeader('설문 평균 — 인프라 선호도', '응답자 6,127명 기준 분포')}"></div>
           <div style="display:grid;gap:14px">
             <div th:each="row : ${surveyRows}"
                  style="display:grid;grid-template-columns:80px 1fr 200px;align-items:center;gap:16px">
