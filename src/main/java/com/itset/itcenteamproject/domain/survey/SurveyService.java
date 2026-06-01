@@ -8,6 +8,7 @@ import com.itset.itcenteamproject.domain.user.User;
 import com.itset.itcenteamproject.domain.user.UserRepository;
 import com.itset.itcenteamproject.exception.CustomException;
 import com.itset.itcenteamproject.exception.ErrorCode;
+import com.itset.itcenteamproject.global.component.SessionManager;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,10 +20,11 @@ import static com.itset.itcenteamproject.exception.ErrorCode.NOT_FOUND_USER;
 public class SurveyService {
     private final SurveyRepository surveyRepository;
     private final UserRepository userRepository;
+    private final SessionManager sessionManager;
 
     @Transactional
-    public SurveyDTO createSurvey(SurveyCreateRequest request, Long userId){
-
+    public SurveyDTO createSurvey(SurveyCreateRequest request){
+        Long userId = sessionManager.getLoginUserId();
         //유효성 검증
         validateSurvey(request);
 

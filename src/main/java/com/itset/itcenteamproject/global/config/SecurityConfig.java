@@ -69,23 +69,19 @@ public class SecurityConfig {
                                 "/images/**",
                                 "/api/hello",
                                 "/api/hello/*",
-                                "/auth/**",
-//                                "/communities/**",
                                 "/api/auth/**",
-                                "/api/signup",
-                                "/api/users/check",
-                                "/api/users/check-nickname"
-                                /*,
-                                "/api/surveys/**",
-                                "/api/infra/**",
-                                "/api/dashboard/**",
-                                "/api/history/**",
-                                "/api/dashboards/test",
-                                "/api/dashboards/test"*/
+                                "/api/dashboard/test"
                         ).permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-                        // 2.그 외 API는 인증 필요
-                        .anyRequest().authenticated()
+                        .requestMatchers(
+                                "/communities/**",
+                                "/api/users/check",
+                                "/api/users/check-nickname",
+                                "/api/surveys/**",
+                                "/api/infra/**",
+                                "/api/history/**",
+                                "/api/dashboard/**"
+                        ).authenticated()
                 )
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint((request, response, authException) -> {
