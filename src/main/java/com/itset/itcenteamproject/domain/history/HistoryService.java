@@ -1,5 +1,7 @@
 package com.itset.itcenteamproject.domain.history;
 
+import com.itset.itcenteamproject.domain.dashboard.model.RecommendedDong;
+import com.itset.itcenteamproject.domain.infra.entity.DongLocation;
 import com.itset.itcenteamproject.domain.survey.entity.Survey;
 import com.itset.itcenteamproject.domain.survey.dto.SurveyDTO;
 import com.itset.itcenteamproject.domain.survey.SurveyRepository;
@@ -43,14 +45,15 @@ HistoryService {
                     .orElseThrow(() -> new CustomException(ErrorCode.NO_HISTORY_DATA));
             log.info(history.toString());
             // Ranking데이터 가져오기
-            List<HistoryItemDTO> rankings = history.getHistoryItems().stream()
-                    .map(HistoryItemDTO::from)
+            List<RecommendedDong> recommendedDongs = history.getHistoryItems().stream()
+                    //HistoryItemDTO가 사라져서 변환로직이 사려졌기 때문에 HistoryService 에 만들어둠
+                    .map(HistoryService::toRecommendedDong)
                     .toList();
             // 가져온 모든 데이터를 응답 List에 더한다.
             result.add(
                     HistoryDTO.builder()
                             .surveyDto(surveyDto)
-                            .rankings(rankings)
+                            .recommendedDongs(recommendedDongs)
                             .build()
             );
         }
@@ -66,11 +69,29 @@ HistoryService {
 
         return HistoryDTO.builder()
                 .surveyDto(SurveyDTO.from(survey))
-                .rankings(history.getHistoryItems().stream()
-                        .map(HistoryItemDTO::from)
+                //HistoryItemDTO가 사라져서 변환로직이 사려졌기 때문에 HistoryService 에 만들어둠
+                .recommendedDongs(history.getHistoryItems().stream()
+                        .map(HistoryService::toRecommendedDong)
                         .collect(Collectors.toList()))
                 .build();
 
+    }
+
+    // HistoryItemDTO가 사라져서 변환로직이 사라져서 만들었음
+    // HistoryItem(저장된 추천 결과) -> RecommendedDong 변환
+    // 주의 ** 히스토리 흐름에는 score/message가 저장돼 있지 않으므로 채우지 않는다.
+    private static RecommendedDong toRecommendedDong(HistoryItem historyItem) {
+        DongLocation dongLocation = historyItem.getDongLocation();
+
+        return RecommendedDong.builder()
+                .ranking(historyItem.getRanking())
+                .dongCode(historyItem.getDongCode())
+                .districtName(dongLocation.getDistrictName())
+                .dongName(dongLocation.getDongName())
+                .latitude(dongLocation.getLatitude())
+                .longitude(dongLocation.getLongitude())
+                .commuteTime(historyItem.getCommuteTime())
+                .build();
     }
 
 }

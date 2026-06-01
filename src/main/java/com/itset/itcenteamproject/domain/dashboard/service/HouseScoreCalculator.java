@@ -48,6 +48,7 @@ public class HouseScoreCalculator {
                     newRecommendedDong.add(
                             RecommendedDong.builder()
                                     .dongCode(dong.getDongCode())
+                                    .districtName(dong.getDistrictName())
                                     .dongName(dong.getDongName())
                                     .score(dong.getScore().add(BigDecimal.valueOf(additionalScore)))
                                     .longitude(dong.getLongitude())
