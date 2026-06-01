@@ -1,6 +1,8 @@
 package com.itset.itcenteamproject.domain.survey;
 
 import com.itset.itcenteamproject.domain.survey.dto.SurveyCreateRequest;
+import com.itset.itcenteamproject.domain.survey.dto.SurveyCreateResponse;
+import com.itset.itcenteamproject.domain.survey.dto.SurveyDTO;
 import com.itset.itcenteamproject.domain.user.dto.SurveyCheckResponseDTO;
 import com.itset.itcenteamproject.domain.user.service.SessionUserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,10 +25,9 @@ public class SurveyController {
 
     @PostMapping
     @Operation(summary = "설문 등록",description = "설문 작성자는 현재 세션 유저로 등록됩니다")
-    public ResponseEntity<Long> createSurvey(@RequestBody @Valid SurveyCreateRequest request,
+    public SurveyCreateResponse createSurvey(@RequestBody @Valid SurveyCreateRequest request,
                                              @Parameter(hidden = true) @SessionAttribute("loginUser") Long userId) {
-        Long surveyId = surveyService.createSurvey(request,userId);//생성된 질문 ID
-        return ResponseEntity.status(HttpStatus.CREATED).body(surveyId);//200 대신 201응답
+        return surveyService.createSurvey(request,userId);//설문 전체 응답
     }
 
     //의도하지 않은 경로로 대시보드 진입 방지
