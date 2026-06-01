@@ -16,14 +16,7 @@
 <body>
 
   <!-- ───────────────────── 상단 바 (뒤로가기 + 홈) ───────────────────── -->
-  <header class="dp-topbar"
-          style="display:flex;align-items:center;gap:8px;padding:12px 24px;border-bottom:1px solid var(--dp-gray-100);background:#fff">
-    <button type="button" class="dp-btn dp-btn--secondary"
-            onclick="if (document.referrer &amp;&amp; new URL(document.referrer).host === location.host) { history.back(); } else { location.href='/'; }">
-      ← 뒤로
-    </button>
-    <a class="dp-btn dp-btn--secondary" th:href="@{/}">홈</a>
-  </header>
+  <nav th:replace="~{fragments/nav :: communityNav}"></nav>
 
   <div class="dp-page">
     <!-- ───────────────────── 관리자 페이지 ───────────────────── -->
