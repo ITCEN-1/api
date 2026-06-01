@@ -1,4 +1,4 @@
-package com.itset.itcenteamproject.domain.user.service;
+package com.itset.itcenteamproject.global.component;
 
 import com.itset.itcenteamproject.domain.user.security.CustomUserDetails;
 import com.itset.itcenteamproject.exception.CustomException;
@@ -6,10 +6,10 @@ import com.itset.itcenteamproject.exception.ErrorCode;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-@Service
-public class SessionUserService {
+@Component
+public class SessionManager {
 
     public Long getLoginUserId() {
         return getLoginUser().getId();
@@ -22,6 +22,7 @@ public class SessionUserService {
                 || !authentication.isAuthenticated()
                 // authentication.getPrincipal()이 진짜 우리가 만든 CustomUserDetails 타입인지 확인
                 || !(authentication.getPrincipal() instanceof CustomUserDetails userDetails)) {
+            
             throw new CustomException(ErrorCode.SESSION_EXPIRED);
         }
 
