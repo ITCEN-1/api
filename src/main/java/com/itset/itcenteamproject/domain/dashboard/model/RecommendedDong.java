@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 public class RecommendedDong implements Comparable<RecommendedDong>{
     private Integer ranking;
     private Integer dongCode;
+    private String districtName;
     private String dongName;
     private Double latitude;
     private Double longitude;

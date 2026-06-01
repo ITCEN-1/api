@@ -1,7 +1,6 @@
 package com.itset.itcenteamproject.domain.survey;
 
 import com.itset.itcenteamproject.domain.survey.dto.SurveyCreateRequest;
-import com.itset.itcenteamproject.domain.survey.dto.SurveyCreateResponse;
 import com.itset.itcenteamproject.domain.survey.dto.SurveyDTO;
 import com.itset.itcenteamproject.domain.survey.entity.Survey;
 import com.itset.itcenteamproject.domain.survey.entity.SurveySelectedDistrict;
@@ -22,7 +21,7 @@ public class SurveyService {
     private final UserRepository userRepository;
 
     @Transactional
-    public SurveyCreateResponse createSurvey(SurveyCreateRequest request, Long userId){
+    public SurveyDTO createSurvey(SurveyCreateRequest request, Long userId){
 
         //유효성 검증
         validateSurvey(request);
@@ -44,7 +43,7 @@ public class SurveyService {
             });
         }
 
-        return SurveyCreateResponse.from(survey);
+        return SurveyDTO.from(survey);
     }
 
     //정상적인 설문(전세월세보증금)인지 검사:

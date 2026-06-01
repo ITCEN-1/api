@@ -17,17 +17,26 @@ public enum ErrorCode {
     METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "C002", "허용되지 않은 메서드입니다."),
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "C003", "서버 내부 오류입니다."),
 
+    // 게시판, 댓글관련
+    REQUIRED_TITLE(HttpStatus.BAD_REQUEST, "C004", "제목을 입력해주세요."),
+    REQUIRED_CONTENT(HttpStatus.BAD_REQUEST, "C005", "본문을 입력해주세요."),
+    REQUIRED_COMMENT_CONTENT(HttpStatus.BAD_REQUEST, "C006", "댓글 내용을 입력해주세요."),
+    COMMENT_CONTENT_TOO_LONG(HttpStatus.BAD_REQUEST, "C007", "댓글은 500자 이하로 입력해주세요."),
+
     // User관련 추가
     BAD_REQUEST(HttpStatus.BAD_REQUEST, "U001", "잘못된 요청입니다."),
     INVALID_LOGIN_ID(HttpStatus.BAD_REQUEST, "U002", "아이디는 6~12자 영문+숫자 조합이어야 합니다."),
+    INVALID_LOGIN_PW(HttpStatus.BAD_REQUEST, "U003", "비밀번호는 6자 이상, 영문+숫자+특수문자 조합(공백 제외)이어야 합니다."),
+    INVALID_LOGIN_NAME(HttpStatus.BAD_REQUEST, "U004", "닉네임은 10자 이내여야 합니다."),
 
-    DUPLICATE_LOGIN_ID(HttpStatus.CONFLICT, "U003", "이미 사용 중인 아이디입니다."),
-    DUPLICATE_NICKNAME(HttpStatus.CONFLICT, "U004", "이미 사용 중인 닉네임입니다."),
 
-    LOGIN_FAILED(HttpStatus.UNAUTHORIZED, "U005", "아이디 또는 비밀번호가 올바르지 않습니다."),
-    SESSION_EXPIRED(HttpStatus.UNAUTHORIZED, "U006", "세션이 만료되었습니다."),
+    DUPLICATE_LOGIN_ID(HttpStatus.CONFLICT, "U005", "이미 사용 중인 아이디입니다."),
+    DUPLICATE_NICKNAME(HttpStatus.CONFLICT, "U006", "이미 사용 중인 닉네임입니다."),
 
-    NOT_FOUND_USER(HttpStatus.NOT_FOUND,"U007","존재하지 않는 유저입니다"),
+    LOGIN_FAILED(HttpStatus.UNAUTHORIZED, "U007", "아이디 또는 비밀번호가 올바르지 않습니다."),
+    SESSION_EXPIRED(HttpStatus.UNAUTHORIZED, "U008", "세션이 만료되었습니다."),
+
+    NOT_FOUND_USER(HttpStatus.NOT_FOUND,"U009","존재하지 않는 유저입니다"),
 
     // 설문 관련
     INVALID_RENTAL_FILED(HttpStatus.BAD_REQUEST,"SUR001","정상적인 전세 또는 월세+보증금 입력이 아닙니다"),
@@ -37,6 +46,7 @@ public enum ErrorCode {
     INVALID_MIN_MAX_VALUE(HttpStatus.BAD_REQUEST, "SUR005", "최소 금액이 최대 금액보다 작아야합니다."),
 
     // DongLocation 관련
+    REQUIRED_DONG_CODE(HttpStatus.BAD_REQUEST, "DON000", "동을 선택해주세요."),
     INVALID_DONG_CODE(HttpStatus.BAD_REQUEST,"DON001","유효하지 않은 동 코드입니다. (1111010100 ~ 1174011000)"),
 
     // 통근점수 산정 관련

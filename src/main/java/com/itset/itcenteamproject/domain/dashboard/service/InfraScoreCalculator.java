@@ -100,6 +100,7 @@ public class InfraScoreCalculator {
                     return RecommendedDong.builder()
                             .ranking(null)
                             .dongCode(r.dong.getDongCode())
+                            .districtName(r.dong.getDistrictName())
                             .dongName(r.dong.getDongName())
                             .latitude(r.dong.getLatitude())
                             .longitude(r.dong.getLongitude())

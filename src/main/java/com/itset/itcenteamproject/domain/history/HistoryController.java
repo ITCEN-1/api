@@ -1,7 +1,7 @@
 package com.itset.itcenteamproject.domain.history;
 
+import com.itset.itcenteamproject.domain.user.service.SessionUserService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -15,9 +15,11 @@ import java.util.List;
 public class HistoryController {
 
     private final HistoryService historyService;
+    private final SessionUserService sessionUserService;
 
-    public HistoryController(HistoryService historyService) {
+    public HistoryController(HistoryService historyService, SessionUserService sessionUserService) {
         this.historyService = historyService;
+        this.sessionUserService = sessionUserService;
     }
 
     @Operation(summary = "히스토리 목록 내 특정 히스토리 조회")
@@ -28,8 +30,9 @@ public class HistoryController {
       
     @Operation(summary = "히스토리 조회",description = "세션 유저의 히스토리 조회")
     @GetMapping("/history")
-    public List<HistoryDTO> getHistory(@Parameter(hidden = true) @SessionAttribute("loginUser") Long userId,
-                                       @PageableDefault Pageable pageable) {
+    public List<HistoryDTO> getHistory(@PageableDefault Pageable pageable) {
+        Long userId = sessionUserService.getLoginUserId();
+
         return historyService.getHistory(userId, pageable);
     }
 }
