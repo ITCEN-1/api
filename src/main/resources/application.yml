@@ -30,6 +30,9 @@ kakao:
 odsay:
   rest-api-keys: ${ODSAY_REST_API_KEY_LIST}
 
+frontserver:
+  url: ${FRONT_SERVER_URL}
+
 logging:
   level:
     com.itset.itcenteamproject.domain.dashboard.client.OdsayApiKeys: DEBUG

@@ -1,26 +1,26 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/extras/spring-security"
-      xmlns:http="http://www.w3.org/1999/xhtml">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
 <body>
 <nav class="dp-nav" th:fragment="communityNav">
-    <a class="dp-nav__logo" th:href="@{http://localhost:5173/dashboard}" href="http://localhost:5173/dashboard">
+    <a class="dp-nav__logo" th:href="${frontServerUrl + '/dashboard'}" href="${frontServerUrl + '/dashboard'}">
         <img th:src="@{/images/header-logo.png}" src="/images/header-logo.png" alt="동네픽">
     </a>
     <div class="dp-nav__links">
-        <a class="dp-nav__link" th:href="@{http://localhost:5173/dashboard}">대시보드</a>
-        <a class="dp-nav__link" th:href="@{http://localhost:5173/history}">히스토리</a>
+        <a class="dp-nav__link" th:href="${frontServerUrl + '/dashboard'}">대시보드</a>
+        <a class="dp-nav__link" th:href="${frontServerUrl + '/history'}">히스토리</a>
         <a class="dp-nav__link active" th:href="@{/communities/posts}" href="/communities/posts">게시판</a>
         <a class="dp-nav__link"
            sec:authorize="hasRole('ADMIN')"
            th:href="@{/admin}"
-           href="/admin">
+           href="/admin" data-nav="admin">
             관리자
         </a>
     </div>
     <div class="dp-nav__right">
         <a class="dp-nav__link"
-           sec:authorize="isAnonymous()"
-           href="http://localhost:5173/login">
+            sec:authorize="isAnonymous()"
+            th:href="${frontServerUrl + '/login'}"
+            href="${frontServerUrl + '/login'}">
             로그인
         </a>
 
@@ -36,6 +36,21 @@
             로그아웃
         </button>
     </div>
+    <script>
+        const path = window.location.pathname;
+
+        if (path.startsWith("/communities")) {
+            document
+                .querySelector('[data-nav="community"]')
+                ?.classList.add("active");
+        }
+
+        if (path.startsWith("/admin")) {
+            document
+                .querySelector('[data-nav="admin"]')
+                ?.classList.add("active");
+        }
+    </script>
 </nav>
 </body>
 </html>
