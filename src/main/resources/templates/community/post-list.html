@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <th:block th:insert="~{fragments/head :: favicon}"></th:block>
     <title th:text="${pageTitle}">게시글 목록</title>
     <link rel="stylesheet" href="/css/community.css" th:href="@{/css/community.css}">
 </head>
@@ -30,15 +31,24 @@
             <div class="card">
                 <div class="card__body">
                     <form class="filter-form" th:action="@{${listUrl}}" method="get">
-                        <input type="text" name="titleKeyword" placeholder="제목 검색" th:value="${titleKeyword}">
-                        <select id="districtSelect" name="district">
+                        <label style="position:absolute;left:-9999px">제목 검색
+                          <input id="titleKeyword" type="text" name="titleKeyword" placeholder="제목 검색" th:value="${titleKeyword}">
+                        </label>
+
+                        <label style="position:absolute;left:-9999px">구 선택
+                          <select id="districtSelect" name="district">
                             <option value="">구 전체</option>
                             <option th:each="dist : ${districts}" th:value="${dist}" th:text="${dist}" th:selected="${dist == district}">구</option>
-                        </select>
-                        <select id="dongSelect" name="dongCode">
+                          </select>
+                        </label>
+
+                        <label style="position:absolute;left:-9999px">동 선택
+                          <select id="dongSelect" name="dongCode">
                             <option value="">동 전체</option>
                             <option th:each="d : ${dongs}" th:value="${d.dongCode}" th:text="${d.dongName}" th:selected="${dongCode != null and d.dongCode == dongCode}">동</option>
-                        </select>
+                          </select>
+                        </label>
+
                         <button type="submit">검색</button>
                         <a class="button-link" th:href="@{/communities/posts}" href="/communities/posts">초기화</a>
                     </form>
