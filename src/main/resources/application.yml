@@ -29,3 +29,6 @@ kakao:
 
 odsay:
   rest-api-keys: ${ODSAY_REST_API_KEY_LIST}
+
+frontserver:
+  url: ${FRONT_SERVER_URL}
