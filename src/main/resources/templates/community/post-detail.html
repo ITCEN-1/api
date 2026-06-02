@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <th:block th:insert="~{fragments/head :: favicon}"></th:block>
     <title>게시글 상세</title>
     <link rel="stylesheet" href="/css/community.css" th:href="@{/css/community.css}">
 </head>
@@ -85,11 +86,12 @@
                       method="post">
 
                     <div class="form-row">
-                        <textarea name="content"
-                                  rows="3"
-                                  maxlength="500"
-                                  required
-                                  placeholder="댓글을 입력하세요"></textarea>
+                            <label for="commentContent" style="position:absolute;left:-9999px">댓글 입력</label>
+                            <textarea id="commentContent" name="content"
+                                          rows="3"
+                                          maxlength="500"
+                                          required
+                                          placeholder="댓글을 입력하세요"></textarea>
                     </div>
 
                     <div class="actions">
@@ -147,7 +149,8 @@
                                   method="post">
 
                                 <div class="form-row">
-                                    <textarea name="content"
+                                    <label th:for="${'editContent-' + comment.commentId}" style="position:absolute;left:-9999px">댓글 수정</label>
+                                    <textarea th:id="${'editContent-' + comment.commentId}" name="content"
                                               rows="3"
                                               maxlength="500"
                                               required
