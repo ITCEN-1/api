@@ -35,4 +35,11 @@ public class HistoryController {
 
         return historyService.getHistory(userId, pageable);
     }
+
+    @GetMapping("/history/latest")
+    public HistoryDTO getLatestHistory() {
+        Long userId = sessionManager.getLoginUserId();
+
+        return historyService.getLatestHistory(userId);
+    }
 }

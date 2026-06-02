@@ -77,6 +77,18 @@ HistoryService {
 
     }
 
+    public HistoryDTO getLatestHistory(Long userId) {
+        History history = historyRepository.findHistoriesByLatest(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NO_HISTORY_DATA));
+
+        return HistoryDTO.builder()
+                .surveyDto(SurveyDTO.from(history.getSurvey()))
+                .recommendedDongs(history.getHistoryItems().stream()
+                        .map(HistoryService::toRecommendedDong)
+                        .collect(Collectors.toList()))
+                .build();
+    }
+
     // HistoryItemDTO가 사라져서 변환로직이 사라져서 만들었음
     // HistoryItem(저장된 추천 결과) -> RecommendedDong 변환
     // 주의 ** 히스토리 흐름에는 score/message가 저장돼 있지 않으므로 채우지 않는다.
