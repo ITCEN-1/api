@@ -80,7 +80,7 @@ public class OdsayClient {
                 }
 
                 log.warn("[ODsay] 에러 응답 수신. code: {}, msg: {}", errorCode, errorMsg);
-                return 0;
+                throw new CustomException(ODSAY_API_ERROR);
             }
 
             JsonNode pathArray = root.path("result").path("path");
