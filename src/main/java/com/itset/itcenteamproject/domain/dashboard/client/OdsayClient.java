@@ -69,6 +69,20 @@ public class OdsayClient {
         try {
             JsonNode root = objectMapper.readTree(response);
 
+            JsonNode errorNode = root.path("error");
+            if (!errorNode.isMissingNode()) {
+                String errorCode = errorNode.path("code").asText();
+                String errorMsg = errorNode.path("msg").asText();
+
+                if ("-98".equals(errorCode)) {
+                    log.warn("[ODsay] 출도착지가 700m 이내 입니당 code: {}, msg: {}", errorCode, errorMsg);
+                    return 0;
+                }
+
+                log.warn("[ODsay] 에러 응답 수신. code: {}, msg: {}", errorCode, errorMsg);
+                return 0;
+            }
+
             JsonNode pathArray = root.path("result").path("path");
             JsonNode firstPath = pathArray.path(0);
             JsonNode totalTime = firstPath.path("info").path("totalTime");
