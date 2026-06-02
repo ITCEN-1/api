@@ -1,22 +1,33 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/extras/spring-security"
+      xmlns:http="http://www.w3.org/1999/xhtml">
 <body>
 <nav class="dp-nav" th:fragment="communityNav">
-    <a class="dp-nav__logo" th:href="@{/communities/posts}" href="/communities/posts">
+    <a class="dp-nav__logo" th:href="@{http://localhost:5173/dashboard}" href="http://localhost:5173/dashboard">
         <img th:src="@{/images/header-logo.png}" src="/images/header-logo.png" alt="동네픽">
     </a>
     <div class="dp-nav__links">
-        <a class="dp-nav__link" href="#">대시보드</a>
-        <a class="dp-nav__link" href="#">히스토리</a>
+        <a class="dp-nav__link" th:href="@{http://localhost:5173/dashboard}">대시보드</a>
+        <a class="dp-nav__link" th:href="@{http://localhost:5173/history}">히스토리</a>
         <a class="dp-nav__link active" th:href="@{/communities/posts}" href="/communities/posts">게시판</a>
+        <a class="dp-nav__link"
+           sec:authorize="hasRole('ADMIN')"
+           th:href="@{/admin}"
+           href="/admin">
+            관리자
+        </a>
     </div>
     <div class="dp-nav__right">
         <a class="dp-nav__link"
            sec:authorize="isAnonymous()"
-           th:href="@{/auth/login}"
-           href="/auth/login">
+           href="http://localhost:5173/login">
             로그인
         </a>
+
+        <span sec:authorize="isAuthenticated()">
+        <span sec:authorize="hasRole('ADMIN')">[관리자]</span>
+        <span sec:authentication="principal.nickname"></span>님
+    </span>
 
         <button type="button"
                 class="dp-nav__link"
@@ -24,7 +35,6 @@
                 sec:authorize="isAuthenticated()">
             로그아웃
         </button>
-        <div class="dp-avatar">덕</div>
     </div>
 </nav>
 </body>

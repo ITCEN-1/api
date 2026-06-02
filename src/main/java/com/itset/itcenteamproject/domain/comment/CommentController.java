@@ -2,7 +2,7 @@ package com.itset.itcenteamproject.domain.comment;
 
 import com.itset.itcenteamproject.domain.comment.dto.CommentCreateRequest;
 import com.itset.itcenteamproject.domain.comment.dto.CommentUpdateRequest;
-import com.itset.itcenteamproject.domain.user.service.SessionUserService;
+import com.itset.itcenteamproject.global.component.SessionManager;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -19,7 +19,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class CommentController {
 
     private final CommentService commentService;
-    private final SessionUserService sessionUserService;
+    private final SessionManager sessionManager;
 
     //댓글 작성
     @PostMapping
@@ -30,7 +30,7 @@ public class CommentController {
             Model model,
             RedirectAttributes redirectAttributes
     ) {
-        Long userId = sessionUserService.getLoginUserId();
+        Long userId = sessionManager.getLoginUserId();
 
         commentService.createComment(userId, postId, form);
 
@@ -52,7 +52,7 @@ public class CommentController {
             Model model,
             RedirectAttributes redirectAttributes
     ) {
-        Long userId = sessionUserService.getLoginUserId();
+        Long userId = sessionManager.getLoginUserId();
 
         commentService.updateComment(userId, commentId, form);
 
@@ -73,7 +73,7 @@ public class CommentController {
             Model model,
             RedirectAttributes redirectAttributes
     ) {
-        Long userId = sessionUserService.getLoginUserId();
+        Long userId = sessionManager.getLoginUserId();
 
         commentService.deleteComment(userId, commentId);
 
