@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/extras/spring-security"
-      xmlns:http="http://www.w3.org/1999/xhtml">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
 <body>
 <nav class="dp-nav" th:fragment="communityNav">
     <a class="dp-nav__logo" th:href="@{http://localhost:5173/dashboard}" href="http://localhost:5173/dashboard">
@@ -9,7 +8,7 @@
     <div class="dp-nav__links">
         <a class="dp-nav__link" th:href="@{http://localhost:5173/dashboard}">대시보드</a>
         <a class="dp-nav__link" th:href="@{http://localhost:5173/history}">히스토리</a>
-        <a class="dp-nav__link active" th:href="@{/communities/posts}" href="/communities/posts">게시판</a>
+        <a class="dp-nav__link" th:href="@{/communities/posts}" href="/communities/posts">게시판</a>
         <a class="dp-nav__link"
            sec:authorize="hasRole('ADMIN')"
            th:href="@{/admin}"

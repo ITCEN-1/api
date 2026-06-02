@@ -5,7 +5,6 @@
 
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('logoutBtn')?.addEventListener('click', async () => {
-        if (!confirm('로그아웃하시겠습니까?')) return;
         const res = await fetch('/api/auth/logout', {method: 'POST'});
         if (res.ok) {
             location.href = '/auth/login';
