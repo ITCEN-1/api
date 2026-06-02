@@ -61,6 +61,7 @@ jobs:
           KAKAO_REST_API_KEY: ${{ secrets.KAKAO_REST_API_KEY }}
           ODSAY_REST_API_KEY_LIST: ${{ secrets.ODSAY_REST_API_KEY_LIST }}
           FRONT_SERVER_URL: ${{ secrets.FRONT_SERVER_URL }}
+          SESSION_COOKIE_SECURE: ${{ secrets.SESSION_COOKIE_SECURE }}
 
         with:
           host: ${{ secrets.SERVER_HOST }}
@@ -78,4 +79,5 @@ jobs:
                        -Dkakao.rest-api-key="${KAKAO_REST_API_KEY}" \
                        -Dodsay.rest-api-keys="${ODSAY_REST_API_KEY_LIST}" \
                        -Dfrontserver.url="${FRONT_SERVER_URL}" \
+                       -Dserver.servlet.session.cookie.secure="${SESSION_COOKIE_SECURE}" \
                        -jar ~/app/*.jar > ~/app/app.log 2>&1 &
