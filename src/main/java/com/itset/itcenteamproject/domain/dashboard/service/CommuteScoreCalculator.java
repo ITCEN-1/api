@@ -51,11 +51,14 @@ public class CommuteScoreCalculator {
         }
 
         // 2) 순수 HTTP 호출(ODsay)만 병렬 실행한다. 동시성은 풀 크기와 키 풀 블로킹으로 제한된다.
-        List<CompletableFuture<RecommendedDong>> futures = prepared.stream()
-                .map(p -> CompletableFuture.supplyAsync(
-                        () -> buildCommuteScoredDong(p.recommendedDong(), p.startingCoordinate(), workplaceCoordinate),
-                        odsayExecutor))
-                .toList();
+        List<CompletableFuture<RecommendedDong>> futures = new ArrayList<>();
+        for(DongWithCoordinate p:prepared){
+            CompletableFuture<RecommendedDong> completableFuture = CompletableFuture.supplyAsync(
+                    () -> buildCommuteScoredDong(p.recommendedDong(), p.startingCoordinate(), workplaceCoordinate),
+                    odsayExecutor //스레드 풀을 제한해서 동시 비동기 요청을 제한한다
+            );
+            futures.add(completableFuture);
+        }
 
         // 3) 입력 순서대로 결과를 수집한다. 하나라도 실패하면 fail-fast 로 예외를 전파한다.
         try {
