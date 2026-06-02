@@ -1,6 +1,6 @@
 package com.itset.itcenteamproject.domain.history;
 
-import com.itset.itcenteamproject.domain.user.service.SessionUserService;
+import com.itset.itcenteamproject.global.component.SessionManager;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Pageable;
@@ -15,11 +15,11 @@ import java.util.List;
 public class HistoryController {
 
     private final HistoryService historyService;
-    private final SessionUserService sessionUserService;
+    private final SessionManager sessionManager;
 
-    public HistoryController(HistoryService historyService, SessionUserService sessionUserService) {
+    public HistoryController(HistoryService historyService, SessionManager sessionManager) {
         this.historyService = historyService;
-        this.sessionUserService = sessionUserService;
+        this.sessionManager = sessionManager;
     }
 
     @Operation(summary = "히스토리 목록 내 특정 히스토리 조회")
@@ -31,8 +31,15 @@ public class HistoryController {
     @Operation(summary = "히스토리 조회",description = "세션 유저의 히스토리 조회")
     @GetMapping("/history")
     public List<HistoryDTO> getHistory(@PageableDefault Pageable pageable) {
-        Long userId = sessionUserService.getLoginUserId();
+        Long userId = sessionManager.getLoginUserId();
 
         return historyService.getHistory(userId, pageable);
+    }
+
+    @GetMapping("/history/latest")
+    public HistoryDTO getLatestHistory() {
+        Long userId = sessionManager.getLoginUserId();
+
+        return historyService.getLatestHistory(userId);
     }
 }

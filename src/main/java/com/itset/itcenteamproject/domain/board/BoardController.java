@@ -3,7 +3,7 @@ package com.itset.itcenteamproject.domain.board;
 import com.itset.itcenteamproject.domain.board.dto.*;
 import com.itset.itcenteamproject.domain.comment.CommentService;
 import com.itset.itcenteamproject.domain.comment.dto.CommentListItem;
-import com.itset.itcenteamproject.domain.user.service.SessionUserService;
+import com.itset.itcenteamproject.global.component.SessionManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
@@ -18,13 +18,13 @@ import java.util.List;
 @RequestMapping("/communities")
 public class BoardController {
     private final BoardService boardService;
-    private final SessionUserService sessionUserService;
+    private final SessionManager sessionManager;
     private final CommentService commentService;
 
     // 게시글 조회, 검색
     @GetMapping("/posts")
     public String getPostList(@RequestParam(required = false) String titleKeyword, @RequestParam(required = false) String district,
-                              @RequestParam(required = false) Integer dongCode, @RequestParam(defaultValue = "0") int page, Model model) {
+                              @RequestParam(required = false) Integer dongCode, @RequestParam(defaultValue = "0", required=false) int page, Model model) {
         BoardSearchCondition c = createSearchCondition(titleKeyword, district, dongCode);
         Page<BoardListItemDTO> postPage = boardService.getPosts(c, page);
         addPostListModel(model, titleKeyword, district, dongCode, postPage, false, "게시글 목록", "/communities/posts");
@@ -38,7 +38,7 @@ public class BoardController {
                                 @RequestParam(required = false) Integer dongCode,
                                 @RequestParam(defaultValue = "0") int page,
                                 Model model) {
-        Long userId = sessionUserService.getLoginUserId();
+        Long userId = sessionManager.getLoginUserId();
 
         BoardSearchCondition c = createSearchCondition(titleKeyword, district, dongCode);
         Page<BoardListItemDTO> postPage = boardService.getMyPosts(userId, c, page);
@@ -68,7 +68,7 @@ public class BoardController {
             @ModelAttribute("form") BoardCreateRequest form,
             RedirectAttributes redirectAttributes
     ) {
-        Long userId = sessionUserService.getLoginUserId();
+        Long userId = sessionManager.getLoginUserId();
         Long postId = boardService.createPost(userId, form);
 
         redirectAttributes.addFlashAttribute("successMessage", "게시글이 작성되었습니다.");
@@ -85,7 +85,7 @@ public class BoardController {
             @PathVariable Long postId,
             Model model
     ) {
-        Long loginUserId = sessionUserService.getLoginUserId();
+        Long loginUserId = sessionManager.getLoginUserId();
         BoardDetailDTO post = boardService.getPostDetailAndIncreaseView(postId, loginUserId);
 
         boolean editable = loginUserId != null && loginUserId.equals(post.getWriterId());
@@ -111,7 +111,7 @@ public class BoardController {
             @PathVariable Long postId,
             Model model
     ) {
-        Long userId = sessionUserService.getLoginUserId();
+        Long userId = sessionManager.getLoginUserId();
         BoardUpdateRequest form = boardService.getPostForEdit(userId, postId);
         model.addAttribute("districts", boardService.getDistricts());
         model.addAttribute("dongs", boardService.getDongsByDistrict(form.getDistrictName()));
@@ -128,7 +128,7 @@ public class BoardController {
             @ModelAttribute("form") BoardUpdateRequest form,
             RedirectAttributes redirectAttributes
     ) {
-        Long userId = sessionUserService.getLoginUserId();
+        Long userId = sessionManager.getLoginUserId();
 
         boardService.updatePost(userId, postId, form);
 
@@ -144,8 +144,8 @@ public class BoardController {
             RedirectAttributes redirectAttributes
     ) {
         // 1) 현재 로그인한 사용자 ID 조회
-        // 로그인하지 않은 사용자는 SessionUserService에서 SESSION_EXPIRED 예외 발생
-        Long userId = sessionUserService.getLoginUserId();
+        // 로그인하지 않은 사용자는 sessionManager SESSION_EXPIRED 예외 발생
+        Long userId = sessionManager.getLoginUserId();
 
         // 2) 삭제 처리
         // 실제 권한 검사는 service에서 다시 수행

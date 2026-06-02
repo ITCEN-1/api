@@ -1,8 +1,9 @@
 package com.itset.itcenteamproject.domain.user;
 
+import com.itset.itcenteamproject.domain.survey.SurveyService;
 import com.itset.itcenteamproject.domain.user.dto.*;
-import com.itset.itcenteamproject.domain.user.service.SessionUserService;
 import com.itset.itcenteamproject.domain.user.service.UserService;
+import com.itset.itcenteamproject.global.component.SessionManager;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpSession;
@@ -19,7 +20,8 @@ public class UserApiController {
     private final UserService userService;
     //설문 관련은 LoginSuccessHandler에서 사용
     //세션 관련
-    private final SessionUserService sessionUserService;
+    private final SessionManager sessionManager;
+    private final SurveyService surveyService;
 
     //로그인 테스트용
     @Operation(summary = "로그인 테스트")
@@ -29,7 +31,7 @@ public class UserApiController {
             HttpSession session
     ) {
         User user = userService.login(dto);
-        sessionUserService.login(session, user.getId());
+        sessionManager.login(session, user.getId());
 
         return LoginResponseDTO.builder()
                 .loginId(user.getLoginId())
@@ -74,9 +76,18 @@ public class UserApiController {
     @GetMapping("/me")
     @Operation(summary = "유저 정보 조회",description = "세션 유저의 정보 조회")
     public UserResponseDTO me() {
-        Long userId = sessionUserService.getLoginUserId();
+        Long userId = sessionManager.getLoginUserId();
         User user = userService.findById(userId);
+        Boolean isSurveyed = surveyService.hasSurvey(userId);
 
-        return new UserResponseDTO(user);
+        return UserResponseDTO
+                .builder()
+                .id(user.getId())
+                .loginId(user.getLoginId())
+                .nickname(user.getNickname())
+                .role(user.getRole())
+                .isSurveyed(isSurveyed)
+                .createdAt(user.getCreatedAt())
+                .build();
     }
 }

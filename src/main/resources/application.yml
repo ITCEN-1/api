@@ -1,5 +1,7 @@
 spring:
-
+  servlet:
+    session:
+      timout: 30m
   datasource:
     url: ${DB_URL}
     username: ${DB_USERNAME}
@@ -27,3 +29,6 @@ kakao:
 
 odsay:
   rest-api-keys: ${ODSAY_REST_API_KEY_LIST}
+
+frontserver:
+  url: ${FRONT_SERVER_URL}
