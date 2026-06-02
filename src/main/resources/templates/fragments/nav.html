@@ -8,11 +8,11 @@
     <div class="dp-nav__links">
         <a class="dp-nav__link" th:href="@{http://localhost:5173/dashboard}">대시보드</a>
         <a class="dp-nav__link" th:href="@{http://localhost:5173/history}">히스토리</a>
-        <a class="dp-nav__link" th:href="@{/communities/posts}" href="/communities/posts">게시판</a>
+        <a class="dp-nav__link" th:href="@{/communities/posts}" href="/communities/posts" data-nav="community">게시판</a>
         <a class="dp-nav__link"
            sec:authorize="hasRole('ADMIN')"
            th:href="@{/admin}"
-           href="/admin">
+           href="/admin" data-nav="admin">
             관리자
         </a>
     </div>
@@ -35,6 +35,21 @@
             로그아웃
         </button>
     </div>
+    <script>
+        const path = window.location.pathname;
+
+        if (path.startsWith("/communities")) {
+            document
+                .querySelector('[data-nav="community"]')
+                ?.classList.add("active");
+        }
+
+        if (path.startsWith("/admin")) {
+            document
+                .querySelector('[data-nav="admin"]')
+                ?.classList.add("active");
+        }
+    </script>
 </nav>
 </body>
 </html>
