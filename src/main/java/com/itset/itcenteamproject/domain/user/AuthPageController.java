@@ -1,5 +1,6 @@
 package com.itset.itcenteamproject.domain.user;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -8,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @RequestMapping("/auth")
 public class AuthPageController {
-    @GetMapping("/login") public String loginPage() { return "redirect:http://localhost:5173/login"; }
-    @GetMapping("/signup") public String signupPage() { return "redirect:http://localhost:5173/signup"; }
+    @Value("${frontserver.url}") private String frontServerUrl;
+
+    @GetMapping("/login") public String loginPage() { return "redirect:" + frontServerUrl + "/login"; }
+    @GetMapping("/signup") public String signupPage() { return "redirect:" + frontServerUrl + "/signup"; }
 }
