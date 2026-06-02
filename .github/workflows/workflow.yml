@@ -68,7 +68,7 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_KEY }}
           passphrase: ${{ secrets.SERVER_PASSPHRASE }}
-          envs: DB_URL,DB_USERNAME,DB_PASSWORD,DDL_AUTO,KAKAO_REST_API_KEY,ODSAY_REST_API_KEY_LIST,FRONT_SERVER_URL
+          envs: DB_URL,DB_USERNAME,DB_PASSWORD,DDL_AUTO,KAKAO_REST_API_KEY,ODSAY_REST_API_KEY_LIST,FRONT_SERVER_URL,SESSION_COOKIE_SECURE
           script: |
             sudo fuser -k 8080/tcp || true
             rm -f ~/app/*.jar.bak
