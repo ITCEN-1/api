@@ -78,7 +78,7 @@ public class OdsayClient {
                     return 0;
                 }
 
-                log.warn("[ODsay] 에러 응답 수신. code: {}, msg: {}", errorCode, errorMsg);
+                log.warn("[ODsay] 에러 응답 수신. code: {}, msg: {},response: {}", errorCode, errorMsg,response);
                 throw new CustomException(ODSAY_API_ERROR);
             }
 
