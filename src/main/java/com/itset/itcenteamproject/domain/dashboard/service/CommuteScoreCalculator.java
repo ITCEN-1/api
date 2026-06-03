@@ -1,9 +1,5 @@
 package com.itset.itcenteamproject.domain.dashboard.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.itset.itcenteamproject.domain.dashboard.client.OdsayApiKeys;
 import com.itset.itcenteamproject.domain.dashboard.client.OdsayClient;
 import com.itset.itcenteamproject.domain.dashboard.model.RecommendedDong;
 import com.itset.itcenteamproject.global.vo.Coordinate;
@@ -11,11 +7,7 @@ import com.itset.itcenteamproject.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestClient;
-import org.springframework.web.client.RestClientException;
-
 import java.math.BigDecimal;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,8 +23,6 @@ public class CommuteScoreCalculator {
     /**
      * workplaceDongCode(직장,학교 동) 를 기준으로 recommendedDongList(추천된 동) 에 있는 각 동 까지 걸리는 시간을
      * 조회하여 추가 점수를 부여하고 RecommendedDong.score에 가산하여 리턴합니다
-     * @param workplaceCoordinate
-     * @param recommendedDongList
      * @return 통근거리를 기준으로 점수가 추가된 addCommuteScoreDongList 리스트 반환
      */
     public List<RecommendedDong> calculate(Coordinate workplaceCoordinate, List<RecommendedDong> recommendedDongList){

@@ -11,6 +11,12 @@ public interface WolseRepository extends JpaRepository<Wolse, Long>, HouseContra
     @Query("select new com.itset.itcenteamproject.domain.house.ContractCntDTO(w.dongCode, count(w)) from Wolse as w" +
             " where w.monthlyRent Between :#{#survey.monthlyMin} and :#{#survey.monthlyMax}" +
             " and w.deposit Between :#{#survey.depositMin} and :#{#survey.depositMax}" +
+            " and w.dongCode in :dongCodes" +
+            " group by w.dongCode order by count(w) desc")
+    List<ContractCntDTO> findContractCntByPreferenceInDongCodes(Survey survey, List<Integer> dongCodes);
+    @Query("select new com.itset.itcenteamproject.domain.house.ContractCntDTO(w.dongCode, count(w)) from Wolse as w" +
+            " where w.monthlyRent Between :#{#survey.monthlyMin} and :#{#survey.monthlyMax}" +
+            " and w.deposit Between :#{#survey.depositMin} and :#{#survey.depositMax}" +
             " group by w.dongCode order by count(w) desc")
     List<ContractCntDTO> findContractCntByPreference(Survey survey);
 }

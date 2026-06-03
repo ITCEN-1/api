@@ -70,13 +70,13 @@ public class SecurityConfig {
                                 "/api/hello",
                                 "/api/hello/*",
                                 "/api/auth/**",
-                                "/api/dashboard/test"
+                                "/api/dashboard/test",
+                                "/api/users/check",
+                                "/api/users/check-nickname"
                         ).permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers(
                                 "/communities/**",
-                                "/api/users/check",
-                                "/api/users/check-nickname",
                                 "/api/surveys/**",
                                 "/api/infra/**",
                                 "/api/history/**",

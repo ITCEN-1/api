@@ -7,58 +7,67 @@ import com.itset.itcenteamproject.domain.house.HouseContractRepository;
 import com.itset.itcenteamproject.domain.survey.entity.Survey;
 import com.itset.itcenteamproject.exception.CustomException;
 import com.itset.itcenteamproject.exception.ErrorCode;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@AllArgsConstructor
 @Component
 public class HouseScoreCalculator {
     private final Map<String, HouseContractRepository> contractRepositoryMap;
-
-    public HouseScoreCalculator(Map<String, HouseContractRepository> contractRepositoryMap) {
-        this.contractRepositoryMap = contractRepositoryMap;
-    }
+    private final RankingMinMaxNormalizer rankingMinMaxNormalizer;
 
     public List<RecommendedDong> calcHousePriceScore(Survey survey, List<RecommendedDong> recommendedDongs) {
         List<RecommendedDong> newRecommendedDong = new ArrayList<>();
+        List<Integer> recommendedDongCodes = recommendedDongs.stream()
+                .map(RecommendedDong::getDongCode)
+                .toList();
         List<ContractCntDTO> contractCntDTO = this.contractRepositoryMap.get(getContractType(survey).getBeanName())
-                .findContractCntByPreference(survey);
+                .findContractCntByPreferenceInDongCodes(survey, recommendedDongCodes);
 
         if (contractCntDTO.isEmpty()) {
             throw new CustomException(ErrorCode.NO_CONTRACT_DATA);
         }
-        Long maxCnt = contractCntDTO.getFirst().getCnt();
 
-        Map<Integer, Long> cntMap = contractCntDTO.stream()
-                .collect(Collectors.toMap(
-                        ContractCntDTO::getDongCode,
-                        ContractCntDTO::getCnt
-                ));
+        // 계약 건수 기준 내림차순 정렬하여 rank 부여 (1등이 가장 건수가 많음)
+        List<ContractCntDTO> sortedByCnt = contractCntDTO.stream()
+                .sorted(Comparator.comparing(ContractCntDTO::getCnt).reversed())
+                .collect(Collectors.toList());
 
+        int size = sortedByCnt.size();
+        Map<Integer, Integer> rankMap = new HashMap<>();
+        for (int i = 0; i < sortedByCnt.size(); i++) {
+            rankMap.put(sortedByCnt.get(i).getDongCode(), i + 1); // 1-based rank
+        }
+
+        // recommendedDongs에 대해 rank 기반 normalized score를 계산하여 기존 score에 추가
         recommendedDongs.stream()
-                .filter(dong -> cntMap.containsKey(dong.getDongCode()))
+                .filter(dong -> rankMap.containsKey(dong.getDongCode()))
                 .forEach(dong -> {
-                    Long curCnt = cntMap.get(dong.getDongCode());
-                    double additionalScore = calcScore(maxCnt, curCnt);
+                    int rank = rankMap.get(dong.getDongCode());
+                    BigDecimal normalized = rankingMinMaxNormalizer.getMinMaxNormalizedScore(rank, BigDecimal.valueOf(0), size);
+                    BigDecimal existing = dong.getScore() != null ? dong.getScore() : BigDecimal.ZERO;
                     newRecommendedDong.add(
                             RecommendedDong.builder()
                                     .dongCode(dong.getDongCode())
                                     .districtName(dong.getDistrictName())
                                     .dongName(dong.getDongName())
-                                    .score(dong.getScore().add(BigDecimal.valueOf(additionalScore)))
+                                    .score(existing.add(normalized))
                                     .longitude(dong.getLongitude())
                                     .latitude(dong.getLatitude())
-                                    .message(dong.getMessage()+" house: "+BigDecimal.valueOf(additionalScore))
+                                    .message(dong.getMessage() + " house(rank:" + rank + " score:" + normalized + ")")
                                     .build()
                     );
                 });
 
-        return getTop10RecommendedDongs(newRecommendedDong);
+        return newRecommendedDong;
     }
 
     private ContractTypeEnum getContractType(Survey survey) {
@@ -68,15 +77,4 @@ public class HouseScoreCalculator {
         return ContractTypeEnum.WOLSE;
     }
 
-    private Double calcScore(Long maxContractCnt, Long curContractCnt) {
-        return (double) curContractCnt / maxContractCnt * 100;
-    }
-
-    private List<RecommendedDong> getTop10RecommendedDongs(List<RecommendedDong> recommendedDongs) {
-
-        return recommendedDongs.stream()
-                .sorted(Comparator.comparing(RecommendedDong::getScore).reversed())
-                .limit(10)
-                .collect(Collectors.toList());
-    }
 }

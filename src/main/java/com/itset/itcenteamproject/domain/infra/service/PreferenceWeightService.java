@@ -12,8 +12,8 @@ public class PreferenceWeightService {
 
         return switch (level) {
             case HIGH -> 1.0;
-            case MIDDLE -> 0.5;
-            case LOW -> 0.0;
+            case MIDDLE -> 0.66;
+            case LOW -> 0.33;
         };
     }
 }

@@ -2,6 +2,7 @@ package com.itset.itcenteamproject.domain.dashboard;
 
 import com.itset.itcenteamproject.domain.dashboard.model.RecommendedDong;
 import com.itset.itcenteamproject.domain.dashboard.service.HouseScoreCalculator;
+import com.itset.itcenteamproject.domain.dashboard.service.RankingMinMaxNormalizer;
 import com.itset.itcenteamproject.domain.house.ContractCntDTO;
 import com.itset.itcenteamproject.domain.house.HouseContractRepository;
 import com.itset.itcenteamproject.domain.survey.PreferenceLevel;
@@ -26,6 +27,8 @@ class HouseScoreCalculatorTest {
 
     @Mock
     private HouseContractRepository mockRepository;
+    @Mock
+    private RankingMinMaxNormalizer mockNormalizer;
 
     private HouseScoreCalculator calculator;
     private Survey testSurvey, wolseTestSurvey;
@@ -37,7 +40,7 @@ class HouseScoreCalculatorTest {
         mockMap.put("jeonseRepository", mockRepository);
         mockMap.put("wolseRepository", mockRepository);
 
-        calculator = new HouseScoreCalculator(mockMap);
+        calculator = new HouseScoreCalculator(mockMap, mockNormalizer);
 
         // 테스트 사용자
         User testUser = User.builder()
@@ -120,7 +123,7 @@ class HouseScoreCalculatorTest {
         contractList.add(new ContractCntDTO(1002, 200L));
         contractList.add(new ContractCntDTO(1003, 100L));
 
-        when(mockRepository.findContractCntByPreference(testSurvey))
+        when(mockRepository.findContractCntByPreferenceInDongCodes(testSurvey, contractList.stream().map(ContractCntDTO::getDongCode).toList()))
                 .thenReturn(contractList);
 
         // when
@@ -150,7 +153,7 @@ class HouseScoreCalculatorTest {
         contractList.add(new ContractCntDTO(1002, 300L));
         contractList.add(new ContractCntDTO(1003, 100L));
 
-        when(mockRepository.findContractCntByPreference(wolseTestSurvey))
+        when(mockRepository.findContractCntByPreferenceInDongCodes(wolseTestSurvey, contractList.stream().map(ContractCntDTO::getDongCode).toList()))
                 .thenReturn(contractList);
 
         // when
@@ -182,7 +185,7 @@ class HouseScoreCalculatorTest {
             contractList.add(new ContractCntDTO(1000 + i, 100L - i * 5)); // 95, 90, 85, ..., 25
         }
 
-        when(mockRepository.findContractCntByPreference(testSurvey))
+        when(mockRepository.findContractCntByPreferenceInDongCodes(testSurvey, contractList.stream().map(ContractCntDTO::getDongCode).toList()))
                 .thenReturn(contractList);
 
         // when
