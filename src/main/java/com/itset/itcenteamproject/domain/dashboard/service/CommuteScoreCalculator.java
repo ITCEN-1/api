@@ -73,13 +73,13 @@ public class CommuteScoreCalculator {
         }
     }
 
-    // 동 하나에 대해 ODsay 통근시간을 조회하고 점수를 가산한 RecommendedDong 을 만든다 (JPA 미접근, 병렬 실행됨)
+    // 동 하나에 대해 ODsay 통근시간을 조회하고 점수를 가산한 RecommendedDong 을 만든다
     private RecommendedDong buildCommuteScoredDong(RecommendedDong rd, Coordinate startingDongCoordinate, Coordinate workplaceCoordinate) {
         // 오디세이 API로 통근시간 가져오기
         String odsayResponse = odsayClient.getCommuteMinutes(startingDongCoordinate, workplaceCoordinate);
         int commuteMinutes = odsayClient.convertOdsayResponseToTotalMinutes(odsayResponse);
 
-        // 통근시간으로 점수 산정해서 기존 점수에 더하기 (Decimal 은 + 대신 add)
+        // 통근시간으로 점수 산정해서 기존 점수에 더하기
         BigDecimal newScore = rd.getScore().add(convertMinutesToScore(commuteMinutes));
 
         // commute 점수 이력 추가
