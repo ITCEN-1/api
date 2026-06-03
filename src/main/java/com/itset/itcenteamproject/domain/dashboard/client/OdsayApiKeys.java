@@ -73,11 +73,11 @@ public class OdsayApiKeys {
             return request.apply(key);// 받았던 람다 함수를 실제로 실행시키는 부분
         } finally {
             // 예외가 나도 키는 반드시 반납되어야하므로 finally로
-
             long elapsed = System.currentTimeMillis() - start;//디 버어어어어 그
             long delay = Math.max(0L, COOLDOWN_MS - elapsed);
-            log.debug("[ODsay] 응답 수신 (소요 {}ms), {}ms 후 풀 반납 예정 (사용 시작 + {}ms 기준)",
-                    elapsed, delay, COOLDOWN_MS);//디 버어어어어 그
+            //디버깅 전용 코드
+            /*log.debug("[ODsay] 응답 수신 (소요 {}ms), {}ms 후 풀 반납 예정 (사용 시작 + {}ms 기준)",
+                    elapsed, delay, COOLDOWN_MS);*/
             cooldownScheduler.schedule(() -> {
                 available.offer(key);
                 log.debug("[ODsay] 키 쿨다운 종료, 풀 반납 완료");
