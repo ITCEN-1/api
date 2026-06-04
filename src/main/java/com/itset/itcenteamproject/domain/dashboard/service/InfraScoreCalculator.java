@@ -67,10 +67,10 @@ public class InfraScoreCalculator {
             long libraryCount = libraryCountMap.getOrDefault(dong.getDongCode(), 0L);
             long largeStoreCount = largeStoreCountMap.getOrDefault(dong.getDongCode(), 0L);
 
-            double subwayScore = (subwayCount / (double) subwayMaxCnt) * 25 * subwayWeight;
-            double hospitalScore = (hospitalCount / (double) hospitalMaxCnt) * 25 * hospitalWeight;
-            double libraryScore = (libraryCount / (double) libraryMaxCnt) * 25 * libraryWeight;
-            double largeStoreScore = (largeStoreCount / (double) largeStoreMaxCnt) * 25 * largeStoreWeight;
+            double subwayScore = subwayMaxCnt > 0 ? (subwayCount / (double) subwayMaxCnt) * 25 * subwayWeight : 0.0;
+            double hospitalScore = hospitalMaxCnt > 0 ? (hospitalCount / (double) hospitalMaxCnt) * 25 * hospitalWeight : 0.0;
+            double libraryScore = libraryMaxCnt > 0 ? (libraryCount / (double) libraryMaxCnt) * 25 * libraryWeight : 0.0;
+            double largeStoreScore = largeStoreMaxCnt > 0 ? (largeStoreCount / (double) largeStoreMaxCnt) * 25 * largeStoreWeight : 0.0;
 
             // 인프라 점수 계산
             rowPq.add(new Row(
@@ -80,9 +80,11 @@ public class InfraScoreCalculator {
         }
 
         List<RecommendedDong> rankedDongs = new ArrayList<>();
+        // Use the raw aggregated infra score (clamped to 0..100) to preserve continuous differences
         int rank = 1;
         while(!rowPq.isEmpty()) {
             Row row = rowPq.poll();
+            BigDecimal infraScore = rankingMinMaxNormalizer.getMinMaxNormalizedScore(rank, BigDecimal.valueOf(0), filteredDongCodes.size());
             rankedDongs.add(
                     RecommendedDong.builder()
                             .ranking(null)
@@ -91,8 +93,8 @@ public class InfraScoreCalculator {
                             .dongName(row.dong.getDongName())
                             .latitude(row.dong.getLatitude())
                             .longitude(row.dong.getLongitude())
-                            .score(rankingMinMaxNormalizer.getMinMaxNormalizedScore(rank, BigDecimal.valueOf(0), rowPq.size()))
-                            .message("infra: "+BigDecimal.valueOf(row.score))
+                            .score(infraScore)
+                            .message("normalizedInfra: " + infraScore)
                             .build()
             );
             rank++;

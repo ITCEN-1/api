@@ -8,15 +8,26 @@ import java.math.RoundingMode;
 @Component
 public class RankingMinMaxNormalizer {
 
-    public BigDecimal getMinMaxNormalizedScore(int ranking, BigDecimal baseScore, int size) {
-        if (size <= 1) {
-            return BigDecimal.valueOf(100);
+    // 기존 하위호환 메서드: 실제 size를 maxSize로 사용
+
+    /**
+     * 순위 기반 Min-Max 정규화
+     * @param ranking 1-based rank
+     * @param baseScore 기본 점수
+     * @param maxSize 실제 데이터 수 (ranking의 상한 검증용)
+     * @param maxSize 정규화에 사용할 최대 크기 (다른 계산기와 스케일을 맞추기 위해 사용)
+     * @return baseScore 에 더할 정규화 점수(0..100)
+     */
+    public BigDecimal getMinMaxNormalizedScore(int ranking, BigDecimal baseScore, int maxSize) {
+        if (maxSize <= 1) {
+            return BigDecimal.valueOf(100).add(baseScore);
         }
-        // Min-Max 정규화
-        // ranking이 1등이면 100점, size등이면 0점이 되도록 계산
-        // BigDecimal로 나눗셈하여 소수 손실을 방지
+        if (ranking > maxSize) {
+            ranking = maxSize;
+        }
+
         BigDecimal rankIndex = BigDecimal.valueOf(ranking - 1);
-        BigDecimal denom = BigDecimal.valueOf(size - 1);
+        BigDecimal denom = BigDecimal.valueOf(maxSize - 1);
         BigDecimal ratio = rankIndex.divide(denom, 6, RoundingMode.HALF_UP); // 0..1
         BigDecimal score = BigDecimal.valueOf(100).multiply(BigDecimal.ONE.subtract(ratio));
         return baseScore.add(score);
