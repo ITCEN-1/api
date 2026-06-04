@@ -14,9 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,6 +27,7 @@ public class InfraScoreCalculator {
     private final LibraryRepository libraryRepository;
     private final LargeStoreRepository largeStoreRepository;
     private final PreferenceWeightService preferenceWeightService;
+    private final RankingMinMaxNormalizer rankingMinMaxNormalizer;
 
     // 순위 없이 동 + 점수만 반환
     public List<RecommendedDong> calculateTopDongs(
@@ -37,7 +36,7 @@ public class InfraScoreCalculator {
             //후보 법정동 코드 목록
             List<Integer> filteredDongCodes
     ) {
-        //HIGH/MIDDLE/LOW를 숫자 가중치(1.0/0.5/0.0)로 변환
+        //HIGH/MIDDLE/LOW를 숫자 가중치(1.0/0.66/0.33)로 변환
         double subwayWeight = preferenceWeightService.toWeight(survey.getPreferenceSubway());
         double hospitalWeight = preferenceWeightService.toWeight(survey.getPreferenceHospital());
         double libraryWeight = preferenceWeightService.toWeight(survey.getPreferenceLibrary());
@@ -52,12 +51,15 @@ public class InfraScoreCalculator {
         Map<Integer, Long> libraryCountMap = toCountMap(libraryRepository.countByDongCodeIn(filteredDongCodes));
         Map<Integer, Long> largeStoreCountMap = toCountMap(largeStoreRepository.countByDongCodeIn(filteredDongCodes));
 
+        int subwayMaxCnt = maxInfraCnt(subwayCountMap);
+        int hospitalMaxCnt = maxInfraCnt(hospitalCountMap);
+        int libraryMaxCnt = maxInfraCnt(libraryCountMap);
+        int largeStoreMaxCnt = maxInfraCnt(largeStoreCountMap);
+
         //중간 계산 저장용 리스트. Row에는 동 1개에 대한 count/density 묶음이 들어감
-        List<Row> rows = new ArrayList<>();
-        // 1) 동별 count + density(밀도) 계산
+        PriorityQueue<Row> rowPq = new PriorityQueue<>(Comparator.comparing((Row r) -> r.score).reversed()); //점수 높은 순 정렬
+        // 1) 동별 count / 최대 count 계산 및 설문 기반 가중치 적용
         for (DongLocation dong : candidates) {
-            //면적이 null, 0이면 1.0으로(0나누기 에러 방지)
-            double area = (dong.getDongArea() == null || dong.getDongArea() <= 0.0) ? 1.0 : dong.getDongArea();
 
             //GROUP BY 결과에 없는 동코드는 기본값 0
             long subwayCount = subwayCountMap.getOrDefault(dong.getDongCode(), 0L);
@@ -65,55 +67,40 @@ public class InfraScoreCalculator {
             long libraryCount = libraryCountMap.getOrDefault(dong.getDongCode(), 0L);
             long largeStoreCount = largeStoreCountMap.getOrDefault(dong.getDongCode(), 0L);
 
-            //밀도 계산(개수/면적)
-            rows.add(new Row(
-                    dong,
-                    subwayCount / area,
-                    hospitalCount / area,
-                    libraryCount / area,
-                    largeStoreCount / area
+            double subwayScore = subwayMaxCnt > 0 ? (subwayCount / (double) subwayMaxCnt) * 25 * subwayWeight : 0.0;
+            double hospitalScore = hospitalMaxCnt > 0 ? (hospitalCount / (double) hospitalMaxCnt) * 25 * hospitalWeight : 0.0;
+            double libraryScore = libraryMaxCnt > 0 ? (libraryCount / (double) libraryMaxCnt) * 25 * libraryWeight : 0.0;
+            double largeStoreScore = largeStoreMaxCnt > 0 ? (largeStoreCount / (double) largeStoreMaxCnt) * 25 * largeStoreWeight : 0.0;
+
+            // 인프라 점수 계산
+            rowPq.add(new Row(
+                dong,
+                subwayScore + hospitalScore + libraryScore + largeStoreScore
             ));
         }
 
-        // 2) 후보 동 중에서 인프라별 최대 밀도 구하기 (정규화 기준 값으로 사용)
-        double maxSubwayDensity = rows.stream().mapToDouble(r -> r.subwayDensity).max().orElse(0.0);
-        double maxHospitalDensity = rows.stream().mapToDouble(r -> r.hospitalDensity).max().orElse(0.0);
-        double maxLibraryDensity = rows.stream().mapToDouble(r -> r.libraryDensity).max().orElse(0.0);
-        double maxLargeStoreDensity = rows.stream().mapToDouble(r -> r.largeStoreDensity).max().orElse(0.0);
-
-        return rows.stream()
-                .map(r -> {
-                    //정규화 공식: (현재밀도/최대밀도)*25
-                    //인프라마다 규모가 달라도 0~25 범위에서 비교 가능
-                    //인프라 점수 합: 100
-                    double subwayNorm = normalizeTo25(r.subwayDensity, maxSubwayDensity);
-                    double hospitalNorm = normalizeTo25(r.hospitalDensity, maxHospitalDensity);
-                    double libraryNorm = normalizeTo25(r.libraryDensity, maxLibraryDensity);
-                    double largeStoreNorm = normalizeTo25(r.largeStoreDensity, maxLargeStoreDensity);
-
-                    //최종 합산 점수
-                    double score = (subwayNorm * subwayWeight)
-                            + (hospitalNorm * hospitalWeight)
-                            + (libraryNorm * libraryWeight)
-                            + (largeStoreNorm * largeStoreWeight);
-
-                    return RecommendedDong.builder()
+        List<RecommendedDong> rankedDongs = new ArrayList<>();
+        // Use the raw aggregated infra score (clamped to 0..100) to preserve continuous differences
+        int rank = 1;
+        while(!rowPq.isEmpty()) {
+            Row row = rowPq.poll();
+            BigDecimal infraScore = rankingMinMaxNormalizer.getMinMaxNormalizedScore(rank, BigDecimal.valueOf(0), filteredDongCodes.size());
+            rankedDongs.add(
+                    RecommendedDong.builder()
                             .ranking(null)
-                            .dongCode(r.dong.getDongCode())
-                            .districtName(r.dong.getDistrictName())
-                            .dongName(r.dong.getDongName())
-                            .latitude(r.dong.getLatitude())
-                            .longitude(r.dong.getLongitude())
-                            .score(BigDecimal.valueOf(score))
-                            .message("infra: "+BigDecimal.valueOf(score))
-                            .build();
-                })
-                .toList();
-    }
+                            .dongCode(row.dong.getDongCode())
+                            .districtName(row.dong.getDistrictName())
+                            .dongName(row.dong.getDongName())
+                            .latitude(row.dong.getLatitude())
+                            .longitude(row.dong.getLongitude())
+                            .score(infraScore)
+                            .message("normalizedInfra: " + infraScore)
+                            .build()
+            );
+            rank++;
+        }
 
-    private double normalizeTo25(double value, double max) {
-        if (max <= 0.0) return 0.0;
-        return (value / max) * 25.0;
+        return rankedDongs;
     }
 
     //통 조회 결과에서 동 코드에 해당하는 카운트 수 찾기
@@ -123,23 +110,17 @@ public class InfraScoreCalculator {
 
     private static class Row {
         private final DongLocation dong;
-        private final double subwayDensity;
-        private final double hospitalDensity;
-        private final double libraryDensity;
-        private final double largeStoreDensity;
-
+        private final double score;
         private Row(
                 DongLocation dong,
-                double subwayDensity,
-                double hospitalDensity,
-                double libraryDensity,
-                double largeStoreDensity
+                double score
         ) {
             this.dong = dong;
-            this.subwayDensity = subwayDensity;
-            this.hospitalDensity = hospitalDensity;
-            this.libraryDensity = libraryDensity;
-            this.largeStoreDensity = largeStoreDensity;
+            this.score = score;
         }
+    }
+
+    private int maxInfraCnt(Map<Integer, Long> infraCountMap) {
+        return infraCountMap.values().stream().mapToInt(Long::intValue).max().orElse(0);
     }
 }

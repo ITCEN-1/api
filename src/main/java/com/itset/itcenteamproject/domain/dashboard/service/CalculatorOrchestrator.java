@@ -26,7 +26,6 @@ public class CalculatorOrchestrator {
     private final KakaoGeocodingClient kakaoGeocodingClient;
     private final LocationService locationService;
 
-
     //현재 유저의 가장 최근 설문 내용을 기반으로 점수를 산정
     @Transactional
     public List<RecommendedDong> getRankingListFromCurrentSurvey(Long userId){
@@ -39,7 +38,6 @@ public class CalculatorOrchestrator {
         log.info("[Perf] filteredDongCodes size={}", filteredDongCodes.size());
 
         //점수 산정
-
         //1. 인프라 점수 산정 100 -> 100
         List<RecommendedDong> infraStepRecommendedDongList = infraScoreCalculator.calculateTopDongs(survey,filteredDongCodes);
 
@@ -50,11 +48,7 @@ public class CalculatorOrchestrator {
         if(survey.getWorkplaceAddress()!=null){
             Coordinate workplaceCoordinate=kakaoGeocodingClient.addressToCoordinate(survey.getWorkplaceAddress());
 
-            List<RecommendedDong> commuteStepRecommendedDongList = commuteScoreCalculator.calculate(workplaceCoordinate,houseStepRecommendedDongList);
-
-            List<RecommendedDong> result = scoreDongList(commuteStepRecommendedDongList);
-
-            return result;
+            return commuteScoreCalculator.calculate(workplaceCoordinate,houseStepRecommendedDongList);
         }
 
         //최종 결과에 순위 부여
@@ -69,6 +63,7 @@ public class CalculatorOrchestrator {
         //정렬된 순서대로 랭킹 부여
         for(int i=0;i<dongList.size();i++){
             dongList.get(i).setRanking(i+1);
+            System.out.println("Ranking: "+dongList.get(i).getRanking()+" Dong: "+dongList.get(i).getDongName()+" Score: "+dongList.get(i).getMessage());
         }
         return dongList;
     }

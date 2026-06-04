@@ -80,8 +80,6 @@ public class SecurityConfig {
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers(
                                 "/communities/**",
-                                "/api/users/check",
-                                "/api/users/check-nickname",
                                 "/api/surveys/**",
                                 "/api/infra/**",
                                 "/api/history/**",

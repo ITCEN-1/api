@@ -11,6 +11,13 @@ public interface JeonseRepository extends JpaRepository<Jeonse, Long>, HouseCont
     @Query("select new com.itset.itcenteamproject.domain.house.ContractCntDTO(j.dongCode, count(j)) " +
             "from Jeonse j " +
             "where j.jeonseRent between :#{#survey.jeonseMin} and :#{#survey.jeonseMax} " +
+            "and j.dongCode in :dongCodes " +
+            "group by j.dongCode " +
+            "order by count(j) desc")
+    List<ContractCntDTO> findContractCntByPreferenceInDongCodes(Survey survey, List<Integer> dongCodes);
+    @Query("select new com.itset.itcenteamproject.domain.house.ContractCntDTO(j.dongCode, count(j)) " +
+            "from Jeonse j " +
+            "where j.jeonseRent between :#{#survey.jeonseMin} and :#{#survey.jeonseMax} " +
             "group by j.dongCode " +
             "order by count(j) desc")
     List<ContractCntDTO> findContractCntByPreference(Survey survey);

@@ -5,5 +5,5 @@ import com.itset.itcenteamproject.domain.survey.entity.Survey;
 import java.util.List;
 
 public interface HouseContractRepository {
-    List<ContractCntDTO> findContractCntByPreference(Survey survey);
+    List<ContractCntDTO> findContractCntByPreferenceInDongCodes(Survey survey, List<Integer> dongCodes);
 }
