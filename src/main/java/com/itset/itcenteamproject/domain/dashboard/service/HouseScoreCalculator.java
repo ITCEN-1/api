@@ -67,7 +67,7 @@ public class HouseScoreCalculator {
                     );
                 });
 
-        return newRecommendedDong;
+        return newRecommendedDong.stream().limit(10).toList();
     }
 
     private ContractTypeEnum getContractType(Survey survey) {

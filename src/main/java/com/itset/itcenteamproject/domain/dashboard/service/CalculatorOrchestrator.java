@@ -22,7 +22,6 @@ public class CalculatorOrchestrator {
     private final SurveyRepository surveyRepository;
     private final InfraScoreCalculator infraScoreCalculator;
     private final HouseScoreCalculator houseScoreCalculator;
-    private final StraightDistanceCalculator straightDistanceCalculator;
     private final CommuteScoreCalculator commuteScoreCalculator;
     private final KakaoGeocodingClient kakaoGeocodingClient;
     private final LocationService locationService;
@@ -49,12 +48,7 @@ public class CalculatorOrchestrator {
         if(survey.getWorkplaceAddress()!=null){
             Coordinate workplaceCoordinate=kakaoGeocodingClient.addressToCoordinate(survey.getWorkplaceAddress());
 
-            List<RecommendedDong> straightDistanceStepRecommendedDongList = straightDistanceCalculator.calculateStraightDistanceScore(workplaceCoordinate, houseStepRecommendedDongList);
-            List<RecommendedDong> commuteStepRecommendedDongList = commuteScoreCalculator.calculate(workplaceCoordinate,straightDistanceStepRecommendedDongList);
-
-            List<RecommendedDong> result = scoreDongList(commuteStepRecommendedDongList);
-
-            return result;
+            return commuteScoreCalculator.calculate(workplaceCoordinate,houseStepRecommendedDongList);
         }
 
         //최종 결과에 순위 부여
