@@ -24,7 +24,7 @@ public class BoardController {
     // 게시글 조회, 검색
     @GetMapping("/posts")
     public String getPostList(@RequestParam(required = false) String titleKeyword, @RequestParam(required = false) String district,
-                              @RequestParam(required = false) Integer dongCode, @RequestParam(defaultValue = "0") int page, Model model) {
+                              @RequestParam(required = false) Integer dongCode, @RequestParam(defaultValue = "0", required=false) int page, Model model) {
         BoardSearchCondition c = createSearchCondition(titleKeyword, district, dongCode);
         Page<BoardListItemDTO> postPage = boardService.getPosts(c, page);
         addPostListModel(model, titleKeyword, district, dongCode, postPage, false, "게시글 목록", "/communities/posts");

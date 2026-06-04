@@ -119,8 +119,9 @@ a {
 }
 
 .dp-nav__link.active {
-    background: var(--dp-coral-50);
     color: var(--primary);
+    background: var(--dp-coral-50);
+    font-weight: 700;
 }
 
 .dp-nav__right {

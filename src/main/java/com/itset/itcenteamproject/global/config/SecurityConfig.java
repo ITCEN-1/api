@@ -7,6 +7,7 @@ import com.itset.itcenteamproject.domain.user.security.LoginSuccessHandler;
 import com.itset.itcenteamproject.exception.ErrorCode;
 import com.itset.itcenteamproject.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -31,6 +32,8 @@ public class SecurityConfig {
     private final ObjectMapper objectMapper;
     private final LoginSuccessHandler loginSuccessHandler;
     private final LoginFailureHandler loginFailureHandler;
+    @Value("${frontserver.url}")
+    private String frontServerUrl;
 
     @Bean
     public SecurityFilterChain filterChain(
@@ -71,8 +74,8 @@ public class SecurityConfig {
                                 "/api/hello/*",
                                 "/api/auth/**",
                                 "/api/dashboard/test",
-                                "/api/users/check",
-                                "/api/users/check-nickname"
+                                "/api/users/**",
+                                "/api/me"
                         ).permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers(
@@ -88,7 +91,7 @@ public class SecurityConfig {
                             String uri = request.getRequestURI();
 
                             if (uri.startsWith("/communities")) {
-                                response.sendRedirect("http://localhost:5173/login");
+                                response.sendRedirect("%s/login".formatted(frontServerUrl));
                                 return;
                             }
 
@@ -133,7 +136,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
+        configuration.setAllowedOrigins(List.of("http://localhost:5173", frontServerUrl));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);

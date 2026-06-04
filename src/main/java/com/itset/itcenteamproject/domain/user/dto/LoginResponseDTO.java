@@ -11,7 +11,7 @@ public class LoginResponseDTO {
     private String loginId;
     private String nickname;
     private String role;
-    private boolean surveyCompleted;
+    private Boolean isSurveyed;
     private String redirectPath;
 }
 

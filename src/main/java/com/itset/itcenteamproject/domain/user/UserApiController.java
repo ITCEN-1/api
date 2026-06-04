@@ -1,5 +1,6 @@
 package com.itset.itcenteamproject.domain.user;
 
+import com.itset.itcenteamproject.domain.survey.SurveyService;
 import com.itset.itcenteamproject.domain.user.dto.*;
 import com.itset.itcenteamproject.domain.user.service.UserService;
 import com.itset.itcenteamproject.global.component.SessionManager;
@@ -20,6 +21,7 @@ public class UserApiController {
     //설문 관련은 LoginSuccessHandler에서 사용
     //세션 관련
     private final SessionManager sessionManager;
+    private final SurveyService surveyService;
 
     //로그인 테스트용
     @Operation(summary = "로그인 테스트")
@@ -76,7 +78,16 @@ public class UserApiController {
     public UserResponseDTO me() {
         Long userId = sessionManager.getLoginUserId();
         User user = userService.findById(userId);
+        Boolean isSurveyed = surveyService.hasSurvey(userId);
 
-        return new UserResponseDTO(user);
+        return UserResponseDTO
+                .builder()
+                .id(user.getId())
+                .loginId(user.getLoginId())
+                .nickname(user.getNickname())
+                .role(user.getRole())
+                .isSurveyed(isSurveyed)
+                .createdAt(user.getCreatedAt())
+                .build();
     }
 }

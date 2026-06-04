@@ -11,6 +11,10 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.ExecutorService;
+import java.util.stream.Collectors;
 
 import static com.itset.itcenteamproject.exception.ErrorCode.*;
 
@@ -21,70 +25,71 @@ public class CommuteScoreCalculator {
 
     private final LocationService locationUtil;
     private final OdsayClient odsayClient;
+    private final ExecutorService odsayExecutor;
     /**
      * workplaceDongCode(직장,학교 동) 를 기준으로 recommendedDongList(추천된 동) 에 있는 각 동 까지 걸리는 시간을
      * 조회하여 추가 점수를 부여하고 RecommendedDong.score에 가산하여 리턴합니다
      * @return 통근거리를 기준으로 점수가 추가된 addCommuteScoreDongList 리스트 반환
      */
     public List<RecommendedDong> calculate(Coordinate workplaceCoordinate, List<RecommendedDong> recommendedDongList){
-        // 1) 각 동에 대해 Odsay에서 통근시간을 조회하고, 해당 통근시간으로 점수(convertMinutesToScore) 산정
-        //    단, 기존 RecommendedDong.score는 변경하지 않고 commuteTime 필드만 채웁니다.
-        // 2) 산정된 통근 점수 기준으로 내림차순 정렬하여 1등~10등까지 ranking을 부여합니다.
 
-        // helper entry to keep computed commute score
-        class Entry {
-            RecommendedDong rd;
-            int minutes;
-            BigDecimal commuteScore;
-            Entry(RecommendedDong rd, int minutes, BigDecimal commuteScore){
-                this.rd = rd;
-                this.minutes = minutes;
-                this.commuteScore = commuteScore;
+        // 1) 동 좌표 변환은 JPA(EntityManager)를 타므로 트랜잭션 스레드에서 먼저 모두 수행한다.
+        //    (영속성 컨텍스트는 스레드 안전하지 않아 워커 스레드에서 접근하면 안 됨)
+        List<DongWithCoordinate> prepared = new ArrayList<>();
+        for (RecommendedDong rd : recommendedDongList) {
+            validateDongCode(rd.getDongCode());
+            Coordinate startingDongCoordinate = locationUtil.dongCodeToCoordinate(rd.getDongCode());
+            prepared.add(new DongWithCoordinate(rd, startingDongCoordinate));
+        }
+
+        // 2) 순수 HTTP 호출(ODsay)만 병렬 실행한다. 동시성은 풀 크기와 키 풀 블로킹으로 제한된다.
+        List<CompletableFuture<RecommendedDong>> futures = new ArrayList<>();
+        for(DongWithCoordinate p:prepared){
+            CompletableFuture<RecommendedDong> completableFuture = CompletableFuture.supplyAsync(
+                    () -> buildCommuteScoredDong(p.recommendedDong(), p.startingCoordinate(), workplaceCoordinate),
+                    odsayExecutor //스레드 풀을 제한해서 동시 비동기 요청을 제한한다
+            );
+            futures.add(completableFuture);
+        }
+
+        // 3) 입력 순서대로 결과를 수집한다. 하나라도 실패하면 fail-fast 로 예외를 전파한다.
+        try {
+            return futures.stream()
+                    .map(CompletableFuture::join)
+                    .collect(Collectors.toList());
+        } catch (CompletionException e) {
+            if (e.getCause() instanceof CustomException ce) {
+                throw ce;
             }
+            throw e;
         }
-
-        List<Entry> entries = new ArrayList<>();
-        for(RecommendedDong rd: recommendedDongList){
-            Integer startingDongCode = rd.getDongCode();
-            validateDongCode(startingDongCode);
-            Coordinate startingDongCoordinate = locationUtil.dongCodeToCoordinate(startingDongCode);
-
-            String odsayResponse = odsayClient.getCommuteMinutes(startingDongCoordinate, workplaceCoordinate);
-            int commuteMinutes = odsayClient.convertOdsayResponseToTotalMinutes(odsayResponse);
-
-            BigDecimal commuteScore = convertMinutesToScore(commuteMinutes);
-
-            // update commuteTime in the existing object (preserve original score)
-            rd.setCommuteTime(commuteMinutes);
-
-            entries.add(new Entry(rd, commuteMinutes, commuteScore));
-        }
-
-        // 정렬: commuteScore 기준 내림차순(높은 점수가 우수), 동률일 경우 rd.score 기준 내림차순
-        entries.sort(Comparator.comparing((Entry e) -> e.commuteScore, Comparator.reverseOrder())
-                .thenComparing(e -> e.rd.getScore(), Comparator.nullsLast(Comparator.reverseOrder())));
-
-        // 1등부터 10등까지 ranking 부여
-        for (int i = 0; i < entries.size(); i++) {
-            RecommendedDong rd = entries.get(i).rd;
-            if (i < 10) {
-                rd.setRanking(i + 1);
-            } else {
-                rd.setRanking(null);
-            }
-            // optionally annotate message with commute score
-            rd.setMessage((rd.getMessage() == null ? "" : rd.getMessage() + " ") + "commuteScore:" + entries.get(i).commuteScore);
-        }
-        System.out.println(entries);
-        // 반환은 원래 리스트의 순서를 유지하거나, 랭킹이 높은 순으로 반환하고 싶다면 아래처럼 반환
-        // 여기서는 ranking이 반영된 추천 리스트를 commuteScore 내림차순으로 반환합니다.
-        List<RecommendedDong> result = new ArrayList<>();
-        for (Entry e : entries) {
-            result.add(e.rd);
-            System.out.println("법정동명: " + e.rd.getDongName() + " " + e.rd.getMessage() + " commuteTime:" + e.minutes);
-        }
-        return result;
     }
+
+    // 동 하나에 대해 ODsay 통근시간을 조회하고 점수를 가산한 RecommendedDong 을 만든다
+    private RecommendedDong buildCommuteScoredDong(RecommendedDong rd, Coordinate startingDongCoordinate, Coordinate workplaceCoordinate) {
+        // 오디세이 API로 통근시간 가져오기
+        String odsayResponse = odsayClient.getCommuteMinutes(startingDongCoordinate, workplaceCoordinate);
+        int commuteMinutes = odsayClient.convertOdsayResponseToTotalMinutes(odsayResponse);
+
+        // 통근시간으로 점수 산정해서 기존 점수에 더하기
+        BigDecimal newScore = rd.getScore().add(convertMinutesToScore(commuteMinutes));
+
+        // commute 점수 이력 추가
+        String newMessage = rd.getMessage() + " commute: " + convertMinutesToScore(commuteMinutes);
+
+        return RecommendedDong.builder()
+                .commuteTime(commuteMinutes)
+                .dongCode(rd.getDongCode())
+                .dongName(rd.getDongName())
+                .score(newScore)
+                .longitude(rd.getLongitude())
+                .latitude(rd.getLatitude())
+                .message(newMessage)
+                .build();
+    }
+
+    // 동과 변환된 시작 좌표를 묶는 내부 레코드
+    private record DongWithCoordinate(RecommendedDong recommendedDong, Coordinate startingCoordinate) {}
 
     /**
      * 통근시간(분)을 점수로 수치화하는 메소드입니다 산정 방식은 임의로 정했습니다

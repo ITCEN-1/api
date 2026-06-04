@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <th:block th:insert="~{fragments/head :: favicon}"></th:block>
     <title th:text="${pageTitle}">게시글 목록</title>
+    <link rel="icon" th:href="@{/favicon.ico}">
     <link rel="stylesheet" href="/css/community.css" th:href="@{/css/community.css}">
 </head>
 <body>
@@ -19,8 +21,8 @@
                 <p>같은 동네에 사는 사람들과 소소한 정보를 나눠보세요.</p>
             </div>
             <div class="actions">
-            <a class="button-link" th:href="@{/communities/my/posts}" href="/communities/my/posts">내 글 보기</a>
-            <a class="button-link primary" th:href="@{/communities/posts/new}" href="/communities/posts/new">새 글 쓰기</a>
+                <a class="button-link" th:href="@{/communities/my/posts}" href="/communities/my/posts">내 글 보기</a>
+                <a class="button-link primary" th:href="@{/communities/posts/new}" href="/communities/posts/new">새 글 쓰기</a>
             </div>
         </header>
 
