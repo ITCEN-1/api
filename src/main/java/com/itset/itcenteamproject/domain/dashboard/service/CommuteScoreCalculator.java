@@ -15,9 +15,12 @@ import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 
 import java.math.BigDecimal;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.ExecutorService;
+import java.util.stream.Collectors;
 
 import static com.itset.itcenteamproject.exception.ErrorCode.*;
 
@@ -28,6 +31,7 @@ public class CommuteScoreCalculator {
 
     private final LocationService locationUtil;
     private final OdsayClient odsayClient;
+    private final ExecutorService odsayExecutor;
     /**
      * workplaceDongCode(직장,학교 동) 를 기준으로 recommendedDongList(추천된 동) 에 있는 각 동 까지 걸리는 시간을
      * 조회하여 추가 점수를 부여하고 RecommendedDong.score에 가산하여 리턴합니다
@@ -36,37 +40,64 @@ public class CommuteScoreCalculator {
      * @return 통근거리를 기준으로 점수가 추가된 addCommuteScoreDongList 리스트 반환
      */
     public List<RecommendedDong> calculate(Coordinate workplaceCoordinate, List<RecommendedDong> recommendedDongList){
-        List<RecommendedDong> newRecommendedDong= new ArrayList<>();
-        for(RecommendedDong rd: recommendedDongList){
 
-            // 추천된 동 코드를 좌표로 변환
-            Integer startingDongCode = rd.getDongCode();
-            validateDongCode(startingDongCode);
-            Coordinate startingDongCoordinate = locationUtil.dongCodeToCoordinate(startingDongCode);
-
-            // 오디세이 API로 통근시간 가져오기
-            String odsayResponse=odsayClient.getCommuteMinutes(startingDongCoordinate,workplaceCoordinate);
-            int commuteMinutes=odsayClient.convertOdsayResponseToTotalMinutes(odsayResponse);
-
-            // 통근시간으로 점수 산정해서 기존 점수에 더하기 (Decimal 은 + 대신 add)
-            BigDecimal newScore = rd.getScore().add(convertMinutesToScore(commuteMinutes));
-
-            // commute 점수 이력 추가
-            String newMessage = rd.getMessage()+" commute: "+convertMinutesToScore(commuteMinutes);
-
-            newRecommendedDong.add(RecommendedDong.builder()
-                    .commuteTime(commuteMinutes)
-                    .dongCode(rd.getDongCode())
-                    .districtName(rd.getDistrictName())
-                    .dongName(rd.getDongName())
-                    .score(newScore)
-                    .longitude(rd.getLongitude())
-                    .latitude(rd.getLatitude())
-                    .message(newMessage)
-                    .build());
+        // 1) 동 좌표 변환은 JPA(EntityManager)를 타므로 트랜잭션 스레드에서 먼저 모두 수행한다.
+        //    (영속성 컨텍스트는 스레드 안전하지 않아 워커 스레드에서 접근하면 안 됨)
+        List<DongWithCoordinate> prepared = new ArrayList<>();
+        for (RecommendedDong rd : recommendedDongList) {
+            validateDongCode(rd.getDongCode());
+            Coordinate startingDongCoordinate = locationUtil.dongCodeToCoordinate(rd.getDongCode());
+            prepared.add(new DongWithCoordinate(rd, startingDongCoordinate));
         }
-        return newRecommendedDong;
+
+        // 2) 순수 HTTP 호출(ODsay)만 병렬 실행한다. 동시성은 풀 크기와 키 풀 블로킹으로 제한된다.
+        List<CompletableFuture<RecommendedDong>> futures = new ArrayList<>();
+        for(DongWithCoordinate p:prepared){
+            CompletableFuture<RecommendedDong> completableFuture = CompletableFuture.supplyAsync(
+                    () -> buildCommuteScoredDong(p.recommendedDong(), p.startingCoordinate(), workplaceCoordinate),
+                    odsayExecutor //스레드 풀을 제한해서 동시 비동기 요청을 제한한다
+            );
+            futures.add(completableFuture);
+        }
+
+        // 3) 입력 순서대로 결과를 수집한다. 하나라도 실패하면 fail-fast 로 예외를 전파한다.
+        try {
+            return futures.stream()
+                    .map(CompletableFuture::join)
+                    .collect(Collectors.toList());
+        } catch (CompletionException e) {
+            if (e.getCause() instanceof CustomException ce) {
+                throw ce;
+            }
+            throw e;
+        }
     }
+
+    // 동 하나에 대해 ODsay 통근시간을 조회하고 점수를 가산한 RecommendedDong 을 만든다
+    private RecommendedDong buildCommuteScoredDong(RecommendedDong rd, Coordinate startingDongCoordinate, Coordinate workplaceCoordinate) {
+        // 오디세이 API로 통근시간 가져오기
+        String odsayResponse = odsayClient.getCommuteMinutes(startingDongCoordinate, workplaceCoordinate);
+        int commuteMinutes = odsayClient.convertOdsayResponseToTotalMinutes(odsayResponse);
+
+        // 통근시간으로 점수 산정해서 기존 점수에 더하기
+        BigDecimal newScore = rd.getScore().add(convertMinutesToScore(commuteMinutes));
+
+        // commute 점수 이력 추가
+        String newMessage = rd.getMessage() + " commute: " + convertMinutesToScore(commuteMinutes);
+
+        return RecommendedDong.builder()
+                .commuteTime(commuteMinutes)
+                .dongCode(rd.getDongCode())
+                .dongName(rd.getDongName())
+                .score(newScore)
+                .longitude(rd.getLongitude())
+                .latitude(rd.getLatitude())
+                .message(newMessage)
+                .build();
+    }
+
+    // 동과 변환된 시작 좌표를 묶는 내부 레코드
+    private record DongWithCoordinate(RecommendedDong recommendedDong, Coordinate startingCoordinate) {}
 
     /**
      * 통근시간(분)을 점수로 수치화하는 메소드입니다 산정 방식은 임의로 정했습니다

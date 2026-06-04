@@ -32,30 +32,29 @@ public class OdsayClient {
      */
     public String getCommuteMinutes(Coordinate startingCoordinate, Coordinate destinationCoordinate){
 
-        // 요청 uri 정의
-        String uriString = "https://api.odsay.com/v1/api/searchPubTransPathT"
-                + "?apiKey=" + odsayApiKeys.getNextKey()
-                + "&lang=0"
-                + "&SX=" + startingCoordinate.getLongitude()
-                + "&SY=" + startingCoordinate.getLatitude()
-                + "&EX=" + destinationCoordinate.getLongitude()
-                + "&EY=" + destinationCoordinate.getLatitude()
-                + "&OPT=0"
-                + "&SearchType=0"
-                + "&SearchPathType=0";
+        // 키 풀에서 키를 빌려 요청한다. 응답을 받은 뒤 키는 쿨다운 후 풀에 반납된다(429 방지).
+        return odsayApiKeys.executeWithKey(apiKey -> {
+            // 요청 uri 정의
+            String uriString = "https://api.odsay.com/v1/api/searchPubTransPathT"
+                    + "?apiKey=" + apiKey
+                    + "&lang=0"
+                    + "&SX=" + startingCoordinate.getLongitude()
+                    + "&SY=" + startingCoordinate.getLatitude()
+                    + "&EX=" + destinationCoordinate.getLongitude()
+                    + "&EY=" + destinationCoordinate.getLatitude()
+                    + "&OPT=0"
+                    + "&SearchType=0"
+                    + "&SearchPathType=0";
 
-        String response=null;
-        try{
-            response = restClient.get()
-                    .uri(URI.create(uriString))
-                    .retrieve()//http 요청을 실행
-                    .body(String.class);//응답 body를 String 으로 변환
-
-        }catch (RestClientException e){
-            throw new CustomException(ODSAY_API_ERROR);
-        }
-
-        return response;
+            try {
+                return restClient.get()
+                        .uri(URI.create(uriString))
+                        .retrieve()//http 요청을 실행
+                        .body(String.class);//응답 body를 String 으로 변환
+            } catch (RestClientException e) {
+                throw new CustomException(ODSAY_API_ERROR);
+            }
+        });
     }
 
     // 오디세이 응답 JSON 에서 가장 빠른 경로 소요시간을 파싱
@@ -79,7 +78,7 @@ public class OdsayClient {
                     return 0;
                 }
 
-                log.warn("[ODsay] 에러 응답 수신. code: {}, msg: {}", errorCode, errorMsg);
+                log.warn("[ODsay] 에러 응답 수신. code: {}, msg: {},response: {}", errorCode, errorMsg,response);
                 throw new CustomException(ODSAY_API_ERROR);
             }
 
