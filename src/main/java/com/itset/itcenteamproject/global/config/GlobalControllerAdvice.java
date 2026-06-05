@@ -10,6 +10,8 @@ public class GlobalControllerAdvice {
     @Value("${frontserver.url:}")
     private String frontServerUrl;
 
+
+
     @ModelAttribute("frontServerUrl")
     public String frontServerUrl() {
         return frontServerUrl;
