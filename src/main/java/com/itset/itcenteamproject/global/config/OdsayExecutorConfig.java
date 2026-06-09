@@ -3,6 +3,7 @@ package com.itset.itcenteamproject.global.config;
 import com.itset.itcenteamproject.domain.dashboard.client.OdsayApiKeys;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.client.RestClient;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -15,8 +16,13 @@ import java.util.concurrent.Executors;
 @Configuration
 public class OdsayExecutorConfig {
 
+    @Bean
+    public RestClient restClient(RestClient.Builder builder) {
+        return builder.build();
+    }
+
     @Bean(destroyMethod = "shutdown")
-    public ExecutorService odsayExecutor(OdsayApiKeys odsayApiKeys) {//OdsayApiKeys 도 컴포넌트라 바로 주입가능
+    public ExecutorService odsayExecutor(OdsayApiKeys odsayApiKeys) {
         return Executors.newFixedThreadPool(odsayApiKeys.getKeyCount());
     }
 }

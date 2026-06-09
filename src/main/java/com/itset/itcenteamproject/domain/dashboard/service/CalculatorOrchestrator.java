@@ -63,7 +63,6 @@ public class CalculatorOrchestrator {
         //정렬된 순서대로 랭킹 부여
         for(int i=0;i<dongList.size();i++){
             dongList.get(i).setRanking(i+1);
-            System.out.println("Ranking: "+dongList.get(i).getRanking()+" Dong: "+dongList.get(i).getDongName()+" Score: "+dongList.get(i).getMessage());
         }
         return dongList;
     }

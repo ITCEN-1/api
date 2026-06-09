@@ -23,7 +23,8 @@ import static com.itset.itcenteamproject.exception.ErrorCode.*;
 @RequiredArgsConstructor
 public class KakaoGeocodingClient {
 
-    private final RestClient restClient = RestClient.create();
+    private final RestClient restClient;
+    private final ObjectMapper objectMapper;
 
     @Value("${kakao.rest-api-key}")// <-- 롬북 Value랑 헷갈려서 20분 버림, 이거 읽는 사람은 그러지마세요
     private String kakaoRestApiKey;
@@ -51,7 +52,6 @@ public class KakaoGeocodingClient {
     // 카카오 API 응답 내용을 뒤져서 주소로 파싱
     private Coordinate parseCoordinate(String response) {
         try {
-            ObjectMapper objectMapper = new ObjectMapper();
             JsonNode root = objectMapper.readTree(response);
             JsonNode documents = root.path("documents");
 
