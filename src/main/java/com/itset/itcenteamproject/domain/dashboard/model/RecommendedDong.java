@@ -20,12 +20,12 @@ public class RecommendedDong implements Comparable<RecommendedDong>{
     private Integer commuteTime;
     private String message;
 
-    //score 기준 내림차순 정렬 (점수 높은게 1등이므로)
+    //score 기준 내림차순 정렬 (점수 높은게 1등이므로), null은 마지막으로
     @Override
     public int compareTo(RecommendedDong o) {
-        return o.getScore().compareTo(this.getScore());
-        // o.getScore() - this.getScore() 결과로
-        // o > this : o가 앞으로
-        // o < this : o가 뒤로
+        if (this.score == null && o.getScore() == null) return 0;
+        if (this.score == null) return 1;
+        if (o.getScore() == null) return -1;
+        return o.getScore().compareTo(this.score);
     }
 }

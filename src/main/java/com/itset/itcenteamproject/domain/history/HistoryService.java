@@ -94,6 +94,9 @@ HistoryService {
     // 주의 ** 히스토리 흐름에는 score/message가 저장돼 있지 않으므로 채우지 않는다.
     private static RecommendedDong toRecommendedDong(HistoryItem historyItem) {
         DongLocation dongLocation = historyItem.getDongLocation();
+        if (dongLocation == null) {
+            throw new CustomException(ErrorCode.INVALID_DONG_CODE);
+        }
 
         return RecommendedDong.builder()
                 .ranking(historyItem.getRanking())
