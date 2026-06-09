@@ -20,8 +20,8 @@ import static com.itset.itcenteamproject.exception.ErrorCode.*;
 @Slf4j
 public class OdsayClient {
 
-    private final RestClient restClient = RestClient.create();
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final RestClient restClient;
+    private final ObjectMapper objectMapper;
     private final OdsayApiKeys odsayApiKeys;
 
     /**
