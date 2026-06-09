@@ -85,7 +85,6 @@ public class CommuteScoreCalculator {
                     rd.setRanking(null);
                 }
                 result.add(rd);
-                System.out.println(rd.getMessage());
             }
             return result.stream().limit(10).toList();
 
